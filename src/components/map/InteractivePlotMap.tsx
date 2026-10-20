@@ -243,7 +243,7 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full bg-slate-950 overflow-hidden select-none"
+      className="relative w-full h-full bg-white overflow-hidden select-none"
       style={{
         cursor: isDraggingRef.current && dragMovedRef.current ? 'grabbing' : 'grab',
         touchAction: 'none',
@@ -292,7 +292,7 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
             const isFilteredOut = filteredPlotIds && !filteredPlotIds.has(plot.id);
             const centroid = calculatePolygonCentroid(plot.geometry!.coordinates);
             const pointsString = pointsToSvgPolygon(plot.geometry!.coordinates);
-            const statusColor = getStatusColor(plot.status);
+            const statusStyle = getStatusColor(plot.status);
 
             return (
               <g
@@ -311,23 +311,35 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                 {/* Plot Boundary Polygon */}
                 <polygon
                   points={pointsString}
-                  fill={isSelected ? '#38bdf8' : isHovered ? '#60a5fa' : statusColor}
-                  stroke={isSelected ? '#0284c7' : isHovered ? '#1d4ed8' : '#ffffff'}
+                  fill={
+                    isSelected
+                      ? '#38bdf8'
+                      : isHovered
+                      ? '#86efac'
+                      : statusStyle.fill
+                  }
+                  stroke={
+                    isSelected
+                      ? '#0284c7'
+                      : isHovered
+                      ? '#16a34a'
+                      : statusStyle.stroke
+                  }
                   strokeWidth={
                     isSelected
                       ? Math.max(2.5, 4 / transform.scale)
                       : isHovered
-                      ? Math.max(1.8, 2.5 / transform.scale)
-                      : Math.max(1, 1.5 / transform.scale)
+                      ? Math.max(2, 3 / transform.scale)
+                      : Math.max(1.2, 1.8 / transform.scale)
                   }
                   strokeLinejoin="round"
                   className="cursor-pointer transition-all duration-150"
                   fillOpacity={
                     isSelected
-                      ? 0.85
+                      ? 0.88
                       : isHovered
-                      ? 0.75
-                      : 0.62
+                      ? 0.78
+                      : 0.65
                   }
                 />
 
@@ -342,7 +354,7 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                     fontWeight={isSelected ? 'bold' : '600'}
                     fill={isSelected ? '#020617' : '#0f172a'}
                     stroke="#ffffff"
-                    strokeWidth={Math.max(0.5, 1.5 / transform.scale)}
+                    strokeWidth={Math.max(1, 2 / transform.scale)}
                     paintOrder="stroke fill"
                     style={{ pointerEvents: 'none', userSelect: 'none' }}
                   >
@@ -400,10 +412,10 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
       {/* LEGEND (DESKTOP ONLY) */}
       <div className="absolute bottom-4 left-4 z-20 hidden md:flex items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-md text-xs font-semibold text-slate-700 pointer-events-none">
         {[
-          { label: 'Available', color: '#4ade80', border: '#16a34a' },
-          { label: 'Booked', color: '#60a5fa', border: '#2563eb' },
-          { label: 'Registered', color: '#f472b6', border: '#db2777' },
-          { label: 'Blocked', color: '#fde047', border: '#ca8a04' },
+          { label: 'Available', color: '#22c55e', border: '#15803d' },
+          { label: 'Booked', color: '#3b82f6', border: '#1d4ed8' },
+          { label: 'Registered', color: '#f43f5e', border: '#be123c' },
+          { label: 'Blocked', color: '#eab308', border: '#a16207' },
         ].map(({ label, color, border }) => (
           <div key={label} className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color, border: `1.5px solid ${border}` }} />

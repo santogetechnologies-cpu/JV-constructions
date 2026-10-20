@@ -22,8 +22,8 @@ export const AdminNewProjectPage: React.FC = () => {
   const [totalLandArea, setTotalLandArea] = useState('10.5 Acres');
   const [status, setStatus] = useState<ProjectStatus>('draft');
   const [phone, setPhone] = useState('+91 98765 43210');
-  const [email, setEmail] = useState('sales@landestate.local');
-  const [salesOffice, setSalesOffice] = useState('Site Marketing Suite');
+  const [email, setEmail] = useState('');
+  const [salesOffice, setSalesOffice] = useState('');
 
   // Auto-generate slug from name
   const handleNameChange = (val: string) => {

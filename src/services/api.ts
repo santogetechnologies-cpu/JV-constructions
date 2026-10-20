@@ -10,6 +10,7 @@ import {
   DashboardMetrics,
   PlotStatus,
   BookingStatus,
+  UserProfile,
 } from '../types/database';
 
 // -------------------------------------------------------------

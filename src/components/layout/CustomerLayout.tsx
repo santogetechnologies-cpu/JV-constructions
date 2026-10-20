@@ -9,7 +9,7 @@ export const CustomerLayout: React.FC = () => {
 
   if (isMapPage) {
     return (
-      <main className="h-screen w-screen overflow-hidden bg-slate-900">
+      <main className="h-screen w-screen overflow-hidden bg-white">
         <Outlet />
       </main>
     );
@@ -21,7 +21,6 @@ export const CustomerLayout: React.FC = () => {
       <main className="flex-1">
         <Outlet />
       </main>
-      <Footer />
     </div>
   );
 };

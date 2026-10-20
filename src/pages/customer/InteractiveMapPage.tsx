@@ -154,10 +154,11 @@ export const InteractiveMapPage: React.FC = () => {
       // 3. Area Range Filter (in Cents)
       if (filters.areaRange !== 'all') {
         const cents = p.area_cents;
-        if (filters.areaRange === 'under_3' && cents >= 3.0) return;
-        if (filters.areaRange === '3_to_5' && (cents < 3.0 || cents > 5.0)) return;
-        if (filters.areaRange === '5_to_10' && (cents < 5.0 || cents > 10.0)) return;
-        if (filters.areaRange === 'above_10' && cents <= 10.0) return;
+        if (filters.areaRange === '<2' && cents >= 2.0) return;
+        if (filters.areaRange === '2-5' && (cents < 2.0 || cents > 5.0)) return;
+        if (filters.areaRange === '5-8' && (cents < 5.0 || cents > 8.0)) return;
+        if (filters.areaRange === '8-13' && (cents < 8.0 || cents > 13.0)) return;
+        if (filters.areaRange === '>13' && cents <= 13.0) return;
       }
 
       matchingIds.add(p.id);
@@ -194,21 +195,21 @@ export const InteractiveMapPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-white">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-400 mb-3" />
-        <p className="text-xs font-bold text-slate-300">Loading CAD Layout & Plots...</p>
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-white text-slate-800">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-3" />
+        <p className="text-xs font-bold text-slate-600">Loading CAD Layout & Plots...</p>
       </div>
     );
   }
 
   if (error || !project) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center p-6 text-center bg-slate-950 text-white">
-        <h3 className="font-bold text-slate-100 text-base">Unable to load project layout</h3>
-        <p className="text-xs text-slate-400 mt-1 max-w-sm">{error}</p>
+      <div className="h-screen w-full flex flex-col items-center justify-center p-6 text-center bg-white text-slate-800">
+        <h3 className="font-bold text-slate-900 text-base">Unable to load project layout</h3>
+        <p className="text-xs text-slate-500 mt-1 max-w-sm">{error}</p>
         <Link
           to="/"
-          className="mt-4 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors"
+          className="mt-4 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors"
         >
           Return to Home
         </Link>
@@ -220,7 +221,7 @@ export const InteractiveMapPage: React.FC = () => {
     documents.find((d) => d.category === 'dtcp_approval')?.approval_number || 'APPROVED';
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-slate-950 select-none">
+    <div className="relative w-full h-screen overflow-hidden bg-white select-none">
       {/* 1. RESPONSIVE UNIFIED TOP BAR */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs px-2.5 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2 pointer-events-auto">
         {/* LEFT: BACK BUTTON + PROJECT INFO */}
@@ -346,9 +347,9 @@ export const InteractiveMapPage: React.FC = () => {
       {/* 4. WATERMARK / BRANDING BADGE */}
       <div className={`fixed bottom-4 right-4 z-20 pointer-events-none ${selectedPlot ? 'hidden sm:block' : 'block'}`}>
         <div className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-xl border border-slate-200 shadow-sm flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
           <span className="text-[10px] font-black text-slate-800 tracking-tight">
-            Land<span className="text-emerald-600">Estate</span>
+            Land<span className="text-blue-600">Estate</span>
           </span>
         </div>
       </div>

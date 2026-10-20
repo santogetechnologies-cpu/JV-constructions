@@ -73,43 +73,43 @@ export function getStatusColor(status: PlotStatus): {
   switch (status) {
     case 'available':
       return {
-        fill: '#4ade80', // Vibrant light green
-        stroke: '#16a34a',
+        fill: '#22c55e', // Vibrant emerald green
+        stroke: '#15803d',
         text: '#14532d',
         badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
         badgeText: 'text-emerald-700',
       };
     case 'booked':
       return {
-        fill: '#60a5fa', // Vibrant sky blue
-        stroke: '#2563eb',
+        fill: '#3b82f6', // Clean vibrant blue
+        stroke: '#1d4ed8',
         text: '#1e3a8a',
         badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
         badgeText: 'text-blue-700',
       };
     case 'on_hold':
       return {
-        fill: '#93c5fd', // Light blue
-        stroke: '#3b82f6',
-        text: '#1e40af',
-        badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        badgeText: 'text-indigo-700',
+        fill: '#f97316', // Orange
+        stroke: '#c2410c',
+        text: '#7c2d12',
+        badgeBg: 'bg-orange-50 text-orange-700 border-orange-200',
+        badgeText: 'text-orange-700',
       };
     case 'sold':
       return {
-        fill: '#f472b6', // Vibrant pink / rose
-        stroke: '#db2777',
-        text: '#831843',
+        fill: '#f43f5e', // Rose / Red for sold/registered
+        stroke: '#be123c',
+        text: '#881337',
         badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
         badgeText: 'text-rose-700',
       };
     case 'blocked':
       return {
-        fill: '#fde047', // Warm yellow
-        stroke: '#ca8a04',
+        fill: '#eab308', // Amber / Gold for blocked
+        stroke: '#a16207',
         text: '#713f12',
-        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-        badgeText: 'text-amber-700',
+        badgeBg: 'bg-yellow-50 text-yellow-800 border-yellow-200',
+        badgeText: 'text-yellow-800',
       };
     default:
       return {

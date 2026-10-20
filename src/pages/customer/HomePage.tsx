@@ -8,28 +8,54 @@ import {
   Layers,
   Sparkles,
   FileCheck2,
-  Lock,
-  PlusCircle,
+  Map,
+  CheckCircle2,
+  Building2,
+  Calendar,
 } from 'lucide-react';
-import { Project } from '../../types/database';
-import { getPublishedProjects } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { Project, Plot } from '../../types/database';
+import { getPublishedProjects, getPlotsWithGeometries } from '../../services/api';
+import { formatPriceCompact } from '../../lib/utils';
+
+interface ProjectWithStats extends Project {
+  totalPlots?: number;
+  availablePlots?: number;
+  minPrice?: number | null;
+}
 
 export const HomePage: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isStaff } = useAuth();
 
   useEffect(() => {
     async function load() {
       try {
         setLoading(true);
         const data = await getPublishedProjects();
-        setProjects(data);
+
+        // Fetch stats for each project to show rich metrics on big cards
+        const withStats: ProjectWithStats[] = await Promise.all(
+          data.map(async (p) => {
+            try {
+              const plots = await getPlotsWithGeometries(p.id);
+              const totalPlots = plots.length;
+              const availablePlots = plots.filter((plot) => plot.status === 'available').length;
+              const prices = plots
+                .map((plot) => plot.price_inr)
+                .filter((pr): pr is number => pr !== null && pr > 0);
+              const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+              return { ...p, totalPlots, availablePlots, minPrice };
+            } catch {
+              return { ...p, totalPlots: 0, availablePlots: 0, minPrice: null };
+            }
+          })
+        );
+
+        setProjects(withStats);
       } catch (err: any) {
         console.error('Failed to load published projects:', err);
-        setError(err.message || 'Could not load projects from database');
+        setError(err.message || 'Could not load layouts');
       } finally {
         setLoading(false);
       }
@@ -38,73 +64,49 @@ export const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-white border-b border-slate-200 py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 mb-6">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>DTCP & LP Approved Layout Blueprints</span>
-            </div>
-            <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight">
-              Interactive CAD Blueprints & Live Real Estate Plot Inventory.
-            </h1>
-            <p className="mt-6 text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-              Transforming static engineering survey drawings, DTCP approvals, and CAD blueprints into a fully synchronized digital layout. Inspect actual plot boundaries, verify approvals, and reserve plots in real time.
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                to="/projects"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-xl transition-all"
-              >
-                <span>Explore Approved Layouts</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                to="/admin"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm transition-all"
-              >
-                <Lock className="w-4 h-4 text-slate-500" />
-                <span>Admin CAD Portal</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Decorative Grid Overlay */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-      </section>
-
-      {/* PUBLISHED PROJECTS SECTION (REAL SUPABASE RECORDS) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full flex-1">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans py-8 sm:py-12">
+      {/* PUBLISHED PROJECTS SECTION WITH BIG LUXURY CARDS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-              Featured Approved Layouts
-            </h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Select a project to explore its interactive vector plot map and live availability.
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-wider text-blue-700">
+                Live Layout Inventory
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+              Approved Real Estate Layouts
+            </h1>
+            <p className="text-sm sm:text-base text-slate-500 mt-2 max-w-xl">
+              Inspect master-planned layouts, exact survey geometries, dimensions, and live reservation status directly on interactive CAD vector maps.
             </p>
           </div>
           <Link
             to="/projects"
-            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+            className="inline-flex items-center gap-1.5 text-sm font-extrabold text-blue-600 hover:text-blue-700 transition-colors group"
           >
             <span>View All Projects</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
         {/* LOADING STATE */}
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-72 rounded-2xl bg-white border border-slate-200 p-6 animate-pulse">
-                <div className="h-6 w-3/4 bg-slate-200 rounded mb-4" />
-                <div className="h-4 w-1/2 bg-slate-100 rounded mb-6" />
-                <div className="h-24 bg-slate-100 rounded-xl" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className="h-96 rounded-3xl bg-white border border-slate-200 p-8 animate-pulse flex flex-col justify-between shadow-xs"
+              >
+                <div className="space-y-4">
+                  <div className="h-6 w-1/3 bg-slate-200 rounded-lg" />
+                  <div className="h-8 w-3/4 bg-slate-200 rounded-lg" />
+                  <div className="h-4 w-full bg-slate-100 rounded-lg" />
+                  <div className="h-4 w-2/3 bg-slate-100 rounded-lg" />
+                </div>
+                <div className="h-24 bg-slate-100 rounded-2xl" />
+                <div className="h-12 bg-slate-200 rounded-xl" />
               </div>
             ))}
           </div>
@@ -113,53 +115,104 @@ export const HomePage: React.FC = () => {
         {/* ERROR STATE */}
         {!loading && error && (
           <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm">
-            <p className="font-bold">Error loading live data from Supabase:</p>
+            <p className="font-bold">Error loading live layout data:</p>
             <p className="mt-1">{error}</p>
           </div>
         )}
 
-        {/* REAL PROJECTS GRID */}
+        {/* BIG LUXURIOUS PROJECT CARDS (2-Column Large Showcase) */}
         {!loading && !error && projects.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {projects.map((proj) => (
               <div
                 key={proj.id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col justify-between group"
+                className="bg-white rounded-3xl border border-slate-200/90 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between group hover:-translate-y-1"
               >
-                <div className="p-6">
-                  {/* Status Badge */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                      {proj.city}, {proj.state}
+                {/* Visual Header / Blueprint Graphic Canvas */}
+                <div className="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-6 sm:p-8 text-white overflow-hidden border-b border-slate-800">
+                  {/* Subtle Blueprint grid pattern */}
+                  <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#93c5fd_1px,transparent_1px)] [background-size:16px_16px]" />
+                  
+                  {/* Top Badges */}
+                  <div className="flex items-center justify-between gap-3 relative z-10 mb-4">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-300 border border-blue-400/30 backdrop-blur-md">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                      DTCP & LP Approved
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Approved Layout
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 backdrop-blur-md">
+                      <MapPin className="w-3.5 h-3.5 text-blue-400" />
+                      {proj.city}, {proj.state}
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-extrabold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                  {/* Big Card Title */}
+                  <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-blue-300 transition-colors relative z-10 tracking-tight">
                     {proj.name}
                   </h3>
-                  <p className="text-xs text-slate-500 line-clamp-2 mt-2 leading-relaxed">
-                    {proj.description || 'Verified DTCP-approved layout with verified plot boundaries.'}
-                  </p>
+
+                  {/* Location / Land Area details */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 mt-2 relative z-10 font-medium">
+                    {proj.address && <span>{proj.address}</span>}
+                    {proj.total_land_area && (
+                      <span className="text-blue-300 font-bold">• Extent: {proj.total_land_area}</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="p-6 pt-0">
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                {/* Card Body & Description */}
+                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                      {proj.description ||
+                        'Verified DTCP-approved layout with verified plot boundaries, clear road networks, and ready-to-build documentation.'}
+                    </p>
+
+                    {/* BIG METRICS ROW */}
+                    <div className="grid grid-cols-3 gap-3 my-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center">
+                      <div className="p-2">
+                        <span className="text-[11px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                          Total Plots
+                        </span>
+                        <span className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 block">
+                          {proj.totalPlots ?? 0}
+                        </span>
+                      </div>
+
+                      <div className="p-2 bg-blue-50/80 rounded-xl border border-blue-200/60">
+                        <span className="text-[11px] text-blue-700 font-extrabold uppercase tracking-wider block">
+                          Available
+                        </span>
+                        <span className="text-xl sm:text-2xl font-black text-blue-700 mt-0.5 block">
+                          {proj.availablePlots ?? 0}
+                        </span>
+                      </div>
+
+                      <div className="p-2">
+                        <span className="text-[11px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                          Starting At
+                        </span>
+                        <span className="text-sm sm:text-base font-black text-slate-900 mt-1 block truncate">
+                          {proj.minPrice ? formatPriceCompact(proj.minPrice) : 'On Request'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Actions */}
+                  <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <Link
                       to={`/projects/${proj.slug}`}
-                      className="text-xs font-bold text-slate-600 hover:text-slate-900"
+                      className="text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition-colors w-full sm:w-auto text-center"
                     >
-                      Project Info
+                      View Layout Details
                     </Link>
                     <Link
                       to={`/projects/${proj.slug}/map`}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-colors"
+                      className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.02] active:scale-100 cursor-pointer"
                     >
-                      <span>Open Interactive Map</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <Map className="w-4 h-4 text-blue-200" />
+                      <span>Open Interactive CAD Map</span>
+                      <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 </div>
@@ -168,63 +221,20 @@ export const HomePage: React.FC = () => {
           </div>
         )}
 
-        {/* PROPER DATABASE EMPTY STATE (NO MOCK DATA) */}
+        {/* DATABASE EMPTY STATE */}
         {!loading && !error && projects.length === 0 && (
           <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center max-w-xl mx-auto shadow-xs">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto mb-4">
               <Layers className="w-8 h-8" />
             </div>
             <h3 className="text-lg font-black text-slate-900">
-              No Published Projects in Database
+              No Published Projects Currently Available
             </h3>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed max-w-md mx-auto">
               Our verified DTCP approved layouts and live plot inventories will be published here shortly. Please check back soon or contact our desk.
             </p>
           </div>
         )}
-      </section>
-
-      {/* TRUST / CAPABILITY PILLARS */}
-      <section className="bg-white border-t border-slate-200 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h4 className="font-extrabold text-slate-900 text-base mb-1">
-                Local CAD Precision
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Vector polygons drawn directly on engineering blueprints preserving exact geometry, measurements, and orientation.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h4 className="font-extrabold text-slate-900 text-base mb-1">
-                Real-Time Synchronization
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                When an administrator reserves or registers a plot, all connected customer maps reflect the status update immediately via Supabase Realtime.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-4">
-                <FileCheck2 className="w-5 h-5" />
-              </div>
-              <h4 className="font-extrabold text-slate-900 text-base mb-1">
-                Verified Documents
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Download official DTCP approval orders, Local Planning authority sanction blueprints, and survey certificates securely.
-              </p>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   );

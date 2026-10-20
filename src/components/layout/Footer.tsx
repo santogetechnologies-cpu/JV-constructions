@@ -10,17 +10,17 @@ export const Footer: React.FC = () => {
           {/* Brand info */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2 text-white">
-              <Compass className="w-6 h-6 text-emerald-500" />
+              <Compass className="w-6 h-6 text-blue-500" />
               <span className="font-extrabold text-lg tracking-tight">
-                Land<span className="text-emerald-500">Estate</span>
+                Land<span className="text-blue-500">Estate</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
               Interactive CAD and blueprint-backed real estate plot inventory management platform. Verified DTCP and LP approval layouts.
             </p>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>100% Real Supabase Data Synchronization</span>
+            <div className="flex items-center gap-2 text-xs text-blue-400 font-semibold bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60">
+              <ShieldCheck className="w-4 h-4 shrink-0 text-blue-400" />
+              <span>Verified DTCP & LP Approved Layouts</span>
             </div>
           </div>
 
@@ -33,11 +33,6 @@ export const Footer: React.FC = () => {
               <li>
                 <Link to="/projects" className="hover:text-white transition-colors">
                   All Approved Projects
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/login" className="hover:text-white transition-colors">
-                  Staff Login
                 </Link>
               </li>
             </ul>
@@ -80,8 +75,8 @@ export const Footer: React.FC = () => {
 
         <div className="mt-8 pt-6 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} LandEstate Platform. All rights reserved.</p>
-          <p className="text-[11px] text-slate-500">
-            Engineered with React, Vite, Open Vector SVG, and Supabase PostgreSQL.
+          <p className="text-[11px] text-slate-400 font-medium">
+            Official DTCP & Local Planning Authority Sanctioned Layouts.
           </p>
         </div>
       </div>

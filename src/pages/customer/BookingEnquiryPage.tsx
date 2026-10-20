@@ -165,14 +165,14 @@ export const BookingEnquiryPage: React.FC = () => {
               </div>
               <div className="flex justify-between py-1.5 border-b border-slate-100">
                 <span className="text-slate-500">Price</span>
-                <span className="font-bold text-emerald-700">{formatINR(plot.price_inr)}</span>
+                <span className="font-bold text-blue-700">{formatINR(plot.price_inr)}</span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500 flex items-start gap-2">
-              <Lock className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500 flex items-start gap-2">
+              <Lock className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
               <span>
-                Atomic reservation protection active. Submitting this form creates a validated database enquiry and notifies our sales office.
+                Verified reservation protection active. Submitting this form registers your enquiry directly and notifies our sales office.
               </span>
             </div>
           </div>
@@ -201,7 +201,7 @@ export const BookingEnquiryPage: React.FC = () => {
                   type="text"
                   placeholder="e.g. Anand Kumar"
                   {...register('customerName')}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium"
                 />
                 {errors.customerName && (
                   <p className="text-red-600 text-[11px] mt-1">{errors.customerName.message}</p>
@@ -218,7 +218,7 @@ export const BookingEnquiryPage: React.FC = () => {
                     type="tel"
                     placeholder="+91 98765 43210"
                     {...register('phone')}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium"
                   />
                   {errors.phone && (
                     <p className="text-red-600 text-[11px] mt-1">{errors.phone.message}</p>
@@ -231,7 +231,7 @@ export const BookingEnquiryPage: React.FC = () => {
                     type="email"
                     placeholder="name@example.com"
                     {...register('email')}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium"
                   />
                   {errors.email && (
                     <p className="text-red-600 text-[11px] mt-1">{errors.email.message}</p>
@@ -246,7 +246,7 @@ export const BookingEnquiryPage: React.FC = () => {
                   type="text"
                   placeholder="e.g. Whitefield, Bengaluru"
                   {...register('location')}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium"
                 />
               </div>
 
@@ -267,7 +267,7 @@ export const BookingEnquiryPage: React.FC = () => {
                         type="radio"
                         value={m.value}
                         {...register('preferredContactMethod')}
-                        className="text-emerald-600 focus:ring-emerald-500"
+                        className="text-blue-600 focus:ring-blue-500"
                       />
                       <span>{m.label}</span>
                     </label>
@@ -282,7 +282,7 @@ export const BookingEnquiryPage: React.FC = () => {
                   rows={3}
                   placeholder="Ask about payment schedules, bank loan approvals, registration timeline..."
                   {...register('message')}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium"
                 />
               </div>
 
@@ -292,7 +292,7 @@ export const BookingEnquiryPage: React.FC = () => {
                   <input
                     type="checkbox"
                     {...register('consent')}
-                    className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500"
+                    className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
                   />
                   <span className="text-slate-600 text-[11px] leading-relaxed">
                     I consent to be contacted by the project sales team regarding plot availability, pricing, site visits, and official approval documents.
@@ -308,12 +308,12 @@ export const BookingEnquiryPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-xl disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-500/25 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                      <span>Submitting to Database...</span>
+                      <span>Submitting Request...</span>
                     </>
                   ) : (
                     <span>Confirm & Submit Enquiry</span>

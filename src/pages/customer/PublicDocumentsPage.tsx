@@ -70,8 +70,8 @@ export const PublicDocumentsPage: React.FC = () => {
 
         <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+            <ShieldCheck className="w-5 h-5 text-blue-600" />
+            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
               Legal Clearances & Approvals
             </span>
           </div>
@@ -90,7 +90,7 @@ export const PublicDocumentsPage: React.FC = () => {
                   className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-300 transition-colors"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-blue-600 flex items-center justify-center shrink-0 shadow-xs">
                       <FileCheck2 className="w-5 h-5" />
                     </div>
                     <div>

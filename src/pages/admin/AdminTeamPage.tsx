@@ -135,7 +135,7 @@ export const AdminTeamPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-600">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -158,7 +158,7 @@ export const AdminTeamPage: React.FC = () => {
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all hover:scale-[1.02]"
           >
             <UserPlus className="w-4 h-4" />
             <span>Create New Admin</span>
@@ -172,11 +172,11 @@ export const AdminTeamPage: React.FC = () => {
           {/* PROFILE CARD */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white font-black text-xl flex items-center justify-center shadow-md">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-black text-xl flex items-center justify-center shadow-md">
                 {(profile?.full_name || user?.email || 'A')[0].toUpperCase()}
               </div>
               <div className="truncate">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-300">
                   <Shield className="w-3 h-3" />
                   {profile?.role || 'super_admin'}
                 </span>
@@ -191,13 +191,13 @@ export const AdminTeamPage: React.FC = () => {
           {/* CHANGE PASSWORD CARD */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
             <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-              <KeyRound className="w-4 h-4 text-emerald-600" />
+              <KeyRound className="w-4 h-4 text-blue-600" />
               <h2 className="text-sm font-bold text-slate-900">Change My Password</h2>
             </div>
 
             {pwSuccess && (
-              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>{pwSuccess}</span>
               </div>
             )}
@@ -221,7 +221,7 @@ export const AdminTeamPage: React.FC = () => {
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
                     placeholder="Enter at least 6 characters"
-                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <button
@@ -245,7 +245,7 @@ export const AdminTeamPage: React.FC = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     placeholder="Repeat new password"
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 </div>
@@ -286,7 +286,7 @@ export const AdminTeamPage: React.FC = () => {
 
             {loading ? (
               <div className="p-12 text-center text-slate-400">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mx-auto mb-3" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-3" />
                 <p className="text-xs">Loading administrators from database...</p>
               </div>
             ) : profiles.length === 0 ? (
@@ -313,7 +313,7 @@ export const AdminTeamPage: React.FC = () => {
                               {p.full_name || 'Admin User'}
                             </span>
                             {isCurrent && (
-                              <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-black uppercase">
+                              <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-black uppercase">
                                 You
                               </span>
                             )}
@@ -325,8 +325,8 @@ export const AdminTeamPage: React.FC = () => {
                       </div>
 
                       <div className="flex items-center gap-4 shrink-0">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 text-blue-700 border border-blue-200">
+                          <ShieldCheck className="w-3 h-3 text-blue-600" />
                           {p.role}
                         </span>
 
@@ -350,7 +350,7 @@ export const AdminTeamPage: React.FC = () => {
           <div className="bg-white rounded-3xl border border-slate-200 w-full max-w-md p-6 shadow-2xl relative space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -367,8 +367,8 @@ export const AdminTeamPage: React.FC = () => {
             </div>
 
             {createSuccess && (
-              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>{createSuccess}</span>
               </div>
             )}
@@ -391,7 +391,7 @@ export const AdminTeamPage: React.FC = () => {
                     value={createName}
                     onChange={(e) => setCreateName(e.target.value)}
                     placeholder="e.g. John Doe"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 </div>
@@ -408,7 +408,7 @@ export const AdminTeamPage: React.FC = () => {
                     onChange={(e) => setCreateEmail(e.target.value)}
                     required
                     placeholder="admin@yourdomain.com"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 </div>
@@ -425,7 +425,7 @@ export const AdminTeamPage: React.FC = () => {
                     onChange={(e) => setCreatePassword(e.target.value)}
                     required
                     placeholder="Min. 6 characters"
-                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <button
@@ -452,7 +452,7 @@ export const AdminTeamPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={createLoading}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-2"
                 >
                   {createLoading ? (
                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />

@@ -114,7 +114,7 @@ export const PlotDetailPage: React.FC = () => {
               {project && (
                 <Link
                   to={`/projects/${project.slug}/map`}
-                  className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700"
                 >
                   Full Map View →
                 </Link>
@@ -170,16 +170,16 @@ export const PlotDetailPage: React.FC = () => {
                   <p className="text-base font-extrabold text-slate-900 mt-1">
                     {plot.facing}
                   </p>
-                  <p className="text-xs text-emerald-600 font-semibold">Vastu Standard</p>
+                  <p className="text-xs text-blue-600 font-semibold">Vastu Standard</p>
                 </div>
               </div>
 
               {/* PRICING */}
-              <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 mb-6">
-                <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">
+              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 mb-6">
+                <span className="text-xs font-bold text-blue-800 uppercase tracking-wider block">
                   Configured Price
                 </span>
-                <p className="text-2xl font-black text-emerald-950 mt-1">
+                <p className="text-2xl font-black text-blue-950 mt-1">
                   {formatINR(plot.price_inr)}
                 </p>
               </div>
@@ -199,7 +199,7 @@ export const PlotDetailPage: React.FC = () => {
               {isBookable ? (
                 <Link
                   to={`/booking/${plot.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-lg transition-all"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all"
                 >
                   <span>Submit Booking Enquiry</span>
                   <ArrowRight className="w-4 h-4" />

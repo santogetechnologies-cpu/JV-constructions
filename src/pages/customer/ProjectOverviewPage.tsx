@@ -90,7 +90,7 @@ export const ProjectOverviewPage: React.FC = () => {
         <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-50 text-blue-800 border border-blue-200">
                 Verified DTCP Layout
               </span>
               <span className="flex items-center gap-1 text-xs text-slate-500 font-medium">
@@ -110,9 +110,9 @@ export const ProjectOverviewPage: React.FC = () => {
           <div className="shrink-0 flex flex-col sm:flex-row gap-3">
             <Link
               to={`/projects/${project.slug}/map`}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold shadow-lg transition-all"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all"
             >
-              <Map className="w-4 h-4 text-emerald-400" />
+              <Map className="w-4 h-4 text-blue-200" />
               <span>Launch Interactive Map</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -128,20 +128,20 @@ export const ProjectOverviewPage: React.FC = () => {
             <span className="text-2xl font-black text-slate-900 mt-1 block">{totalPlots}</span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 shadow-xs">
-            <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">
+          <div className="p-5 rounded-2xl bg-blue-50/70 border border-blue-200/80 shadow-xs">
+            <span className="text-xs font-bold text-blue-800 uppercase tracking-wider block">
               Available For Booking
             </span>
-            <span className="text-2xl font-black text-emerald-700 mt-1 block">
+            <span className="text-2xl font-black text-blue-700 mt-1 block">
               {availablePlots}
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-blue-50/60 border border-blue-200/80 shadow-xs">
-            <span className="text-xs font-bold text-blue-800 uppercase tracking-wider block">
+          <div className="p-5 rounded-2xl bg-sky-50/60 border border-sky-200/80 shadow-xs">
+            <span className="text-xs font-bold text-sky-800 uppercase tracking-wider block">
               Reserved / On Hold
             </span>
-            <span className="text-2xl font-black text-blue-700 mt-1 block">{bookedPlots}</span>
+            <span className="text-2xl font-black text-sky-700 mt-1 block">{bookedPlots}</span>
           </div>
 
           <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
@@ -182,7 +182,7 @@ export const ProjectOverviewPage: React.FC = () => {
                 </h3>
                 <Link
                   to={`/documents/${project.slug}`}
-                  className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700"
                 >
                   View All Documents
                 </Link>
@@ -196,7 +196,7 @@ export const ProjectOverviewPage: React.FC = () => {
                       className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between"
                     >
                       <div className="flex items-center gap-3">
-                        <FileCheck2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <FileCheck2 className="w-5 h-5 text-blue-600 shrink-0" />
                         <div>
                           <p className="text-xs font-bold text-slate-900">{doc.title}</p>
                           <p className="text-[10px] text-slate-500 uppercase tracking-wider">
@@ -228,28 +228,75 @@ export const ProjectOverviewPage: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
               <h3 className="font-extrabold text-base text-slate-900 mb-4">Project Sales Office</h3>
-              <div className="space-y-3 text-xs text-slate-600">
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>{project.contact_information?.phone || '+91 98765 43210'}</span>
+              <div className="space-y-4 text-xs text-slate-600">
+                {/* Contact Number */}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Contact Number
+                    </span>
+                    <a
+                      href={`tel:${project.contact_information?.phone || '+91 98765 43210'}`}
+                      className="font-black text-slate-900 text-sm hover:text-blue-600 transition-colors block mt-0.5"
+                    >
+                      {project.contact_information?.phone || '+91 98765 43210'}
+                    </a>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>{project.contact_information?.email || 'sales@landestate.local'}</span>
+
+                {/* Office Address */}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Office Address
+                    </span>
+                    <p className="font-semibold text-slate-800 text-xs mt-0.5 leading-relaxed">
+                      {project.contact_information?.sales_office &&
+                      project.contact_information.sales_office !== 'Site Marketing Suite'
+                        ? project.contact_information.sales_office
+                        : [
+                            project.address || `${project.name} Site Campus`,
+                            project.city,
+                            `${project.state}${project.postal_code ? ` - ${project.postal_code}` : ''}`,
+                          ]
+                            .filter(Boolean)
+                            .join(', ')}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    {project.contact_information?.sales_office ||
-                      `${project.name} Site Marketing Office, ${project.city}`}
-                  </span>
-                </div>
+
+                {/* Email (only if real and configured) */}
+                {project.contact_information?.email &&
+                  !project.contact_information.email.includes('landestate.local') && (
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                          Email
+                        </span>
+                        <a
+                          href={`mailto:${project.contact_information.email}`}
+                          className="font-medium text-slate-800 hover:text-blue-600 transition-colors block mt-0.5"
+                        >
+                          {project.contact_information.email}
+                        </a>
+                      </div>
+                    </div>
+                  )}
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-100">
                 <Link
                   to={`/projects/${project.slug}/map`}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all"
                 >
                   <span>Select a Plot on Map</span>
                   <ArrowRight className="w-3.5 h-3.5" />

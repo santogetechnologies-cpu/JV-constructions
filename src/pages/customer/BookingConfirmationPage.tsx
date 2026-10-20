@@ -59,18 +59,18 @@ export const BookingConfirmationPage: React.FC = () => {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm text-center">
           {/* SUCCESS ICON */}
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
-          <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-600">
-            Request Logged in Database
+          <span className="text-xs font-extrabold uppercase tracking-wider text-blue-600">
+            Request Logged Successfully
           </span>
           <h1 className="text-3xl font-black text-slate-900 mt-1 tracking-tight">
             Enquiry Received Successfully
           </h1>
           <p className="text-xs text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
-            Your booking request has been registered in the Supabase PostgreSQL database. Our sales team has been notified.
+            Your booking request has been registered in our records. Our sales team has been notified and will reach out to you shortly.
           </p>
 
           {/* REFERENCE BADGE */}
@@ -89,7 +89,7 @@ export const BookingConfirmationPage: React.FC = () => {
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] block">
                   Status
                 </span>
-                <span className="font-extrabold text-emerald-700 block mt-0.5 capitalize">
+                <span className="font-extrabold text-blue-700 block mt-0.5 capitalize">
                   {booking.status.replace('_', ' ')}
                 </span>
               </div>
@@ -115,9 +115,9 @@ export const BookingConfirmationPage: React.FC = () => {
           </div>
 
           {/* NEXT STEPS NOTICE */}
-          <div className="text-left bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 mb-6 text-xs text-emerald-950 space-y-2">
-            <h4 className="font-extrabold text-emerald-900 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="text-left bg-blue-50/60 border border-blue-100 rounded-2xl p-5 mb-6 text-xs text-blue-950 space-y-2">
+            <h4 className="font-extrabold text-blue-900 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-blue-600" />
               What Happens Next:
             </h4>
             <ul className="list-disc list-inside space-y-1 text-slate-600 text-[11px] leading-relaxed">
@@ -131,14 +131,14 @@ export const BookingConfirmationPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to={booking.project ? `/projects/${booking.project.slug}/map` : '/projects'}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all"
             >
               <span>Back to Interactive Map</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <Link
               to="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
             >
               Return Home
             </Link>

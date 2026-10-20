@@ -1,6 +1,5 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { PlotStatus, PlotFacing } from '../../types/database';
 
 export interface MapFilterState {
   availability: 'all' | 'available' | 'blocked' | 'booked' | 'registered';

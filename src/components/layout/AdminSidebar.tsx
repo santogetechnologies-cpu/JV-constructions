@@ -3,10 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   FolderKanban,
-  PenTool,
-  Grid,
-  CalendarCheck,
-  FileText,
   Users,
   History,
   LogOut,
@@ -39,12 +35,12 @@ export const AdminSidebar: React.FC = () => {
       <div>
         {/* LOGO */}
         <div className="h-16 flex items-center px-6 border-b border-slate-800 gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-900 font-black">
-            <Compass className="w-5 h-5 text-slate-950" />
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black shadow-md shadow-blue-500/20">
+            <Compass className="w-5 h-5 text-white" />
           </div>
           <div>
             <span className="text-white font-extrabold text-sm block">LandEstate</span>
-            <span className="text-[10px] uppercase font-bold text-emerald-400 block -mt-0.5">
+            <span className="text-[10px] uppercase font-bold text-blue-400 block -mt-0.5">
               Admin Console
             </span>
           </div>
@@ -64,7 +60,7 @@ export const AdminSidebar: React.FC = () => {
                 to={item.path}
                 className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                   active
-                    ? 'bg-emerald-600 text-white shadow-md'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
@@ -92,7 +88,7 @@ export const AdminSidebar: React.FC = () => {
             <p className="text-xs font-bold text-white truncate">
               {profile?.full_name || 'Administrator'}
             </p>
-            <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">
+            <p className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">
               {profile?.role || 'Staff'}
             </p>
           </div>
