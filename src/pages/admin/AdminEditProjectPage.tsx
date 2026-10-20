@@ -218,7 +218,7 @@ export const AdminEditProjectPage: React.FC = () => {
             to={`/admin/projects/${project.id}/layout`}
             className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors"
           >
-            <PenTool className="w-3.5 h-3.5 text-emerald-600" />
+            <PenTool className="w-3.5 h-3.5 text-blue-600" />
             <span>CAD Layout</span>
           </Link>
 
@@ -250,7 +250,7 @@ export const AdminEditProjectPage: React.FC = () => {
             <Link
               to={`/projects/${project.slug}/map`}
               target="_blank"
-              className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>Public Map</span>
@@ -517,12 +517,12 @@ export const AdminEditProjectPage: React.FC = () => {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
           >
             {saving ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
             ) : (
-              <Save className="w-4 h-4 text-emerald-400" />
+              <Save className="w-4 h-4 text-white" />
             )}
             <span>{saving ? 'Saving Changes...' : 'Save Project Details'}</span>
           </button>

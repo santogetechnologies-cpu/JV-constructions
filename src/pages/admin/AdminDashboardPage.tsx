@@ -87,9 +87,9 @@ export const AdminDashboardPage: React.FC = () => {
           </button>
           <Link
             to="/admin/projects/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition-all"
           >
-            <Plus className="w-4 h-4 text-emerald-400" />
+            <Plus className="w-4 h-4 text-white" />
             <span>New Project</span>
           </Link>
         </div>
@@ -164,7 +164,7 @@ export const AdminDashboardPage: React.FC = () => {
               <h3 className="font-extrabold text-base text-slate-900">Projects Directory</h3>
               <Link
                 to="/admin/projects"
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                className="text-xs font-bold text-blue-600 hover:text-blue-700"
               >
                 View All →
               </Link>
@@ -187,7 +187,7 @@ export const AdminDashboardPage: React.FC = () => {
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold capitalize ${
                           p.status === 'published'
-                            ? 'bg-emerald-100 text-emerald-800'
+                            ? 'bg-blue-100 text-blue-800'
                             : 'bg-slate-200 text-slate-700'
                         }`}
                       >
@@ -219,7 +219,7 @@ export const AdminDashboardPage: React.FC = () => {
               <h3 className="font-extrabold text-base text-slate-900">Recent Customer Leads</h3>
               <Link
                 to="/admin/leads"
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                className="text-xs font-bold text-blue-600 hover:text-blue-700"
               >
                 View Leads →
               </Link>

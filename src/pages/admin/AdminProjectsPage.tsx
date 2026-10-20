@@ -179,9 +179,9 @@ export const AdminProjectsPage: React.FC = () => {
 
         <Link
           to="/admin/projects/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md transition-all self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition-all self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4 text-emerald-400" />
+          <Plus className="w-4 h-4 text-white" />
           <span>New Project</span>
         </Link>
       </div>
@@ -190,13 +190,13 @@ export const AdminProjectsPage: React.FC = () => {
         <div
           className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-2.5 ${
             notice.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              ? 'bg-blue-50 border-blue-200 text-blue-800'
               : 'bg-red-50 border-red-200 text-red-800'
           }`}
         >
           <div className="flex items-center gap-2">
             {notice.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
             ) : (
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
             )}
@@ -204,7 +204,7 @@ export const AdminProjectsPage: React.FC = () => {
           </div>
           <button
             onClick={() => setNotice(null)}
-            className="p-1 hover:bg-emerald-100 rounded-lg transition-colors text-slate-500"
+            className="p-1 hover:bg-blue-100 rounded-lg transition-colors text-slate-500"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -280,7 +280,7 @@ export const AdminProjectsPage: React.FC = () => {
                           className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-colors"
                           title="Open Vector Layout & Boundary Editor"
                         >
-                          <PenTool className="w-3 h-3 text-emerald-600" />
+                          <PenTool className="w-3 h-3 text-blue-600" />
                           <span>CAD Layout</span>
                         </Link>
 
@@ -365,7 +365,7 @@ export const AdminProjectsPage: React.FC = () => {
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 my-8">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -391,7 +391,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     placeholder="e.g. Green Valley Meadows Phase 1"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -403,7 +403,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editSlug}
                     onChange={(e) => setEditSlug(e.target.value)}
                     placeholder="e.g. green-valley-meadows"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -415,7 +415,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editCity}
                     onChange={(e) => setEditCity(e.target.value)}
                     placeholder="e.g. Coimbatore"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -427,7 +427,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editState}
                     onChange={(e) => setEditState(e.target.value)}
                     placeholder="e.g. Tamil Nadu"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -438,7 +438,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editAddress}
                     onChange={(e) => setEditAddress(e.target.value)}
                     placeholder="Survey No. 42/1, Bypass Road"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -449,7 +449,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editTotalLandArea}
                     onChange={(e) => setEditTotalLandArea(e.target.value)}
                     placeholder="e.g. 10.5 Acres or 45 Plots"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -458,7 +458,7 @@ export const AdminProjectsPage: React.FC = () => {
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as ProjectStatus)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="draft">Draft (Admin Only)</option>
                     <option value="published">Published (Public)</option>
@@ -473,7 +473,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -484,7 +484,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
                     placeholder="sales@company.com"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -495,7 +495,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editSalesOffice}
                     onChange={(e) => setEditSalesOffice(e.target.value)}
                     placeholder="Marketing Suite Gate 1"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -506,7 +506,7 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
                     placeholder="Project details, approvals, amenities..."
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -514,7 +514,7 @@ export const AdminProjectsPage: React.FC = () => {
               <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 <Link
                   to={`/admin/projects/${editingProject.id}/edit`}
-                  className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 underline"
+                  className="text-[11px] font-bold text-blue-600 hover:text-blue-700 underline"
                 >
                   Open Full Settings Page →
                 </Link>
@@ -530,12 +530,12 @@ export const AdminProjectsPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="inline-flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-md transition-all disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md transition-all disabled:opacity-50"
                   >
                     {isSaving ? (
                       <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />
                     ) : (
-                      <Save className="w-3.5 h-3.5 text-emerald-400" />
+                      <Save className="w-3.5 h-3.5 text-white" />
                     )}
                     <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
                   </button>

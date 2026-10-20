@@ -108,7 +108,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   placeholder="e.g. Green Valley Meadows Phase 1"
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -120,7 +120,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   placeholder="green-valley-meadows"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -132,7 +132,7 @@ export const AdminNewProjectPage: React.FC = () => {
                 placeholder="DTCP approved layout with 40ft blacktop roads, underground drainage, and immediate registration..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -149,7 +149,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   placeholder="e.g. Coimbatore"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -160,7 +160,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   required
                   value={state}
                   onChange={(e) => setState(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -171,7 +171,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   placeholder="641001"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -187,7 +187,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   placeholder="11.0168"
                   value={latitude}
                   onChange={(e) => setLatitude(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -200,7 +200,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   placeholder="76.9558"
                   value={longitude}
                   onChange={(e) => setLongitude(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -217,7 +217,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   value="draft"
                   checked={status === 'draft'}
                   onChange={() => setStatus('draft')}
-                  className="text-emerald-600 focus:ring-emerald-500"
+                  className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="font-bold text-slate-700">Draft (Admin Only)</span>
               </label>
@@ -229,7 +229,7 @@ export const AdminNewProjectPage: React.FC = () => {
                   value="published"
                   checked={status === 'published'}
                   onChange={() => setStatus('published')}
-                  className="text-emerald-600 focus:ring-emerald-500"
+                  className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="font-bold text-slate-700">Published (Visible on Public Portal)</span>
               </label>
@@ -241,9 +241,9 @@ export const AdminNewProjectPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="py-3 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+              className="py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
             >
-              <Save className="w-4 h-4 text-emerald-400" />
+              <Save className="w-4 h-4 text-white" />
               <span>{isSubmitting ? 'Creating Project...' : 'Save & Configure CAD Layout'}</span>
             </button>
           </div>

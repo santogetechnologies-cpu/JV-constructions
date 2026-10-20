@@ -244,7 +244,7 @@ export const AdminProjectBookingsPage: React.FC = () => {
                               handleStatusTransition(b.id, b.plot_id, 'confirmed')
                             }
                             title="Confirm Booking"
-                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] transition-colors"
+                            className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] transition-colors"
                           >
                             Confirm
                           </button>

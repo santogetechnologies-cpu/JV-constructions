@@ -67,13 +67,13 @@ export const AdminLeadsPage: React.FC = () => {
         <div
           className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-2.5 ${
             notice.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              ? 'bg-blue-50 border-blue-200 text-blue-800'
               : 'bg-red-50 border-red-200 text-red-800'
           }`}
         >
           <div className="flex items-center gap-2">
             {notice.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
             ) : (
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
             )}
@@ -97,14 +97,14 @@ export const AdminLeadsPage: React.FC = () => {
             placeholder="Search by customer name, phone, or reference..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full sm:w-48 py-2 px-3 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full sm:w-48 py-2 px-3 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="all">All Statuses ({bookings.length})</option>
           <option value="new_enquiry">New Enquiry</option>

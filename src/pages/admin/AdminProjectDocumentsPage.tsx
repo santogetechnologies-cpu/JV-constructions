@@ -246,9 +246,9 @@ export const AdminProjectDocumentsPage: React.FC = () => {
             <button
               type="submit"
               disabled={uploading}
-              className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md disabled:bg-slate-300 transition-all flex items-center justify-center gap-2 mt-2"
+              className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md disabled:bg-slate-300 transition-all flex items-center justify-center gap-2 mt-2"
             >
-              <Upload className="w-3.5 h-3.5 text-emerald-400" />
+              <Upload className="w-3.5 h-3.5 text-white" />
               <span>{uploading ? 'Uploading to Supabase...' : 'Upload & Publish'}</span>
             </button>
           </form>
