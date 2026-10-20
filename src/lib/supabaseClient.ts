@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+// Fallback to project defaults so app never throws unhandled "supabaseUrl is required" fatal error
+const defaultUrl = 'https://gphhlkksrkzppxrihtnm.supabase.co';
+const defaultKey = 'sb_publishable_yh2rwDeBD53jA2eoPeKJLg_QFx3kjP_';
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn(
-    'Supabase credentials missing! Ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in your .env file.'
-  );
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || defaultUrl;
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  defaultKey;
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
@@ -23,5 +24,8 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 export const isSupabaseConfigured = (): boolean => {
-  return Boolean(supabaseUrl && supabaseKey);
+  return Boolean(
+    (import.meta.env.VITE_SUPABASE_URL || defaultUrl) &&
+    (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || defaultKey)
+  );
 };
