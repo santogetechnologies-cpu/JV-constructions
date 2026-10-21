@@ -142,6 +142,22 @@ export const BookingEnquiryPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* SUMMARY SIDEBAR */}
           <div className="md:col-span-1 bg-white rounded-3xl border border-slate-200 p-6 shadow-sm h-fit">
+            <div className="flex items-center gap-2.5 pb-4 mb-4 border-b border-slate-100">
+              <img
+                src="/logo.png"
+                alt="Yazh Land Promoters"
+                className="w-10 h-10 rounded-full object-contain ring-1 ring-amber-400/50 bg-[#05281b]"
+              />
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Promoted By
+                </span>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  Yazh Land Promoters
+                </span>
+              </div>
+            </div>
+
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
               Reservation Target
             </span>
@@ -308,7 +324,7 @@ export const BookingEnquiryPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-500/25 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-2xl bg-glossy-green-btn hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-emerald-950/25 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer border border-amber-400/30"
                 >
                   {isSubmitting ? (
                     <>

@@ -67,16 +67,17 @@ export const HomePage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans py-8 sm:py-12">
       {/* PUBLISHED PROJECTS SECTION WITH BIG LUXURY CARDS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1">
+
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-wider text-blue-700">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-wider text-blue-800">
                 Live Layout Inventory
               </span>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
-              Approved Real Estate Layouts
+            <h1 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+              Featured Approved Layouts
             </h1>
             <p className="text-sm sm:text-base text-slate-500 mt-2 max-w-xl">
               Inspect master-planned layouts, exact survey geometries, dimensions, and live reservation status directly on interactive CAD vector maps.
@@ -84,7 +85,7 @@ export const HomePage: React.FC = () => {
           </div>
           <Link
             to="/projects"
-            className="inline-flex items-center gap-1.5 text-sm font-extrabold text-blue-600 hover:text-blue-700 transition-colors group"
+            className="inline-flex items-center gap-1.5 text-sm font-extrabold text-blue-700 hover:text-blue-800 transition-colors group"
           >
             <span>View All Projects</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
@@ -129,32 +130,32 @@ export const HomePage: React.FC = () => {
                 className="bg-white rounded-3xl border border-slate-200/90 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between group hover:-translate-y-1"
               >
                 {/* Visual Header / Blueprint Graphic Canvas */}
-                <div className="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-6 sm:p-8 text-white overflow-hidden border-b border-slate-800">
+                <div className="relative bg-gradient-to-br from-[#06281b] via-[#093c27] to-[#041d13] p-6 sm:p-8 text-white overflow-hidden border-b border-emerald-950">
                   {/* Subtle Blueprint grid pattern */}
-                  <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#93c5fd_1px,transparent_1px)] [background-size:16px_16px]" />
+                  <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#6ee7b7_1px,transparent_1px)] [background-size:16px_16px]" />
                   
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-3 relative z-10 mb-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-300 border border-blue-400/30 backdrop-blur-md">
-                      <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-400/15 text-amber-300 border border-amber-400/30 backdrop-blur-md">
+                      <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
                       DTCP & LP Approved
                     </span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 backdrop-blur-md">
-                      <MapPin className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-emerald-100 backdrop-blur-md">
+                      <MapPin className="w-3.5 h-3.5 text-amber-300" />
                       {proj.city}, {proj.state}
                     </span>
                   </div>
 
                   {/* Big Card Title */}
-                  <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-blue-300 transition-colors relative z-10 tracking-tight">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-amber-200 transition-colors relative z-10 tracking-tight">
                     {proj.name}
                   </h3>
 
                   {/* Location / Land Area details */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 mt-2 relative z-10 font-medium">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-emerald-100/80 mt-2 relative z-10 font-medium">
                     {proj.address && <span>{proj.address}</span>}
                     {proj.total_land_area && (
-                      <span className="text-blue-300 font-bold">• Extent: {proj.total_land_area}</span>
+                      <span className="text-amber-300 font-bold">• Extent: {proj.total_land_area}</span>
                     )}
                   </div>
                 </div>
@@ -178,11 +179,11 @@ export const HomePage: React.FC = () => {
                         </span>
                       </div>
 
-                      <div className="p-2 bg-blue-50/80 rounded-xl border border-blue-200/60">
-                        <span className="text-[11px] text-blue-700 font-extrabold uppercase tracking-wider block">
+                      <div className="p-2 bg-emerald-50/80 rounded-xl border border-emerald-200/60">
+                        <span className="text-[11px] text-blue-800 font-extrabold uppercase tracking-wider block">
                           Available
                         </span>
-                        <span className="text-xl sm:text-2xl font-black text-blue-700 mt-0.5 block">
+                        <span className="text-xl sm:text-2xl font-black text-blue-800 mt-0.5 block">
                           {proj.availablePlots ?? 0}
                         </span>
                       </div>
@@ -208,9 +209,9 @@ export const HomePage: React.FC = () => {
                     </Link>
                     <Link
                       to={`/projects/${proj.slug}/map`}
-                      className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.02] active:scale-100 cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-glossy-green-btn hover:opacity-95 text-white text-xs sm:text-sm font-black shadow-lg shadow-emerald-950/20 border border-amber-400/30 transition-all transform hover:scale-[1.02] active:scale-100 cursor-pointer"
                     >
-                      <Map className="w-4 h-4 text-blue-200" />
+                      <Map className="w-4 h-4 text-amber-200" />
                       <span>Open Interactive CAD Map</span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>

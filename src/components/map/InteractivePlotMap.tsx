@@ -107,24 +107,8 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
     fitToLayout();
   }, [fitToLayout, layout?.id]);
 
-  // Center on selected plot automatically
-  useEffect(() => {
-    if (!selectedPlotId) return;
-    const match = plots.find((p) => p.id === selectedPlotId);
-    if (match?.geometry?.coordinates && containerRef.current) {
-      const centroid = calculatePolygonCentroid(match.geometry.coordinates);
-      const w = containerRef.current.clientWidth;
-      const h = containerRef.current.clientHeight;
-      setTransform((prev) => {
-        const targetScale = Math.max(prev.scale, 2.2);
-        return {
-          scale: targetScale,
-          x: w / 2 - centroid[0] * targetScale,
-          y: h / 2 - centroid[1] * targetScale,
-        };
-      });
-    }
-  }, [selectedPlotId, plots]);
+  // Selected plot highlight is handled directly in SVG rendering without zooming or shifting the map
+
 
   // Native non-passive Wheel listener (fixes Chrome passive listener errors)
   useEffect(() => {

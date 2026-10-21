@@ -38,12 +38,19 @@ export const AdminLoginPage: React.FC = () => {
       <div className="w-full max-w-md">
         {/* LOGO */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center mx-auto mb-3 shadow-md">
-            <Compass className="w-6 h-6 text-emerald-400" />
+          <div className="inline-block relative mb-3">
+            <img
+              src="/logo.png"
+              alt="Yazh Land Promoters"
+              className="w-20 h-20 rounded-full object-contain mx-auto ring-4 ring-amber-400/60 shadow-xl bg-[#05281b]"
+            />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-            LandEstate Admin Portal
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight font-sans">
+            Yazh <span className="text-blue-700">Land Promoters</span>
           </h1>
+          <p className="text-xs uppercase font-extrabold tracking-wider text-amber-600 mt-1">
+            Your Land • Our Commitment
+          </p>
           <p className="text-xs text-slate-500 mt-1">
             Sign in to manage CAD layouts, plot inventories, and reservations.
           </p>
@@ -66,10 +73,10 @@ export const AdminLoginPage: React.FC = () => {
                 <input
                   type="email"
                   required
-                  placeholder="admin@landestate.local"
+                  placeholder="admin@yazhlandpromoters.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-900 font-medium"
                 />
               </div>
             </div>
@@ -84,7 +91,7 @@ export const AdminLoginPage: React.FC = () => {
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-900 font-medium"
                 />
               </div>
             </div>
@@ -92,7 +99,7 @@ export const AdminLoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
+              className="w-full py-3 rounded-xl bg-glossy-green-btn hover:opacity-95 text-white font-bold text-xs shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2 border border-amber-400/30"
             >
               {loading ? (
                 <>
@@ -102,7 +109,7 @@ export const AdminLoginPage: React.FC = () => {
               ) : (
                 <>
                   <span>Sign In to Dashboard</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
                 </>
               )}
             </button>

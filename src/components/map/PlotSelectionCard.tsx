@@ -104,10 +104,9 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         {isEnquiryAllowed ? (
           <Link
             to={`/booking/${plot.id}`}
-            className="w-full py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm text-white flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all"
-            style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' }}
+            className="w-full py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm text-white flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all bg-glossy-green-btn border border-amber-400/30"
           >
-            <CheckCircle className="w-4 h-4" />
+            <CheckCircle className="w-4 h-4 text-amber-300" />
             <span>{isBookable ? 'Book Now' : 'Enquire Plot'}</span>
           </Link>
         ) : (
@@ -167,10 +166,9 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
           {isEnquiryAllowed ? (
             <Link
               to={`/booking/${plot.id}`}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-black text-sm text-white transition-all active:scale-95 shadow-md"
-              style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' }}
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-black text-sm text-white transition-all active:scale-95 shadow-md bg-glossy-green-btn border border-amber-400/30"
             >
-              <CheckCircle className="w-4 h-4" />
+              <CheckCircle className="w-4 h-4 text-amber-300" />
               <span>{isBookable ? 'Book Now' : 'Enquire'}</span>
             </Link>
           ) : (

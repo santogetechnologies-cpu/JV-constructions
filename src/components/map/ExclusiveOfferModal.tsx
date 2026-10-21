@@ -85,14 +85,24 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
           </div>
         ) : (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                Exclusive Offer
-              </h2>
-              <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                Interested in <span className="font-bold text-slate-800">{projectName}</span>? Share your details to receive our brochure and current site offers.
-              </p>
+            <div className="flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="Yazh Land Promoters"
+                className="w-12 h-12 rounded-full object-contain ring-2 ring-amber-400/60 shadow-md bg-[#05281b] shrink-0"
+              />
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Exclusive Site Offer
+                </h2>
+                <p className="text-[10px] uppercase font-bold text-amber-600">
+                  Yazh Land Promoters
+                </p>
+              </div>
             </div>
+            <p className="text-xs text-slate-500 -mt-2 leading-relaxed">
+              Interested in <span className="font-bold text-slate-800">{projectName}</span>? Share your details to receive our brochure and current site offers.
+            </p>
 
             {errorMsg && (
               <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
@@ -108,7 +118,7 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
                   placeholder="Your Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
                 />
               </div>
 
@@ -119,7 +129,7 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
                   placeholder="Phone Number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
                 />
               </div>
 
@@ -127,7 +137,7 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
                 <select
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
                 >
                   <option value="">Select City</option>
                   <option value="Chennai">Chennai</option>
@@ -144,12 +154,12 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-glossy-green-btn hover:opacity-95 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 border border-amber-400/30"
               >
                 {submitting ? (
                   <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <span>Get Call Back</span>
+                  <span>Get Exclusive Call Back</span>
                 )}
               </button>
 

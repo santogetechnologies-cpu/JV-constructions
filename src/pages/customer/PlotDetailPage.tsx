@@ -199,10 +199,10 @@ export const PlotDetailPage: React.FC = () => {
               {isBookable ? (
                 <Link
                   to={`/booking/${plot.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-glossy-green-btn hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-emerald-950/20 border border-amber-400/30 transition-all"
                 >
                   <span>Submit Booking Enquiry</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-amber-300" />
                 </Link>
               ) : (
                 <div className="p-3 rounded-xl bg-slate-100 text-center text-xs font-bold text-slate-500">

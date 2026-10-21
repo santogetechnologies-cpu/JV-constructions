@@ -90,11 +90,11 @@ export const ProjectOverviewPage: React.FC = () => {
         <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-50 text-blue-800 border border-blue-200">
+              <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400/15 text-amber-800 border border-amber-400/30">
                 Verified DTCP Layout
               </span>
               <span className="flex items-center gap-1 text-xs text-slate-500 font-medium">
-                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                <MapPin className="w-3.5 h-3.5 text-amber-500" />
                 {project.city}, {project.state}
               </span>
             </div>
@@ -110,9 +110,9 @@ export const ProjectOverviewPage: React.FC = () => {
           <div className="shrink-0 flex flex-col sm:flex-row gap-3">
             <Link
               to={`/projects/${project.slug}/map`}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-glossy-green-btn hover:opacity-95 text-white text-sm font-bold shadow-lg shadow-emerald-950/20 border border-amber-400/30 transition-all"
             >
-              <Map className="w-4 h-4 text-blue-200" />
+              <Map className="w-4 h-4 text-amber-200" />
               <span>Launch Interactive Map</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -296,10 +296,10 @@ export const ProjectOverviewPage: React.FC = () => {
               <div className="mt-6 pt-4 border-t border-slate-100">
                 <Link
                   to={`/projects/${project.slug}/map`}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-glossy-green-btn hover:opacity-95 text-white text-xs font-bold shadow-md shadow-emerald-950/20 border border-amber-400/30 transition-all"
                 >
                   <span>Select a Plot on Map</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
                 </Link>
               </div>
             </div>

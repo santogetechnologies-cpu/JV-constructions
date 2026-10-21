@@ -184,9 +184,9 @@ export const NammaPlotFilterDrawer: React.FC<NammaPlotFilterDrawerProps> = ({
           <button
             type="button"
             onClick={handleApplyClick}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md transition-colors"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-glossy-green-btn hover:opacity-95 text-white text-xs font-bold shadow-md transition-colors border border-amber-400/30"
           >
-            Apply
+            Apply Filters
           </button>
         </div>
       </div>

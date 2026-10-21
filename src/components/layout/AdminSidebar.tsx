@@ -31,16 +31,20 @@ export const AdminSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen sticky top-0 border-r border-slate-800">
+    <aside className="w-64 bg-[#051c13] text-slate-300 flex flex-col justify-between shrink-0 h-screen sticky top-0 border-r border-emerald-950/80 shadow-2xl">
       <div>
         {/* LOGO */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-800 gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black shadow-md shadow-blue-500/20">
-            <Compass className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-white font-extrabold text-sm block">LandEstate</span>
-            <span className="text-[10px] uppercase font-bold text-blue-400 block -mt-0.5">
+        <div className="h-16 flex items-center px-5 border-b border-emerald-950/80 gap-3 bg-[#03140d]">
+          <img
+            src="/logo.png"
+            alt="Yazh Land Promoters"
+            className="w-9 h-9 rounded-full object-contain ring-1 ring-amber-400/50 shadow-md bg-[#05281b]"
+          />
+          <div className="truncate">
+            <span className="text-white font-extrabold text-sm block leading-tight truncate">
+              Yazh <span className="text-emerald-400">Promoters</span>
+            </span>
+            <span className="text-[10px] uppercase font-bold text-amber-400/90 block -mt-0.5">
               Admin Console
             </span>
           </div>
@@ -60,11 +64,11 @@ export const AdminSidebar: React.FC = () => {
                 to={item.path}
                 className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                   active
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                    ? 'bg-glossy-green-btn text-white shadow-md border border-amber-400/30'
+                    : 'text-emerald-100/70 hover:text-white hover:bg-emerald-950/50'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon className="w-4 h-4 shrink-0 text-amber-400" />
                 <span>{item.label}</span>
               </Link>
             );
@@ -73,14 +77,14 @@ export const AdminSidebar: React.FC = () => {
       </div>
 
       {/* USER PROFILE & LOGOUT */}
-      <div className="p-4 border-t border-slate-800 space-y-3">
+      <div className="p-4 border-t border-emerald-950/80 space-y-3 bg-[#03140d]/60">
         <Link
           to="/"
           target="_blank"
-          className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/40 rounded-xl transition-colors"
+          className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-emerald-200/80 hover:text-white bg-emerald-950/60 rounded-xl transition-colors border border-emerald-900/60"
         >
           <span>View Public Site</span>
-          <ExternalLink className="w-3.5 h-3.5" />
+          <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
         </Link>
 
         <div className="flex items-center justify-between px-2 pt-1">
@@ -88,7 +92,7 @@ export const AdminSidebar: React.FC = () => {
             <p className="text-xs font-bold text-white truncate">
               {profile?.full_name || 'Administrator'}
             </p>
-            <p className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">
+            <p className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">
               {profile?.role || 'Staff'}
             </p>
           </div>
