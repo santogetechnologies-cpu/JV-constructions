@@ -151,35 +151,35 @@ export const PlotDetailPage: React.FC = () => {
 
               {/* SPECS */}
               <div className="grid grid-cols-2 gap-3 my-5">
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                  <span className="flex items-center gap-1 text-xs text-slate-500 font-semibold">
-                    <Maximize2 className="w-3.5 h-3.5" /> Area
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="flex items-center gap-1 text-xs text-slate-600 font-bold">
+                    <Maximize2 className="w-3.5 h-3.5 text-slate-500" /> Area
                   </span>
-                  <p className="text-base font-extrabold text-slate-900 mt-1">
+                  <p className="text-lg font-black text-slate-950 mt-1">
                     {plot.area_cents} Cents
                   </p>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-xs text-slate-600 font-bold font-mono">
                     ({plot.area_sqft} sq.ft)
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                  <span className="flex items-center gap-1 text-xs text-slate-500 font-semibold">
-                    <Compass className="w-3.5 h-3.5" /> Facing
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="flex items-center gap-1 text-xs text-slate-600 font-bold">
+                    <Compass className="w-3.5 h-3.5 text-slate-500" /> Facing
                   </span>
-                  <p className="text-base font-extrabold text-slate-900 mt-1">
+                  <p className="text-lg font-black text-slate-950 mt-1">
                     {plot.facing}
                   </p>
-                  <p className="text-xs text-blue-600 font-semibold">Vastu Standard</p>
+                  <p className="text-xs text-emerald-800 font-bold">Vastu Standard</p>
                 </div>
               </div>
 
               {/* PRICING */}
-              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 mb-6">
-                <span className="text-xs font-bold text-blue-800 uppercase tracking-wider block">
+              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-200 mb-6">
+                <span className="text-xs font-black text-blue-950 uppercase tracking-wider block">
                   Configured Price
                 </span>
-                <p className="text-2xl font-black text-blue-950 mt-1">
+                <p className="text-2xl font-black text-slate-950 mt-1">
                   {formatINR(plot.price_inr)}
                 </p>
               </div>

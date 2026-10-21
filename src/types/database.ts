@@ -39,11 +39,22 @@ export interface Project {
     allow_enquiries: boolean;
     hold_duration_hours: number;
     require_approval: boolean;
+    approval_type?: string;
   };
+  approval_type?: string;
   total_land_area: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export function getProjectApprovalType(project?: Partial<Project> | null): string {
+  if (!project) return 'DTCP Approved';
+  return (
+    project.booking_policy?.approval_type ||
+    (project as any).approval_type ||
+    'DTCP Approved'
+  );
 }
 
 export interface ProjectPhase {

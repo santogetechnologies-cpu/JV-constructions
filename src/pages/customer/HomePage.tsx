@@ -12,8 +12,9 @@ import {
   CheckCircle2,
   Building2,
   Calendar,
+  Trees,
 } from 'lucide-react';
-import { Project, Plot } from '../../types/database';
+import { Project, Plot, getProjectApprovalType } from '../../types/database';
 import { getPublishedProjects, getPlotsWithGeometries } from '../../services/api';
 import { formatPriceCompact } from '../../lib/utils';
 
@@ -137,8 +138,12 @@ export const HomePage: React.FC = () => {
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-3 relative z-10 mb-4">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-400/15 text-amber-300 border border-amber-400/30 backdrop-blur-md">
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
-                      DTCP & LP Approved
+                      {getProjectApprovalType(proj).toLowerCase().includes('farm') ? (
+                        <Trees className="w-3.5 h-3.5 text-emerald-300" />
+                      ) : (
+                        <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
+                      )}
+                      {getProjectApprovalType(proj)}
                     </span>
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-emerald-100 backdrop-blur-md">
                       <MapPin className="w-3.5 h-3.5 text-amber-300" />

@@ -321,14 +321,14 @@ export const AdminProjectPlotsPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredPlots.map((plot) => (
-                  <tr key={plot.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-6 font-extrabold text-slate-900 text-sm">
+                  <tr key={plot.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-4 px-6 font-black text-slate-950 text-base">
                       #{plot.plot_number}
                     </td>
-                    <td className="py-4 px-4 font-bold text-slate-700">{plot.area_cents}</td>
-                    <td className="py-4 px-4 text-slate-500 font-mono">{plot.area_sqft}</td>
-                    <td className="py-4 px-4 text-slate-700">{plot.facing}</td>
-                    <td className="py-4 px-4 font-bold text-emerald-800">
+                    <td className="py-4 px-4 font-black text-slate-950">{plot.area_cents} Cent</td>
+                    <td className="py-4 px-4 text-slate-700 font-mono font-bold text-xs">({plot.area_sqft} sq.ft)</td>
+                    <td className="py-4 px-4 font-bold text-slate-900">{plot.facing}</td>
+                    <td className="py-4 px-4 font-black text-slate-950">
                       {formatINR(plot.price_inr)}
                     </td>
                     <td className="py-4 px-4">
@@ -336,16 +336,16 @@ export const AdminProjectPlotsPage: React.FC = () => {
                       <select
                         value={plot.status}
                         onChange={(e) => handleStatusChange(plot.id, e.target.value as PlotStatus)}
-                        className={`text-xs font-bold rounded-lg px-2.5 py-1 border focus:outline-none ${
+                        className={`text-xs font-black rounded-lg px-2.5 py-1.5 border focus:outline-none shadow-xs ${
                           plot.status === 'available'
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                            ? 'bg-emerald-50 text-emerald-950 border-emerald-300'
                             : plot.status === 'booked'
-                            ? 'bg-blue-50 text-blue-800 border-blue-300'
+                            ? 'bg-blue-50 text-blue-950 border-blue-300'
                             : plot.status === 'on_hold'
-                            ? 'bg-indigo-50 text-indigo-800 border-indigo-300'
+                            ? 'bg-orange-50 text-orange-950 border-orange-300'
                             : plot.status === 'sold'
-                            ? 'bg-red-50 text-red-800 border-red-300'
-                            : 'bg-slate-100 text-slate-700 border-slate-300'
+                            ? 'bg-rose-50 text-rose-950 border-rose-300'
+                            : 'bg-yellow-50 text-yellow-950 border-yellow-300'
                         }`}
                       >
                         <option value="available">Available</option>

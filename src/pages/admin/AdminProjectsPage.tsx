@@ -18,9 +18,14 @@ import {
   Building2,
   Phone,
   Mail,
+  ShieldCheck,
+  Trees,
+  Sparkles,
+  Check,
 } from 'lucide-react';
-import { Project, ProjectStatus } from '../../types/database';
+import { Project, ProjectStatus, getProjectApprovalType } from '../../types/database';
 import { getAllProjectsAdmin, updateProject, deleteProject } from '../../services/api';
+import { OFFICIAL_CONTACTS } from '../../constants/contacts';
 
 export const AdminProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -39,6 +44,8 @@ export const AdminProjectsPage: React.FC = () => {
   const [editPostalCode, setEditPostalCode] = useState('');
   const [editTotalLandArea, setEditTotalLandArea] = useState('');
   const [editStatus, setEditStatus] = useState<ProjectStatus>('draft');
+  const [editApprovalOption, setEditApprovalOption] = useState<'dtcp' | 'farmland' | 'custom'>('dtcp');
+  const [editCustomApproval, setEditCustomApproval] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editSalesOffice, setEditSalesOffice] = useState('');
@@ -92,6 +99,19 @@ export const AdminProjectsPage: React.FC = () => {
     setEditPostalCode(p.postal_code || '');
     setEditTotalLandArea(p.total_land_area || '');
     setEditStatus(p.status || 'draft');
+    
+    const initialApproval = p.booking_policy?.approval_type || (p as any).approval_type || 'DTCP Approved';
+    if (initialApproval.toLowerCase() === 'farm land' || initialApproval.toLowerCase().includes('farm')) {
+      setEditApprovalOption('farmland');
+      setEditCustomApproval('');
+    } else if (initialApproval.toLowerCase().includes('dtcp')) {
+      setEditApprovalOption('dtcp');
+      setEditCustomApproval('');
+    } else {
+      setEditApprovalOption('custom');
+      setEditCustomApproval(initialApproval);
+    }
+
     setEditPhone(p.contact_information?.phone || '');
     setEditEmail(p.contact_information?.email || '');
     setEditSalesOffice(p.contact_information?.sales_office || '');
@@ -108,6 +128,13 @@ export const AdminProjectsPage: React.FC = () => {
 
     try {
       setIsSaving(true);
+      const finalApproval =
+        editApprovalOption === 'farmland'
+          ? 'Farm Land'
+          : editApprovalOption === 'custom'
+          ? editCustomApproval.trim() || 'Custom Layout'
+          : 'DTCP Approved';
+
       const updated = await updateProject(editingProject.id, {
         name: editName.trim(),
         slug: editSlug.trim(),
@@ -118,6 +145,13 @@ export const AdminProjectsPage: React.FC = () => {
         postal_code: editPostalCode.trim() || null,
         total_land_area: editTotalLandArea.trim() || null,
         status: editStatus,
+        booking_policy: {
+          ...(editingProject.booking_policy || {}),
+          allow_enquiries: editingProject.booking_policy?.allow_enquiries ?? true,
+          hold_duration_hours: editingProject.booking_policy?.hold_duration_hours ?? 48,
+          require_approval: editingProject.booking_policy?.require_approval ?? true,
+          approval_type: finalApproval,
+        },
         contact_information: {
           phone: editPhone.trim(),
           email: editEmail.trim(),
@@ -241,13 +275,25 @@ export const AdminProjectsPage: React.FC = () => {
                   <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="py-4 px-6">
                       <div className="font-extrabold text-slate-900 text-sm">{p.name}</div>
-                      <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
-                        <MapPin className="w-3 h-3" />
-                        <span>
-                          {p.city}, {p.state}
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1 flex-wrap">
+                        <span className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] inline-flex items-center gap-1 border ${
+                          getProjectApprovalType(p).toLowerCase().includes('farm')
+                            ? 'bg-emerald-100/90 text-emerald-950 border-emerald-300'
+                            : 'bg-amber-100/80 text-amber-950 border-amber-300'
+                        }`}>
+                          {getProjectApprovalType(p).toLowerCase().includes('farm') ? (
+                            <Trees className="w-3 h-3 text-emerald-700" />
+                          ) : (
+                            <ShieldCheck className="w-3 h-3 text-amber-700" />
+                          )}
+                          {getProjectApprovalType(p)}
+                        </span>
+                        <span className="flex items-center gap-0.5">
+                          <MapPin className="w-3 h-3 text-slate-400" />
+                          <span>{p.city}, {p.state}</span>
                         </span>
                         {p.total_land_area && (
-                          <span className="ml-1 text-slate-400">• {p.total_land_area}</span>
+                          <span className="text-slate-500 font-bold">• {p.total_land_area}</span>
                         )}
                       </div>
                     </td>
@@ -466,13 +512,105 @@ export const AdminProjectsPage: React.FC = () => {
                   </select>
                 </div>
 
+                {/* APPROVAL / PROPERTY TYPE */}
+                <div className="sm:col-span-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <label className="block font-black text-slate-900 mb-1.5">
+                    Approval & Property Type *
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditApprovalOption('dtcp')}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                        editApprovalOption === 'dtcp'
+                          ? 'bg-amber-100 text-amber-950 border-amber-400 ring-1 ring-amber-400'
+                          : 'bg-white text-slate-700 border-slate-200'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1 truncate">
+                        <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                        DTCP Approved
+                      </span>
+                      {editApprovalOption === 'dtcp' && <Check className="w-3 h-3 text-amber-800" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditApprovalOption('farmland')}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                        editApprovalOption === 'farmland'
+                          ? 'bg-emerald-100 text-emerald-950 border-emerald-500 ring-1 ring-emerald-500'
+                          : 'bg-white text-slate-700 border-slate-200'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1 truncate">
+                        <Trees className="w-3.5 h-3.5 text-emerald-600" />
+                        Farm Land
+                      </span>
+                      {editApprovalOption === 'farmland' && <Check className="w-3 h-3 text-emerald-800" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditApprovalOption('custom')}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                        editApprovalOption === 'custom'
+                          ? 'bg-blue-100 text-blue-950 border-blue-400 ring-1 ring-blue-400'
+                          : 'bg-white text-slate-700 border-slate-200'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1 truncate">
+                        <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                        Custom
+                      </span>
+                      {editApprovalOption === 'custom' && <Check className="w-3 h-3 text-blue-800" />}
+                    </button>
+                  </div>
+
+                  {editApprovalOption === 'custom' && (
+                    <div className="mt-2.5">
+                      <input
+                        type="text"
+                        value={editCustomApproval}
+                        onChange={(e) => setEditCustomApproval(e.target.value)}
+                        placeholder="Enter custom approval name (e.g. CMDA Approved, Gated Agro Farm)..."
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <span className="text-[11px] font-bold text-slate-500 block mb-1">Quick Advisor Presets:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {OFFICIAL_CONTACTS.map((c) => (
+                      <button
+                        key={c.name}
+                        type="button"
+                        onClick={() => {
+                          setEditPhone(c.phone);
+                          setEditSalesOffice(`${c.name} - ${c.role}`);
+                        }}
+                        className={`px-2.5 py-1 rounded-lg border text-xs font-bold transition-all flex items-center gap-1 ${
+                          editPhone === c.phone
+                            ? 'bg-amber-100 text-amber-950 border-amber-400'
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                        }`}
+                      >
+                        <Phone className="w-3 h-3 text-amber-600" />
+                        <span>{c.name} ({c.phone})</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Sales Phone</label>
                   <input
                     type="text"
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 96005 89191"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>

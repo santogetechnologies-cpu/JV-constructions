@@ -11,8 +11,9 @@ import {
   WifiOff,
   Sparkles,
   Search,
+  Trees,
 } from 'lucide-react';
-import { Project, ProjectLayout, Plot, ProjectDocument } from '../../types/database';
+import { Project, ProjectLayout, Plot, ProjectDocument, getProjectApprovalType } from '../../types/database';
 import {
   getProjectBySlug,
   getPublishedLayout,
@@ -243,9 +244,27 @@ export const InteractiveMapPage: React.FC = () => {
               {project.name}
             </h1>
             <div className="flex items-center gap-1 mt-0.5">
-              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded shrink-0 border border-emerald-200">
-                DTCP: {dtcpRef}
-              </span>
+              {(() => {
+                const approval = getProjectApprovalType(project);
+                const isFarm = approval.toLowerCase().includes('farm');
+                const label = isFarm
+                  ? 'Farm Land'
+                  : approval.toLowerCase().includes('dtcp')
+                  ? `DTCP: ${dtcpRef}`
+                  : approval;
+                return (
+                  <span
+                    className={`text-[9px] sm:text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded shrink-0 border inline-flex items-center gap-1 ${
+                      isFarm
+                        ? 'bg-emerald-100 text-emerald-950 border-emerald-300'
+                        : 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                    }`}
+                  >
+                    {isFarm && <Trees className="w-3 h-3 text-emerald-700" />}
+                    {label}
+                  </span>
+                );
+              })()}
             </div>
           </div>
         </div>

@@ -13,17 +13,17 @@ interface PlotSelectionCardProps {
 function getStatusBadgeStyle(status: string): { bg: string; text: string; dot: string } {
   switch (status) {
     case 'available':
-      return { bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-700', dot: 'bg-emerald-500' };
+      return { bg: 'bg-emerald-50 border-emerald-300', text: 'text-emerald-950 font-black', dot: 'bg-emerald-600' };
     case 'booked':
-      return { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-700', dot: 'bg-blue-500' };
+      return { bg: 'bg-blue-50 border-blue-300', text: 'text-blue-950 font-black', dot: 'bg-blue-600' };
     case 'on_hold':
-      return { bg: 'bg-indigo-50 border-indigo-200', text: 'text-indigo-700', dot: 'bg-indigo-500' };
+      return { bg: 'bg-orange-50 border-orange-300', text: 'text-orange-950 font-black', dot: 'bg-orange-600' };
     case 'sold':
-      return { bg: 'bg-rose-50 border-rose-200', text: 'text-rose-700', dot: 'bg-rose-500' };
+      return { bg: 'bg-rose-50 border-rose-300', text: 'text-rose-950 font-black', dot: 'bg-rose-600' };
     case 'blocked':
-      return { bg: 'bg-amber-50 border-amber-200', text: 'text-amber-700', dot: 'bg-amber-500' };
+      return { bg: 'bg-yellow-50 border-yellow-300', text: 'text-yellow-950 font-black', dot: 'bg-yellow-600' };
     default:
-      return { bg: 'bg-slate-100 border-slate-200', text: 'text-slate-700', dot: 'bg-slate-400' };
+      return { bg: 'bg-slate-100 border-slate-300', text: 'text-slate-950 font-black', dot: 'bg-slate-600' };
   }
 }
 
@@ -52,11 +52,11 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         {/* Top line: Plot number, status, and close */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-black text-slate-900 tracking-tight leading-none">
+            <h3 className="text-xl font-black text-slate-950 tracking-tight leading-none">
               Plot {plot.plot_number}
             </h3>
             {phaseName && (
-              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                 {phaseName}
               </span>
             )}
@@ -81,21 +81,21 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         </div>
 
         {/* Specs & Pricing Line */}
-        <div className="flex items-center justify-between text-xs py-1 px-1 bg-slate-50 rounded-xl border border-slate-100">
+        <div className="flex items-center justify-between text-xs py-1.5 px-2 bg-slate-50/80 rounded-xl border border-slate-200">
           <div className="px-2">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Area</span>
-            <span className="font-extrabold text-slate-900">{plot.area_cents} Cent <span className="text-[10px] text-slate-500 font-normal">({sqft} sq.ft)</span></span>
+            <span className="text-[10px] uppercase font-bold text-slate-500 block">Area</span>
+            <span className="font-black text-slate-950 text-sm">{plot.area_cents} Cent <span className="text-[11px] text-slate-600 font-bold">({sqft} sq.ft)</span></span>
           </div>
 
           <div className="px-2 border-l border-slate-200">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Facing</span>
-            <span className="font-extrabold text-slate-900">{plot.facing}</span>
+            <span className="text-[10px] uppercase font-bold text-slate-500 block">Facing</span>
+            <span className="font-black text-slate-950 text-sm">{plot.facing}</span>
           </div>
 
           {priceCompact && (
             <div className="px-2 border-l border-slate-200 text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Price</span>
-              <span className="font-black text-emerald-600">{priceCompact}</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">Est. Price</span>
+              <span className="font-black text-emerald-950 text-base">{priceCompact}</span>
             </div>
           )}
         </div>
@@ -125,7 +125,7 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         {/* HEADER */}
         <div className="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start justify-between gap-2">
           <div>
-            <h3 className="text-base font-black text-slate-900 leading-tight">
+            <h3 className="text-base font-black text-slate-950 leading-tight">
               {phaseName ? `${phaseName}: Plot no: ${plot.plot_number}` : `Plot no: ${plot.plot_number}`}
             </h3>
           </div>
@@ -139,27 +139,27 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         </div>
 
         {/* SPECS */}
-        <div className="px-5 py-3 grid grid-cols-3 gap-2 text-xs border-b border-slate-100">
+        <div className="px-5 py-3 grid grid-cols-3 gap-2 text-xs border-b border-slate-100 bg-slate-50/50">
           <div>
-            <p className="text-slate-400 font-semibold uppercase tracking-wider text-[9px] mb-0.5">AREA</p>
-            <p className="font-bold text-slate-800">{plot.area_cents} Cent</p>
+            <p className="text-slate-500 font-bold uppercase tracking-wider text-[9px] mb-0.5">AREA</p>
+            <p className="font-black text-slate-950 text-xs">{plot.area_cents} Cent</p>
           </div>
           <div>
-            <p className="text-slate-400 font-semibold uppercase tracking-wider text-[9px] mb-0.5">FACING</p>
-            <p className="font-bold text-slate-800">{plot.facing}</p>
+            <p className="text-slate-500 font-bold uppercase tracking-wider text-[9px] mb-0.5">FACING</p>
+            <p className="font-black text-slate-950 text-xs">{plot.facing}</p>
           </div>
           <div>
-            <p className="text-slate-400 font-semibold uppercase tracking-wider text-[9px] mb-0.5">STATUS</p>
-            <p className={`font-black ${badge.text}`}>{statusLabel}</p>
+            <p className="text-slate-500 font-bold uppercase tracking-wider text-[9px] mb-0.5">STATUS</p>
+            <p className={`font-black text-xs ${badge.text}`}>{statusLabel}</p>
           </div>
         </div>
 
         {/* PRICE + CTA */}
         <div className="px-5 py-3">
           {priceCompact && (
-            <div className="mb-3">
-              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Estimated Price</p>
-              <p className="text-xl font-black text-slate-900">{priceCompact}</p>
+            <div className="mb-3 p-2 bg-emerald-50/60 rounded-xl border border-emerald-100">
+              <p className="text-[10px] text-emerald-900 font-bold uppercase tracking-wider mb-0.5">Estimated Price</p>
+              <p className="text-xl font-black text-slate-950">{priceCompact}</p>
             </div>
           )}
 

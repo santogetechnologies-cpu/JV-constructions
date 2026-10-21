@@ -221,8 +221,8 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
     (p) => p.geometry?.coordinates && p.geometry.coordinates.length >= 3
   );
 
-  // Determine label scale-adaptive font size
-  const labelSize = Math.max(8, Math.min(16, 12 / transform.scale));
+  // Determine label scale-adaptive font size with strong readability
+  const labelSize = Math.max(9, Math.min(17, 13 / transform.scale));
 
   return (
     <div
@@ -297,9 +297,9 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                   points={pointsString}
                   fill={
                     isSelected
-                      ? '#38bdf8'
+                      ? '#bae6fd'
                       : isHovered
-                      ? '#86efac'
+                      ? '#bbf7d0'
                       : statusStyle.fill
                   }
                   stroke={
@@ -320,14 +320,14 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                   className="cursor-pointer transition-all duration-150"
                   fillOpacity={
                     isSelected
-                      ? 0.88
+                      ? 0.70
                       : isHovered
-                      ? 0.78
-                      : 0.65
+                      ? 0.55
+                      : 0.38
                   }
                 />
 
-                {/* Plot Number Label */}
+                {/* Plot Number Label - High Contrast Ultra-sharp */}
                 {showLabels && (
                   <text
                     x={centroid[0]}
@@ -335,12 +335,13 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                     textAnchor="middle"
                     dominantBaseline="central"
                     fontSize={labelSize}
-                    fontWeight={isSelected ? 'bold' : '600'}
-                    fill={isSelected ? '#020617' : '#0f172a'}
+                    fontWeight="900"
+                    fill="#000000"
                     stroke="#ffffff"
-                    strokeWidth={Math.max(1, 2 / transform.scale)}
+                    strokeWidth={Math.max(1.8, 3.2 / transform.scale)}
+                    strokeLinejoin="round"
                     paintOrder="stroke fill"
-                    style={{ pointerEvents: 'none', userSelect: 'none' }}
+                    style={{ pointerEvents: 'none', userSelect: 'none', letterSpacing: '-0.02em' }}
                   >
                     {plot.plot_number}
                   </text>

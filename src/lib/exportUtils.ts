@@ -117,9 +117,9 @@ export function generateSvgContent(
     const [cx, cy] = calculatePolygonCentroid(coords);
 
     svg += `  <g id="plot-${plot.plot_number}">
-    <polygon points="${pointsStr}" fill="${colors.fill}" fill-opacity="0.35" stroke="${colors.stroke}" class="plot-boundary" />
-    <rect x="${cx - 18}" y="${cy - 14}" width="36" height="28" class="badge-bg" />
-    <text x="${cx}" y="${cy + 1}" font-size="16" fill="#0f172a" class="plot-label">${plot.plot_number}</text>
+    <polygon points="${pointsStr}" fill="${colors.fill}" fill-opacity="0.35" stroke="${colors.stroke}" stroke-width="1.5" class="plot-boundary" />
+    <rect x="${cx - 18}" y="${cy - 14}" width="36" height="28" fill="#ffffff" fill-opacity="0.85" rx="4" class="badge-bg" />
+    <text x="${cx}" y="${cy + 1}" font-size="16" font-weight="900" fill="#000000" text-anchor="middle" dominant-baseline="central" class="plot-label">${plot.plot_number}</text>
   </g>\n`;
   }
 

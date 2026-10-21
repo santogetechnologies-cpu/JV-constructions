@@ -16,9 +16,14 @@ import {
   Grid,
   CalendarCheck,
   FileText,
+  ShieldCheck,
+  Trees,
+  Sparkles,
+  Check,
 } from 'lucide-react';
 import { Project, ProjectStatus } from '../../types/database';
 import { getProjectById, updateProject, deleteProject } from '../../services/api';
+import { OFFICIAL_CONTACTS } from '../../constants/contacts';
 
 export const AdminEditProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -35,6 +40,11 @@ export const AdminEditProjectPage: React.FC = () => {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
+  
+  // Approval / Property Type State
+  const [approvalOption, setApprovalOption] = useState<'dtcp' | 'farmland' | 'custom'>('dtcp');
+  const [customApproval, setCustomApproval] = useState('');
+
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('Tamil Nadu');
@@ -64,6 +74,20 @@ export const AdminEditProjectPage: React.FC = () => {
         setName(data.name || '');
         setSlug(data.slug || '');
         setDescription(data.description || '');
+
+        // Populate approval type
+        const initialApproval = data.booking_policy?.approval_type || (data as any).approval_type || 'DTCP Approved';
+        if (initialApproval.toLowerCase() === 'farm land' || initialApproval.toLowerCase().includes('farm')) {
+          setApprovalOption('farmland');
+          setCustomApproval('');
+        } else if (initialApproval.toLowerCase().includes('dtcp')) {
+          setApprovalOption('dtcp');
+          setCustomApproval('');
+        } else {
+          setApprovalOption('custom');
+          setCustomApproval(initialApproval);
+        }
+
         setAddress(data.address || '');
         setCity(data.city || '');
         setState(data.state || 'Tamil Nadu');
@@ -109,6 +133,13 @@ export const AdminEditProjectPage: React.FC = () => {
       setSaving(true);
       setNotice(null);
 
+      const finalApproval =
+        approvalOption === 'farmland'
+          ? 'Farm Land'
+          : approvalOption === 'custom'
+          ? customApproval.trim() || 'Custom Layout'
+          : 'DTCP Approved';
+
       const updated = await updateProject(projectId, {
         name: name.trim(),
         slug: slug.trim(),
@@ -130,6 +161,7 @@ export const AdminEditProjectPage: React.FC = () => {
           allow_enquiries: allowEnquiries,
           hold_duration_hours: Number(holdDurationHours) || 48,
           require_approval: requireApproval,
+          approval_type: finalApproval,
         },
       });
 
@@ -324,6 +356,87 @@ export const AdminEditProjectPage: React.FC = () => {
               </select>
             </div>
 
+            {/* APPROVAL / PROPERTY TYPE SELECTOR */}
+            <div className="sm:col-span-2 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <label className="block font-black text-slate-900 mb-2">
+                Approval & Property Type *
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setApprovalOption('dtcp')}
+                  className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between ${
+                    approvalOption === 'dtcp'
+                      ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-xs ring-1 ring-amber-400'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100 font-bold'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div>
+                      <p className="text-xs">DTCP Approved</p>
+                      <p className="text-[10px] text-slate-500 font-normal">Sanctioned layout</p>
+                    </div>
+                  </div>
+                  {approvalOption === 'dtcp' && <Check className="w-4 h-4 text-amber-700 shrink-0" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setApprovalOption('farmland')}
+                  className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between ${
+                    approvalOption === 'farmland'
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-black shadow-xs ring-1 ring-emerald-500'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100 font-bold'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Trees className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <p className="text-xs">Farm Land</p>
+                      <p className="text-[10px] text-slate-500 font-normal">Agricultural / Farm layout</p>
+                    </div>
+                  </div>
+                  {approvalOption === 'farmland' && <Check className="w-4 h-4 text-emerald-700 shrink-0" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setApprovalOption('custom')}
+                  className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between ${
+                    approvalOption === 'custom'
+                      ? 'bg-blue-50 border-blue-400 text-blue-950 font-black shadow-xs ring-1 ring-blue-400'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100 font-bold'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+                    <div>
+                      <p className="text-xs">Custom Type</p>
+                      <p className="text-[10px] text-slate-500 font-normal">Enter custom approval</p>
+                    </div>
+                  </div>
+                  {approvalOption === 'custom' && <Check className="w-4 h-4 text-blue-700 shrink-0" />}
+                </button>
+              </div>
+
+              {approvalOption === 'custom' && (
+                <div className="mt-3 pt-3 border-t border-slate-200/80 animate-in fade-in">
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Custom Approval / Property Type Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. CMDA Approved, Panchayat Sanctioned, Gated Agro Plantation..."
+                    value={customApproval}
+                    onChange={(e) => setCustomApproval(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              )}
+            </div>
+
             <div>
               <label className="block font-bold text-slate-700 mb-1">Total Land Area</label>
               <input
@@ -431,6 +544,28 @@ export const AdminEditProjectPage: React.FC = () => {
             <h2 className="font-bold text-slate-900 text-sm">Contact Information & Sales Office</h2>
           </div>
 
+          <div className="flex flex-wrap gap-2 pt-1 pb-2">
+            <span className="text-[11px] font-bold text-slate-500 w-full">Quick Advisor Presets:</span>
+            {OFFICIAL_CONTACTS.map((c) => (
+              <button
+                key={c.name}
+                type="button"
+                onClick={() => {
+                  setPhone(c.phone);
+                  setSalesOffice(`${c.name} - ${c.role}`);
+                }}
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  phone === c.phone
+                    ? 'bg-amber-100 text-amber-950 border-amber-400 shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                }`}
+              >
+                <Phone className="w-3 h-3 text-amber-600" />
+                <span>{c.name} ({c.phone})</span>
+              </button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="block font-bold text-slate-700 mb-1">Sales Hotline Phone</label>
@@ -438,7 +573,7 @@ export const AdminEditProjectPage: React.FC = () => {
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 98765 43210"
+                placeholder="+91 96005 89191"
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>

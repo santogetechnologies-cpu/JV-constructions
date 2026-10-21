@@ -10,8 +10,11 @@ import {
   ArrowRight,
   Maximize2,
   Calendar,
+  MessageSquare,
+  Trees,
 } from 'lucide-react';
-import { Project, Plot, ProjectDocument } from '../../types/database';
+import { Project, Plot, ProjectDocument, getProjectApprovalType } from '../../types/database';
+import { OFFICIAL_CONTACTS } from '../../constants/contacts';
 import {
   getProjectBySlug,
   getPlotsWithGeometries,
@@ -90,8 +93,17 @@ export const ProjectOverviewPage: React.FC = () => {
         <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400/15 text-amber-800 border border-amber-400/30">
-                Verified DTCP Layout
+              <span className={`px-3 py-1 rounded-full text-xs font-black inline-flex items-center gap-1.5 border ${
+                getProjectApprovalType(project).toLowerCase().includes('farm')
+                  ? 'bg-emerald-100/90 text-emerald-950 border-emerald-300'
+                  : 'bg-amber-400/15 text-amber-900 border-amber-400/30'
+              }`}>
+                {getProjectApprovalType(project).toLowerCase().includes('farm') ? (
+                  <Trees className="w-3.5 h-3.5 text-emerald-700" />
+                ) : (
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                )}
+                {getProjectApprovalType(project)}
               </span>
               <span className="flex items-center gap-1 text-xs text-slate-500 font-medium">
                 <MapPin className="w-3.5 h-3.5 text-amber-500" />
@@ -227,26 +239,46 @@ export const ProjectOverviewPage: React.FC = () => {
           {/* RIGHT: CONTACT & ENQUIRY */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-              <h3 className="font-extrabold text-base text-slate-900 mb-4">Project Sales Office</h3>
-              <div className="space-y-4 text-xs text-slate-600">
-                {/* Contact Number */}
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                      Contact Number
-                    </span>
-                    <a
-                      href={`tel:${project.contact_information?.phone || '+91 98765 43210'}`}
-                      className="font-black text-slate-900 text-sm hover:text-blue-600 transition-colors block mt-0.5"
-                    >
-                      {project.contact_information?.phone || '+91 98765 43210'}
-                    </a>
-                  </div>
-                </div>
+              <h3 className="font-extrabold text-base text-slate-900 mb-3">Direct Property Advisors</h3>
+              <p className="text-xs text-slate-500 mb-4">Contact our official property advisors for site visits, boundary surveys, and documentation:</p>
 
+              <div className="space-y-2.5 mb-5">
+                {OFFICIAL_CONTACTS.map((c) => (
+                  <div key={c.name} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 hover:bg-amber-50/50 transition-colors">
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-black text-slate-950 text-xs sm:text-sm">{c.name}</span>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.2 rounded-full">
+                          {c.role}
+                        </span>
+                      </div>
+                      <a href={`tel:${c.phoneRaw}`} className="font-bold text-slate-800 text-xs block font-mono mt-0.5 hover:text-emerald-700">
+                        {c.phone}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <a
+                        href={`tel:${c.phoneRaw}`}
+                        className="p-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-transform active:scale-95"
+                        title={`Call ${c.name}`}
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                      </a>
+                      <a
+                        href={`https://wa.me/${c.phoneRaw.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white shadow-xs transition-transform active:scale-95"
+                        title={`WhatsApp ${c.name}`}
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-4 text-xs text-slate-600">
                 {/* Office Address */}
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">

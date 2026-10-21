@@ -68,20 +68,32 @@ export const Footer: React.FC = () => {
           {/* Contact & Support */}
           <div>
             <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-400 mb-3">
-              Direct Contact
+              Direct Contact & Advisors
             </h4>
-            <div className="space-y-2 text-xs text-slate-300">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                <span>Central Real Estate Hub</span>
+            <div className="space-y-2.5 text-xs text-slate-300">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white">Baskar:</span>
+                  <a href="tel:+919600589191" className="text-amber-300 hover:text-amber-200 font-mono font-bold">
+                    +91 96005 89191
+                  </a>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white">Anto:</span>
+                  <a href="tel:+917448926902" className="text-amber-300 hover:text-amber-200 font-mono font-bold">
+                    +91 744 892 6902
+                  </a>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white">Dhinakaran:</span>
+                  <a href="tel:+919790493891" className="text-amber-300 hover:text-amber-200 font-mono font-bold">
+                    +91 97904 93891
+                  </a>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-amber-400" />
-                <span>+91 98765 43210</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-amber-400" />
-                <span>info@yazhlandpromoters.com</span>
+              <div className="pt-2 border-t border-emerald-950 flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="truncate">info@yazhlandpromoters.com</span>
               </div>
             </div>
           </div>

@@ -73,51 +73,51 @@ export function getStatusColor(status: PlotStatus): {
   switch (status) {
     case 'available':
       return {
-        fill: '#22c55e', // Vibrant emerald green
-        stroke: '#15803d',
-        text: '#14532d',
-        badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        badgeText: 'text-emerald-700',
+        fill: '#dcfce7', // Very light green / emerald
+        stroke: '#16a34a',
+        text: '#064e3b',
+        badgeBg: 'bg-emerald-50 text-emerald-950 border-emerald-300 font-black',
+        badgeText: 'text-emerald-950 font-black',
       };
     case 'booked':
       return {
-        fill: '#3b82f6', // Clean vibrant blue
-        stroke: '#1d4ed8',
-        text: '#1e3a8a',
-        badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
-        badgeText: 'text-blue-700',
+        fill: '#dbeafe', // Very light blue
+        stroke: '#2563eb',
+        text: '#172554',
+        badgeBg: 'bg-blue-50 text-blue-950 border-blue-300 font-black',
+        badgeText: 'text-blue-950 font-black',
       };
     case 'on_hold':
       return {
-        fill: '#f97316', // Orange
-        stroke: '#c2410c',
-        text: '#7c2d12',
-        badgeBg: 'bg-orange-50 text-orange-700 border-orange-200',
-        badgeText: 'text-orange-700',
+        fill: '#ffedd5', // Very light orange/amber
+        stroke: '#ea580c',
+        text: '#431407',
+        badgeBg: 'bg-orange-50 text-orange-950 border-orange-300 font-black',
+        badgeText: 'text-orange-950 font-black',
       };
     case 'sold':
       return {
-        fill: '#f43f5e', // Rose / Red for sold/registered
-        stroke: '#be123c',
-        text: '#881337',
-        badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
-        badgeText: 'text-rose-700',
+        fill: '#ffe4e6', // Very light red / rose
+        stroke: '#e11d48',
+        text: '#4c0519',
+        badgeBg: 'bg-rose-50 text-rose-950 border-rose-300 font-black',
+        badgeText: 'text-rose-950 font-black',
       };
     case 'blocked':
       return {
-        fill: '#eab308', // Amber / Gold for blocked
-        stroke: '#a16207',
-        text: '#713f12',
-        badgeBg: 'bg-yellow-50 text-yellow-800 border-yellow-200',
-        badgeText: 'text-yellow-800',
+        fill: '#fef9c3', // Very light yellow
+        stroke: '#ca8a04',
+        text: '#422006',
+        badgeBg: 'bg-yellow-50 text-yellow-950 border-yellow-300 font-black',
+        badgeText: 'text-yellow-950 font-black',
       };
     default:
       return {
-        fill: '#94a3b8',
+        fill: '#f1f5f9',
         stroke: '#64748b',
-        text: '#334155',
-        badgeBg: 'bg-gray-100 text-gray-800 border-gray-200',
-        badgeText: 'text-gray-800',
+        text: '#0f172a',
+        badgeBg: 'bg-slate-100 text-slate-950 border-slate-300 font-black',
+        badgeText: 'text-slate-950 font-black',
       };
   }
 }
