@@ -45,12 +45,6 @@ export const AdminLoginPage: React.FC = () => {
               className="w-20 h-20 rounded-full object-contain mx-auto ring-4 ring-amber-400/60 shadow-xl bg-[#05281b]"
             />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight font-sans">
-            Yazh <span className="text-blue-700">Land Promoters</span>
-          </h1>
-          <p className="text-xs uppercase font-extrabold tracking-wider text-amber-600 mt-1">
-            Your Land • Our Commitment
-          </p>
           <p className="text-xs text-slate-500 mt-1">
             Sign in to manage CAD layouts, plot inventories, and reservations.
           </p>
@@ -114,17 +108,6 @@ export const AdminLoginPage: React.FC = () => {
               )}
             </button>
           </form>
-
-          {/* INITIAL ADMIN SETUP NOTICE */}
-          <div className="mt-8 pt-6 border-t border-slate-100 text-[11px] text-slate-500 space-y-2">
-            <div className="flex items-center gap-1.5 font-bold text-slate-700">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Supabase Authentication Configured</span>
-            </div>
-            <p className="leading-relaxed">
-              Use your authorized Supabase administrator credentials. The first user created in Supabase Auth automatically receives the <code className="text-slate-800 font-mono">super_admin</code> role via the migration trigger.
-            </p>
-          </div>
         </div>
 
         <div className="text-center mt-6">
