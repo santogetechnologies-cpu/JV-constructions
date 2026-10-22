@@ -34,24 +34,24 @@ export const AdminLoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
+    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-3 sm:p-4">
       <div className="w-full max-w-md">
         {/* LOGO */}
-        <div className="text-center mb-8">
-          <div className="inline-block relative mb-3">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-block relative mb-2 sm:mb-3">
             <img
               src="/logo.png"
               alt="Yazh Land Promoters"
-              className="w-20 h-20 rounded-full object-contain mx-auto ring-4 ring-amber-400/60 shadow-xl bg-[#05281b]"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain mx-auto ring-4 ring-amber-400/60 shadow-xl bg-[#05281b]"
             />
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 px-2">
             Sign in to manage CAD layouts, plot inventories, and reservations.
           </p>
         </div>
 
         {/* LOGIN CARD */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-5 sm:p-8">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 font-medium flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
