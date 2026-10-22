@@ -33,14 +33,19 @@ export const AdminNewProjectPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [salesOffice, setSalesOffice] = useState('');
 
-  // Auto-generate slug from name
+  // Auto-generate slug from name in small letters, space replaced by -
+  const generateSlugFromName = (val: string) => {
+    return val
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-');
+  };
+
   const handleNameChange = (val: string) => {
     setName(val);
-    const autoSlug = val
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-    setSlug(autoSlug);
+    setSlug(generateSlugFromName(val));
   };
 
   const getFinalApprovalType = () => {
@@ -51,8 +56,9 @@ export const AdminNewProjectPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !slug.trim() || !city.trim()) {
-      setError('Project name, slug, and city are required.');
+    const finalSlug = (slug || generateSlugFromName(name)) || `project-${Date.now()}`;
+    if (!name.trim() || !city.trim()) {
+      setError('Project name and city are required.');
       return;
     }
 
@@ -121,30 +127,16 @@ export const AdminNewProjectPage: React.FC = () => {
           {/* CORE DETAILS */}
           <div>
             <h3 className="font-bold text-slate-900 text-sm mb-3">Core Identity</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Project Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Green Valley Meadows Phase 1"
-                  value={name}
-                  onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">URL Slug (Unique) *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="green-valley-meadows"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <div>
+              <label className="block font-bold text-slate-700 mb-1">Project Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Green Valley Meadows Phase 1"
+                value={name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
             {/* APPROVAL / PROPERTY TYPE SELECTOR */}

@@ -82,20 +82,18 @@ export const Navbar: React.FC = () => {
                     {OFFICIAL_CONTACTS.map((contact) => (
                       <div
                         key={contact.name}
-                        className="p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50/70 border border-slate-100 hover:border-amber-300/80 transition-all flex items-center justify-between gap-3"
+                        className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 transition-all flex items-center justify-between gap-3"
                       >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-black text-slate-900 text-xs sm:text-sm">
-                              {contact.name}
-                            </span>
-                            <span className="text-[10px] font-bold text-amber-700 bg-amber-100/80 px-1.5 py-0.2 rounded-full">
-                              {contact.role}
-                            </span>
+                        <div className="min-w-0 space-y-0.5">
+                          <div className="font-black text-slate-900 text-sm leading-tight">
+                            {contact.name}
                           </div>
-                          <span className="font-extrabold text-slate-800 text-xs block font-mono mt-0.5">
+                          <div className="text-xs font-semibold text-slate-500 leading-tight">
+                            {contact.role}
+                          </div>
+                          <a href={`tel:${contact.phoneRaw}`} className="font-extrabold text-slate-800 text-xs block font-mono hover:text-emerald-700 transition-colors pt-0.5">
                             {contact.phone}
-                          </span>
+                          </a>
                         </div>
 
                         <div className="flex items-center gap-1.5 shrink-0">

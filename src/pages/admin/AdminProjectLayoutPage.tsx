@@ -442,34 +442,15 @@ export const AdminProjectLayoutPage: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Link
-            to={`/admin/projects/${project.id}/edit`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
-            title="Edit Project Details"
-          >
-            <Settings className="w-4 h-4 text-slate-500" />
-            <span>Settings</span>
-          </Link>
-
           {layout && (
-            <>
-              <button
-                onClick={() => setShowHtmlPasteModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold shadow-sm cursor-pointer transition-all"
-                title="Import 63 clickable plot polygons from plot_viewer.html"
-              >
-                <FileCode className="w-4 h-4" />
-                Import HTML Polygons
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                disabled={isDeleting}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold shadow-sm cursor-pointer transition-all"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete & Re-upload
-              </button>
-            </>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={isDeleting}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold shadow-sm cursor-pointer transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete & Re-upload
+            </button>
           )}
         </div>
       </div>

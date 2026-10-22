@@ -180,7 +180,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <div>
                       <p className="text-xs font-bold text-slate-900">{p.name}</p>
                       <p className="text-[10px] text-slate-500">
-                        {p.city}, {p.state} • Slug: {p.slug}
+                        {p.city}, {p.state}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -197,7 +197,7 @@ export const AdminDashboardPage: React.FC = () => {
                         to={`/admin/projects/${p.id}/layout`}
                         className="px-2.5 py-1 text-[11px] font-bold bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-100"
                       >
-                        CAD Editor
+                        Editor
                       </Link>
                     </div>
                   </div>

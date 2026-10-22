@@ -74,7 +74,7 @@ export function getStatusColor(status: PlotStatus): {
     case 'available':
       return {
         fill: '#dcfce7', // Very light green / emerald
-        stroke: '#16a34a',
+        stroke: '#000000',
         text: '#064e3b',
         badgeBg: 'bg-emerald-50 text-emerald-950 border-emerald-300 font-black',
         badgeText: 'text-emerald-950 font-black',
@@ -82,7 +82,7 @@ export function getStatusColor(status: PlotStatus): {
     case 'booked':
       return {
         fill: '#dbeafe', // Very light blue
-        stroke: '#2563eb',
+        stroke: '#000000',
         text: '#172554',
         badgeBg: 'bg-blue-50 text-blue-950 border-blue-300 font-black',
         badgeText: 'text-blue-950 font-black',
@@ -90,7 +90,7 @@ export function getStatusColor(status: PlotStatus): {
     case 'on_hold':
       return {
         fill: '#ffedd5', // Very light orange/amber
-        stroke: '#ea580c',
+        stroke: '#000000',
         text: '#431407',
         badgeBg: 'bg-orange-50 text-orange-950 border-orange-300 font-black',
         badgeText: 'text-orange-950 font-black',
@@ -98,7 +98,7 @@ export function getStatusColor(status: PlotStatus): {
     case 'sold':
       return {
         fill: '#ffe4e6', // Very light red / rose
-        stroke: '#e11d48',
+        stroke: '#000000',
         text: '#4c0519',
         badgeBg: 'bg-rose-50 text-rose-950 border-rose-300 font-black',
         badgeText: 'text-rose-950 font-black',
@@ -106,7 +106,7 @@ export function getStatusColor(status: PlotStatus): {
     case 'blocked':
       return {
         fill: '#fef9c3', // Very light yellow
-        stroke: '#ca8a04',
+        stroke: '#000000',
         text: '#422006',
         badgeBg: 'bg-yellow-50 text-yellow-950 border-yellow-300 font-black',
         badgeText: 'text-yellow-950 font-black',
@@ -114,7 +114,7 @@ export function getStatusColor(status: PlotStatus): {
     default:
       return {
         fill: '#f1f5f9',
-        stroke: '#64748b',
+        stroke: '#000000',
         text: '#0f172a',
         badgeBg: 'bg-slate-100 text-slate-950 border-slate-300 font-black',
         badgeText: 'text-slate-950 font-black',

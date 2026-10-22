@@ -121,8 +121,8 @@ export const AdminProjectsPage: React.FC = () => {
     e.preventDefault();
     if (!editingProject) return;
 
-    if (!editName.trim() || !editSlug.trim() || !editCity.trim()) {
-      alert('Project name, slug, and city are required.');
+    if (!editName.trim() || !editCity.trim()) {
+      alert('Project name and city are required.');
       return;
     }
 
@@ -135,9 +135,11 @@ export const AdminProjectsPage: React.FC = () => {
           ? editCustomApproval.trim() || 'Custom Layout'
           : 'DTCP Approved';
 
+      const finalSlug = (editSlug || editName.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-')).trim();
+
       const updated = await updateProject(editingProject.id, {
         name: editName.trim(),
-        slug: editSlug.trim(),
+        slug: finalSlug,
         description: editDescription.trim() || null,
         address: editAddress.trim() || null,
         city: editCity.trim(),
@@ -264,7 +266,6 @@ export const AdminProjectsPage: React.FC = () => {
               <thead>
                 <tr className="bg-slate-50/75 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3.5 px-6">Project Name & Location</th>
-                  <th className="py-3.5 px-4">Slug (URL)</th>
                   <th className="py-3.5 px-4">Publication Status</th>
                   <th className="py-3.5 px-4">Created Date</th>
                   <th className="py-3.5 px-6 text-right">Actions</th>
@@ -297,7 +298,6 @@ export const AdminProjectsPage: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td className="py-4 px-4 font-mono text-slate-600 text-[11px]">{p.slug}</td>
                     <td className="py-4 px-4">
                       <button
                         onClick={() => handleTogglePublish(p)}
@@ -435,21 +435,12 @@ export const AdminProjectsPage: React.FC = () => {
                     type="text"
                     required
                     value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
+                    onChange={(e) => {
+                      setEditName(e.target.value);
+                      setEditSlug(e.target.value.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-'));
+                    }}
                     placeholder="e.g. Green Valley Meadows Phase 1"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">URL Slug (Unique) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editSlug}
-                    onChange={(e) => setEditSlug(e.target.value)}
-                    placeholder="e.g. green-valley-meadows"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 

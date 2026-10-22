@@ -302,19 +302,13 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                       ? '#bbf7d0'
                       : statusStyle.fill
                   }
-                  stroke={
-                    isSelected
-                      ? '#0284c7'
-                      : isHovered
-                      ? '#16a34a'
-                      : statusStyle.stroke
-                  }
+                  stroke="#000000"
                   strokeWidth={
                     isSelected
-                      ? Math.max(2.5, 4 / transform.scale)
+                      ? Math.max(2.5, 3.5 / transform.scale)
                       : isHovered
-                      ? Math.max(2, 3 / transform.scale)
-                      : Math.max(1.2, 1.8 / transform.scale)
+                      ? Math.max(1.8, 2.5 / transform.scale)
+                      : Math.max(1.2, 1.6 / transform.scale)
                   }
                   strokeLinejoin="round"
                   className="cursor-pointer transition-all duration-150"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X, CheckCircle, BookOpen } from 'lucide-react';
+import { X, CheckCircle, BookOpen, Lock } from 'lucide-react';
 import { Plot, Project } from '../../types/database';
 import { formatPriceCompact, getStatusLabel, centsToSqft } from '../../lib/utils';
 
@@ -23,7 +23,7 @@ function getStatusBadgeStyle(status: string): { bg: string; text: string; dot: s
     case 'blocked':
       return { bg: 'bg-yellow-50 border-yellow-300', text: 'text-yellow-950 font-black', dot: 'bg-yellow-600' };
     default:
-      return { bg: 'bg-slate-100 border-slate-300', text: 'text-slate-950 font-black', dot: 'bg-slate-600' };
+      return { bg: 'bg-slate-100 border-slate-300', text: 'text-slate-800 font-bold', dot: 'bg-slate-400' };
   }
 }
 
@@ -35,7 +35,6 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
   if (!plot) return null;
 
   const isBookable = plot.status === 'available';
-  const isEnquiryAllowed = ['available', 'booked', 'on_hold'].includes(plot.status);
   const phaseName = (plot as any).phase?.name || null;
   const statusLabel = getStatusLabel(plot.status);
   const badge = getStatusBadgeStyle(plot.status);
@@ -101,21 +100,21 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         </div>
 
         {/* Action Button */}
-        {isEnquiryAllowed ? (
+        {isBookable ? (
           <Link
             to={`/booking/${plot.id}`}
             className="w-full py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm text-white flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all bg-glossy-green-btn border border-amber-400/30"
           >
             <CheckCircle className="w-4 h-4 text-amber-300" />
-            <span>{isBookable ? 'Book Now' : 'Enquire Plot'}</span>
+            <span>Book Now</span>
           </Link>
         ) : (
           <button
             disabled
-            className="w-full py-2.5 px-4 rounded-xl font-bold text-xs text-slate-400 bg-slate-100 cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 rounded-xl font-bold text-xs text-slate-500 bg-slate-100 border border-slate-200 cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <BookOpen className="w-4 h-4" />
-            <span>Not Available for Booking</span>
+            <Lock className="w-4 h-4 text-slate-400" />
+            <span>{plot.status === 'booked' ? 'Booked' : statusLabel}</span>
           </button>
         )}
       </div>
@@ -163,21 +162,21 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
             </div>
           )}
 
-          {isEnquiryAllowed ? (
+          {isBookable ? (
             <Link
               to={`/booking/${plot.id}`}
               className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-black text-sm text-white transition-all active:scale-95 shadow-md bg-glossy-green-btn border border-amber-400/30"
             >
               <CheckCircle className="w-4 h-4 text-amber-300" />
-              <span>{isBookable ? 'Book Now' : 'Enquire'}</span>
+              <span>Book Now</span>
             </Link>
           ) : (
             <button
               disabled
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm text-slate-400 bg-slate-100 cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm text-slate-500 bg-slate-100 border border-slate-200 cursor-not-allowed"
             >
-              <BookOpen className="w-4 h-4" />
-              <span>Not Available</span>
+              <Lock className="w-4 h-4 text-slate-400" />
+              <span>{plot.status === 'booked' ? 'Booked' : statusLabel}</span>
             </button>
           )}
         </div>

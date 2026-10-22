@@ -26,7 +26,6 @@ export const AdminSidebar: React.FC = () => {
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { label: 'Projects', path: '/admin/projects', icon: FolderKanban },
     { label: 'Buyer Leads', path: '/admin/leads', icon: Users },
-    { label: 'Audit Trail', path: '/admin/audit-logs', icon: History },
     { label: 'Team & Security', path: '/admin/team', icon: ShieldCheck },
   ];
 
