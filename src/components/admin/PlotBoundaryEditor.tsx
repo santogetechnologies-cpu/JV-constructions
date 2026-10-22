@@ -108,6 +108,10 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
   const [selectedPlot, setSelectedPlot] = useState<Plot | null>(null);
   const [activeTab, setActiveTab] = useState<SidebarTab>('selected');
 
+  // Selected plot form edit fields
+  const [editAreaCents, setEditAreaCents] = useState<string>('');
+  const [editPriceInr, setEditPriceInr] = useState<string>('');
+
   // Edit vertices state for existing plot
   const [activeCoords, setActiveCoords] = useState<[number, number][]>([]);
   const [draggingVertexIdx, setDraggingVertexIdx] = useState<number | null>(null);
@@ -217,6 +221,14 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
       });
     }
   }, [plots]);
+
+  // Sync selected plot edit fields on plot change
+  useEffect(() => {
+    if (selectedPlot) {
+      setEditAreaCents(selectedPlot.area_cents != null ? String(selectedPlot.area_cents) : '');
+      setEditPriceInr(selectedPlot.price_inr != null ? String(selectedPlot.price_inr) : '');
+    }
+  }, [selectedPlot?.id]);
 
   // Sync selected plot to editor form
   useEffect(() => {
@@ -450,16 +462,17 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
     if (!selectedPlot) return;
     setIsSaving(true);
     try {
-      await createOrUpdatePlot({
+      const updated = await createOrUpdatePlot({
         id: selectedPlot.id,
         project_id: layout.project_id,
         plot_number: selectedPlot.plot_number,
         area_cents: updates.area_cents ?? selectedPlot.area_cents,
         area_sqft: updates.area_cents ? centsToSqft(updates.area_cents) : selectedPlot.area_sqft,
-        price_inr: updates.price_inr ?? selectedPlot.price_inr,
+        price_inr: updates.price_inr !== undefined ? updates.price_inr : selectedPlot.price_inr,
         facing: updates.facing ?? selectedPlot.facing,
         status: updates.status ?? selectedPlot.status,
       });
+      setSelectedPlot((prev) => (prev ? { ...prev, ...updated } : updated));
       setStatusMessage({ type: 'success', text: `Plot #${selectedPlot.plot_number} updated.` });
       onRefresh();
     } catch (err: any) {
@@ -467,6 +480,17 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSavePlotDetails = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!selectedPlot) return;
+    const cents = parseFloat(editAreaCents);
+    const price = parseFloat(editPriceInr);
+    await handleUpdateSelectedPlot({
+      area_cents: !isNaN(cents) && cents > 0 ? cents : selectedPlot.area_cents,
+      price_inr: !isNaN(price) ? price : selectedPlot.price_inr,
+    });
   };
 
   // Delete plot
@@ -947,38 +971,52 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
                     </div>
                   </div>
 
-                  {/* Table Area (Cents) */}
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Area (Cents)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={selectedPlot.area_cents}
-                      onChange={(e) =>
-                        handleUpdateSelectedPlot({ area_cents: parseFloat(e.target.value) || 0 })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none"
-                    />
-                    <span className="text-[10px] text-slate-500 mt-0.5 block">
-                      = {centsToSqft(selectedPlot.area_cents)} sq.ft
-                    </span>
-                  </div>
+                  {/* Table Area (Cents) & Price Details Form */}
+                  <form onSubmit={handleSavePlotDetails} className="space-y-3 pt-1">
+                    {/* Table Area (Cents) */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-bold text-slate-700">Area (Cents)</label>
+                        <span className="text-[10px] font-mono font-bold text-slate-500">
+                          = {!isNaN(parseFloat(editAreaCents)) ? centsToSqft(parseFloat(editAreaCents)) : 0} sq.ft
+                        </span>
+                      </div>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={editAreaCents}
+                        onChange={(e) => setEditAreaCents(e.target.value)}
+                        placeholder="e.g. 2.50"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
 
-                  {/* Price */}
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Price (INR)</label>
-                    <input
-                      type="number"
-                      value={selectedPlot.price_inr || 0}
-                      onChange={(e) =>
-                        handleUpdateSelectedPlot({ price_inr: parseFloat(e.target.value) || 0 })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none"
-                    />
-                    <span className="text-[11px] font-bold text-emerald-600 block mt-1">
-                      {formatINR(selectedPlot.price_inr || 0)}
-                    </span>
-                  </div>
+                    {/* Price */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-bold text-slate-700">Price (INR)</label>
+                        <span className="text-[11px] font-bold text-emerald-600">
+                          {!isNaN(parseFloat(editPriceInr)) ? formatINR(parseFloat(editPriceInr)) : '₹0'}
+                        </span>
+                      </div>
+                      <input
+                        type="number"
+                        value={editPriceInr}
+                        onChange={(e) => setEditPriceInr(e.target.value)}
+                        placeholder="e.g. 2500000"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSaving}
+                      className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>{isSaving ? 'Saving...' : 'Save Area & Price'}</span>
+                    </button>
+                  </form>
 
                   {/* Facing (8 Directions Grid) */}
                   <div>

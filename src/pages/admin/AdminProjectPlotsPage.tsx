@@ -12,6 +12,8 @@ import {
   RotateCcw,
   PenTool,
   Settings,
+  Pencil,
+  X,
 } from 'lucide-react';
 import { Plot, Project, PlotStatus, PlotFacing } from '../../types/database';
 import {
@@ -40,6 +42,63 @@ export const AdminProjectPlotsPage: React.FC = () => {
   const [newFacing, setNewFacing] = useState<PlotFacing>('East');
   const [newPrice, setNewPrice] = useState('2500000');
   const [newStatus, setNewStatus] = useState<PlotStatus>('available');
+
+  // Edit plot modal state
+  const [editingPlot, setEditingPlot] = useState<Plot | null>(null);
+  const [editPlotNumber, setEditPlotNumber] = useState('');
+  const [editAreaCents, setEditAreaCents] = useState('2.5');
+  const [editFacing, setEditFacing] = useState<PlotFacing>('East');
+  const [editPrice, setEditPrice] = useState('2500000');
+  const [editStatus, setEditStatus] = useState<PlotStatus>('available');
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const startEditPlot = (plot: Plot) => {
+    setEditingPlot(plot);
+    setEditPlotNumber(plot.plot_number);
+    setEditAreaCents(String(plot.area_cents ?? 2.5));
+    setEditFacing(plot.facing);
+    setEditPrice(plot.price_inr !== null && plot.price_inr !== undefined ? String(plot.price_inr) : '');
+    setEditStatus(plot.status);
+  };
+
+  const handleUpdatePlot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!project || !editingPlot) return;
+
+    const num = parseInt(editPlotNumber.trim(), 10);
+    if (isNaN(num) || num < 1 || num > 63) {
+      setNotice({ type: 'error', text: 'Plot number must be between 1 and 63 only.' });
+      return;
+    }
+
+    const cents = parseFloat(editAreaCents);
+    if (isNaN(cents) || cents <= 0) {
+      setNotice({ type: 'error', text: 'Please enter a valid area in cents (greater than 0).' });
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const updated = await createOrUpdatePlot({
+        id: editingPlot.id,
+        project_id: project.id,
+        plot_number: String(num),
+        area_cents: cents,
+        area_sqft: centsToSqft(cents),
+        facing: editFacing,
+        price_inr: editPrice ? parseFloat(editPrice) : null,
+        status: editStatus,
+      });
+
+      setPlots((prev) => prev.map((p) => (p.id === editingPlot.id ? { ...p, ...updated } : p)));
+      setEditingPlot(null);
+      setNotice({ type: 'success', text: `Plot #${updated.plot_number} updated successfully!` });
+    } catch (err: any) {
+      setNotice({ type: 'error', text: err.message || 'Failed to update plot' });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const loadData = async () => {
     if (!projectId) return;
@@ -321,11 +380,23 @@ export const AdminProjectPlotsPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredPlots.map((plot) => (
-                  <tr key={plot.id} className="hover:bg-slate-50/80 transition-colors">
+                  <tr key={plot.id} className="hover:bg-slate-50/80 transition-colors group">
                     <td className="py-4 px-6 font-black text-slate-950 text-base">
                       #{plot.plot_number}
                     </td>
-                    <td className="py-4 px-4 font-black text-slate-950">{plot.area_cents} Cent</td>
+                    <td className="py-4 px-4 font-black text-slate-950">
+                      <div className="flex items-center gap-1.5">
+                        <span>{plot.area_cents} Cent</span>
+                        <button
+                          type="button"
+                          onClick={() => startEditPlot(plot)}
+                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 p-1 rounded transition-opacity"
+                          title="Edit Area Cents"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </td>
                     <td className="py-4 px-4 text-slate-700 font-mono font-bold text-xs">({plot.area_sqft} sq.ft)</td>
                     <td className="py-4 px-4 font-bold text-slate-900">{plot.facing}</td>
                     <td className="py-4 px-4 font-black text-slate-950">
@@ -365,13 +436,24 @@ export const AdminProjectPlotsPage: React.FC = () => {
                       )}
                     </td>
                     <td className="py-4 px-6 text-right">
-                      <button
-                        onClick={() => handleDeletePlot(plot.id, plot.plot_number)}
-                        className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg transition-colors"
-                        title="Delete Plot"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => startEditPlot(plot)}
+                          className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Edit Plot Details"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeletePlot(plot.id, plot.plot_number)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Plot"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -384,6 +466,129 @@ export const AdminProjectPlotsPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* EDIT PLOT MODAL */}
+      {editingPlot && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 max-w-md w-full shadow-2xl animate-in fade-in">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div>
+                <h3 className="font-extrabold text-base text-slate-900">
+                  Edit Plot #{editingPlot.plot_number} Details
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Update area in cents, dimensions, facing, pricing, and inventory status.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingPlot(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdatePlot} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Plot Number * (1 - 63)</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 15"
+                  value={editPlotNumber}
+                  onChange={(e) => setEditPlotNumber(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Area (Cents) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={editAreaCents}
+                    onChange={(e) => setEditAreaCents(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Calculated Sq.Ft</label>
+                  <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-mono font-bold">
+                    {centsToSqft(parseFloat(editAreaCents) || 0)} sq.ft
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Facing / Direction</label>
+                <select
+                  value={editFacing}
+                  onChange={(e) => setEditFacing(e.target.value as PlotFacing)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  {['North', 'South', 'East', 'West', 'North-East', 'North-West', 'South-East', 'South-West', 'Other'].map(
+                    (f) => (
+                      <option key={f} value={f}>
+                        {f}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Price (INR)</label>
+                <input
+                  type="number"
+                  value={editPrice}
+                  onChange={(e) => setEditPrice(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                {editPrice && !isNaN(parseFloat(editPrice)) && (
+                  <span className="text-[11px] font-bold text-emerald-600 block mt-1">
+                    {formatINR(parseFloat(editPrice))}
+                  </span>
+                )}
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Inventory Status</label>
+                <select
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value as PlotStatus)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="available">Available</option>
+                  <option value="booked">Booked</option>
+                  <option value="on_hold">On Hold</option>
+                  <option value="sold">Sold / Registered</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingPlot(null)}
+                  className="px-3.5 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 font-bold rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-colors shadow-md disabled:opacity-50"
+                >
+                  {isUpdating ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ADD PLOT MODAL */}
       {isAddingPlot && (
