@@ -142,9 +142,12 @@ export const InteractiveMapPage: React.FC = () => {
     const matchingIds = new Set<string>();
 
     plots.forEach((p) => {
-      // 1. Availability Filter
-      if (filters.availability !== 'all' && p.status !== filters.availability) {
-        return;
+      // 1. Availability Filter (handles registered mapping to sold)
+      if (filters.availability !== 'all') {
+        const isRegisteredMatch = filters.availability === 'registered' && (p.status === 'sold' || (p.status as any) === 'registered');
+        if (!isRegisteredMatch && p.status !== filters.availability) {
+          return;
+        }
       }
 
       // 2. Facing Filter

@@ -73,48 +73,48 @@ export function getStatusColor(status: PlotStatus): {
   switch (status) {
     case 'available':
       return {
-        fill: '#dcfce7', // Very light green / emerald
-        stroke: '#000000',
-        text: '#064e3b',
-        badgeBg: 'bg-emerald-50 text-emerald-950 border-emerald-300 font-black',
+        fill: '#4efa34', // Exactly matching nammaplot --availablegreen
+        stroke: '#4efa34',
+        text: '#14532d',
+        badgeBg: 'bg-[#4efa34]/15 text-emerald-950 border-[#4efa34]/40 font-black',
         badgeText: 'text-emerald-950 font-black',
       };
     case 'booked':
       return {
-        fill: '#dbeafe', // Very light blue
-        stroke: '#000000',
-        text: '#172554',
-        badgeBg: 'bg-blue-50 text-blue-950 border-blue-300 font-black',
+        fill: '#343efa', // Exactly matching nammaplot --danger (electric blue)
+        stroke: '#343efa',
+        text: '#1e1b4b',
+        badgeBg: 'bg-[#343efa]/15 text-blue-950 border-[#343efa]/40 font-black',
         badgeText: 'text-blue-950 font-black',
       };
     case 'on_hold':
       return {
-        fill: '#ffedd5', // Very light orange/amber
-        stroke: '#000000',
-        text: '#431407',
-        badgeBg: 'bg-orange-50 text-orange-950 border-orange-300 font-black',
-        badgeText: 'text-orange-950 font-black',
+        fill: '#f3fa34', // Exactly matching nammaplot --yellow
+        stroke: '#f3fa34',
+        text: '#713f12',
+        badgeBg: 'bg-[#f3fa34]/25 text-amber-950 border-[#f3fa34]/50 font-black',
+        badgeText: 'text-amber-950 font-black',
       };
     case 'sold':
       return {
-        fill: '#ffe4e6', // Very light red / rose
-        stroke: '#000000',
-        text: '#4c0519',
-        badgeBg: 'bg-rose-50 text-rose-950 border-rose-300 font-black',
+        fill: '#fa348a', // Exactly matching nammaplot --accent (hot pink / registered)
+        stroke: '#fa348a',
+        text: '#831843',
+        badgeBg: 'bg-[#fa348a]/15 text-rose-950 border-[#fa348a]/40 font-black',
         badgeText: 'text-rose-950 font-black',
       };
     case 'blocked':
       return {
-        fill: '#fef9c3', // Very light yellow
-        stroke: '#000000',
-        text: '#422006',
-        badgeBg: 'bg-yellow-50 text-yellow-950 border-yellow-300 font-black',
+        fill: '#f3fa34', // Exactly matching nammaplot --yellow
+        stroke: '#f3fa34',
+        text: '#713f12',
+        badgeBg: 'bg-[#f3fa34]/25 text-yellow-950 border-[#f3fa34]/50 font-black',
         badgeText: 'text-yellow-950 font-black',
       };
     default:
       return {
-        fill: '#f1f5f9',
-        stroke: '#000000',
+        fill: '#cbd5e1',
+        stroke: '#94a3b8',
         text: '#0f172a',
         badgeBg: 'bg-slate-100 text-slate-950 border-slate-300 font-black',
         badgeText: 'text-slate-950 font-black',

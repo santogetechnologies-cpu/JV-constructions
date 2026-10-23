@@ -13,15 +13,15 @@ interface PlotSelectionCardProps {
 function getStatusBadgeStyle(status: string): { bg: string; text: string; dot: string } {
   switch (status) {
     case 'available':
-      return { bg: 'bg-emerald-50 border-emerald-300', text: 'text-emerald-950 font-black', dot: 'bg-emerald-600' };
+      return { bg: 'bg-[#4efa34]/15 border-[#4efa34]/40', text: 'text-emerald-950 font-black', dot: 'bg-[#4efa34]' };
     case 'booked':
-      return { bg: 'bg-blue-50 border-blue-300', text: 'text-blue-950 font-black', dot: 'bg-blue-600' };
+      return { bg: 'bg-[#343efa]/15 border-[#343efa]/40', text: 'text-blue-950 font-black', dot: 'bg-[#343efa]' };
     case 'on_hold':
-      return { bg: 'bg-orange-50 border-orange-300', text: 'text-orange-950 font-black', dot: 'bg-orange-600' };
+      return { bg: 'bg-[#f3fa34]/25 border-[#f3fa34]/50', text: 'text-amber-950 font-black', dot: 'bg-[#f3fa34]' };
     case 'sold':
-      return { bg: 'bg-rose-50 border-rose-300', text: 'text-rose-950 font-black', dot: 'bg-rose-600' };
+      return { bg: 'bg-[#fa348a]/15 border-[#fa348a]/40', text: 'text-pink-950 font-black', dot: 'bg-[#fa348a]' };
     case 'blocked':
-      return { bg: 'bg-yellow-50 border-yellow-300', text: 'text-yellow-950 font-black', dot: 'bg-yellow-600' };
+      return { bg: 'bg-[#f3fa34]/25 border-[#f3fa34]/50', text: 'text-yellow-950 font-black', dot: 'bg-[#f3fa34]' };
     default:
       return { bg: 'bg-slate-100 border-slate-300', text: 'text-slate-800 font-bold', dot: 'bg-slate-400' };
   }

@@ -706,20 +706,39 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
                   points={pointsStr}
                   fill={
                     isSel
-                      ? 'rgba(250, 204, 21, 0.45)'
+                      ? '#2563eb'
+                      : p.status === 'available'
+                      ? '#4efa34'
                       : p.status === 'booked'
-                      ? 'rgba(59, 130, 246, 0.25)'
+                      ? '#343efa'
                       : p.status === 'on_hold'
-                      ? 'rgba(245, 158, 11, 0.25)'
+                      ? '#f3fa34'
                       : p.status === 'sold'
-                      ? 'rgba(239, 68, 68, 0.25)'
+                      ? '#fa348a'
                       : p.status === 'blocked'
-                      ? 'rgba(234, 179, 8, 0.25)'
-                      : 'rgba(16, 185, 129, 0.2)'
+                      ? '#f3fa34'
+                      : '#4efa34'
                   }
-                  stroke={isSel ? '#dc2626' : '#000000'}
-                  strokeWidth={isSel ? Math.max(3, vb[2] * 0.0025) : Math.max(1.8, vb[2] * 0.0015)}
-                  className="hover:fill-blue-500/30 hover:stroke-blue-500 transition-colors"
+                  fillOpacity={isSel ? 0.55 : 0.40}
+                  stroke={
+                    isSel
+                      ? '#1d4ed8'
+                      : p.status === 'available'
+                      ? '#4efa34'
+                      : p.status === 'booked'
+                      ? '#343efa'
+                      : p.status === 'on_hold'
+                      ? '#f3fa34'
+                      : p.status === 'sold'
+                      ? '#fa348a'
+                      : p.status === 'blocked'
+                      ? '#f3fa34'
+                      : '#4efa34'
+                  }
+                  strokeWidth={isSel ? 2.5 : 1.2}
+                  vectorEffect="non-scaling-stroke"
+                  strokeLinejoin="round"
+                  className="cursor-pointer transition-colors"
                 />
 
                 {/* Plot Number Label */}

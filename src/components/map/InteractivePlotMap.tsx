@@ -292,36 +292,35 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                   }
                 }}
               >
-                {/* Plot Boundary Polygon */}
+                {/* Plot Boundary Polygon - Exact Nammaplot colors and thin non-scaling borders */}
                 <polygon
                   points={pointsString}
                   fill={
                     isSelected
-                      ? '#bae6fd'
-                      : isHovered
-                      ? '#bbf7d0'
+                      ? '#2563eb'
                       : statusStyle.fill
                   }
-                  stroke="#000000"
-                  strokeWidth={
+                  stroke={
                     isSelected
-                      ? Math.max(2.5, 3.5 / transform.scale)
+                      ? '#1d4ed8'
                       : isHovered
-                      ? Math.max(1.8, 2.5 / transform.scale)
-                      : Math.max(1.2, 1.6 / transform.scale)
+                      ? '#2563eb'
+                      : statusStyle.stroke
                   }
+                  strokeWidth={isSelected ? 2.5 : isHovered ? 2 : 1.2}
+                  vectorEffect="non-scaling-stroke"
                   strokeLinejoin="round"
                   className="cursor-pointer transition-all duration-150"
                   fillOpacity={
                     isSelected
-                      ? 0.70
-                      : isHovered
                       ? 0.55
-                      : 0.38
+                      : isHovered
+                      ? 0.70
+                      : 0.40
                   }
                 />
 
-                {/* Plot Number Label - High Contrast Ultra-sharp */}
+                {/* Plot Number Label - Clean and crisp */}
                 {showLabels && (
                   <text
                     x={centroid[0]}
@@ -329,10 +328,10 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                     textAnchor="middle"
                     dominantBaseline="central"
                     fontSize={labelSize}
-                    fontWeight="900"
-                    fill="#000000"
+                    fontWeight="800"
+                    fill="#1e293b"
                     stroke="#ffffff"
-                    strokeWidth={Math.max(1.8, 3.2 / transform.scale)}
+                    strokeWidth={Math.max(1.2, 2.0 / transform.scale)}
                     strokeLinejoin="round"
                     paintOrder="stroke fill"
                     style={{ pointerEvents: 'none', userSelect: 'none', letterSpacing: '-0.02em' }}
