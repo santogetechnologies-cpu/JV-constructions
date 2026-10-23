@@ -160,12 +160,34 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
     isDraggingRef.current = false;
   }, []);
 
-  // Touch pan & pinch-zoom
-  const touchState = useRef<{ lastDist: number; lastX: number; lastY: number }>({
-    lastDist: 0, lastX: 0, lastY: 0,
+  // Zoom centered on container focal point
+  const zoomAtPoint = (factor: number, clientX?: number, clientY?: number) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const focalX = clientX !== undefined ? clientX - rect.left : rect.width / 2;
+    const focalY = clientY !== undefined ? clientY - rect.top : rect.height / 2;
+
+    setTransform((prev) => {
+      const newScale = Math.min(Math.max(prev.scale * factor, 0.05), 14);
+      const newX = focalX - (focalX - prev.x) * (newScale / prev.scale);
+      const newY = focalY - (focalY - prev.y) * (newScale / prev.scale);
+      return { scale: newScale, x: newX, y: newY };
+    });
+  };
+
+  // Touch pan & pinch-zoom with focal midpoint tracking
+  const touchState = useRef<{
+    lastDist: number;
+    lastX: number;
+    lastY: number;
+  }>({
+    lastDist: 0,
+    lastX: 0,
+    lastY: 0,
   });
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    dragMovedRef.current = false;
     if (e.touches.length === 1) {
       touchState.current.lastX = e.touches[0].clientX - transform.x;
       touchState.current.lastY = e.touches[0].clientY - transform.y;
@@ -180,22 +202,34 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
+      const newX = e.touches[0].clientX - touchState.current.lastX;
+      const newY = e.touches[0].clientY - touchState.current.lastY;
+      if (Math.abs(newX - transform.x) > 4 || Math.abs(newY - transform.y) > 4) {
+        dragMovedRef.current = true;
+      }
       setTransform((prev) => ({
         ...prev,
-        x: e.touches[0].clientX - touchState.current.lastX,
-        y: e.touches[0].clientY - touchState.current.lastY,
+        x: newX,
+        y: newY,
       }));
-    } else if (e.touches.length === 2) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+    } else if (e.touches.length === 2 && containerRef.current) {
+      dragMovedRef.current = true;
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+      const dist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+
       if (touchState.current.lastDist > 0) {
         const factor = dist / touchState.current.lastDist;
-        setTransform((prev) => ({
-          ...prev,
-          scale: Math.min(Math.max(prev.scale * factor, 0.1), 12),
-        }));
+        const rect = containerRef.current.getBoundingClientRect();
+        const midX = (t0.clientX + t1.clientX) / 2 - rect.left;
+        const midY = (t0.clientY + t1.clientY) / 2 - rect.top;
+
+        setTransform((prev) => {
+          const newScale = Math.min(Math.max(prev.scale * factor, 0.05), 14);
+          const newX = midX - (midX - prev.x) * (newScale / prev.scale);
+          const newY = midY - (midY - prev.y) * (newScale / prev.scale);
+          return { scale: newScale, x: newX, y: newY };
+        });
       }
       touchState.current.lastDist = dist;
     }
@@ -213,9 +247,9 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
     }
   };
 
-  // Zoom buttons
-  const handleZoomIn = () => setTransform((prev) => ({ ...prev, scale: Math.min(prev.scale * 1.25, 12) }));
-  const handleZoomOut = () => setTransform((prev) => ({ ...prev, scale: Math.max(prev.scale * 0.8, 0.05) }));
+  // Smooth Center Zoom buttons
+  const handleZoomIn = () => zoomAtPoint(1.3);
+  const handleZoomOut = () => zoomAtPoint(0.75);
 
   const plotsWithGeometry = plots.filter(
     (p) => p.geometry?.coordinates && p.geometry.coordinates.length >= 3

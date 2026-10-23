@@ -71,7 +71,42 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
           <span className="text-[10px] uppercase font-extrabold text-slate-500 px-3 tracking-wider block mb-2">
             Management
           </span>
-          {navItems.map((item) => {
+          {navItems.slice(0, 3).map((item) => {
+            const Icon = item.icon;
+            const active = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  active
+                    ? 'bg-glossy-green-btn text-white shadow-md border border-amber-400/30'
+                    : 'text-emerald-100/70 hover:text-white hover:bg-emerald-950/50'
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0 text-amber-400" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+
+          {/* VIEW PUBLIC SITE — Positioned prominently above Team & Security */}
+          <div className="pt-2 pb-1">
+            <Link
+              to="/"
+              target="_blank"
+              className="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-emerald-900/60 hover:bg-emerald-800/80 rounded-xl transition-all border border-emerald-700/60 shadow-xs"
+            >
+              <div className="flex items-center gap-2.5">
+                <ExternalLink className="w-4 h-4 text-amber-400" />
+                <span>View Public Site</span>
+              </div>
+              <span className="text-[10px] bg-emerald-800/90 text-amber-300 font-bold px-1.5 py-0.5 rounded">Live</span>
+            </Link>
+          </div>
+
+          {/* Team & Security */}
+          {navItems.slice(3).map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
             return (
@@ -93,23 +128,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
       </div>
 
       {/* USER PROFILE & LOGOUT */}
-      <div className="p-4 border-t border-emerald-950/80 space-y-3 bg-[#03140d]/60">
-        <Link
-          to="/"
-          target="_blank"
-          className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-emerald-200/80 hover:text-white bg-emerald-950/60 rounded-xl transition-colors border border-emerald-900/60"
-        >
-          <span>View Public Site</span>
-          <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-        </Link>
-
-        <div className="flex items-center justify-between px-2 pt-1">
+      <div className="p-4 border-t border-emerald-950/80 bg-[#03140d]/60">
+        <div className="flex items-center justify-between px-2">
           <div className="truncate mr-2">
             <p className="text-xs font-bold text-white truncate">
-              {profile?.full_name || 'Administrator'}
+              {profile?.full_name || 'admin'}
             </p>
             <p className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">
-              {profile?.role || 'Staff'}
+              {profile?.role || 'SUPER_ADMIN'}
             </p>
           </div>
           <button

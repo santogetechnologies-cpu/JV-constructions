@@ -111,6 +111,7 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
   // Selected plot form edit fields
   const [editAreaCents, setEditAreaCents] = useState<string>('');
   const [editPriceInr, setEditPriceInr] = useState<string>('');
+  const [editRatePerCent, setEditRatePerCent] = useState<string>('');
 
   // Edit vertices state for existing plot
   const [activeCoords, setActiveCoords] = useState<[number, number][]>([]);
@@ -227,6 +228,11 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
     if (selectedPlot) {
       setEditAreaCents(selectedPlot.area_cents != null ? String(selectedPlot.area_cents) : '');
       setEditPriceInr(selectedPlot.price_inr != null ? String(selectedPlot.price_inr) : '');
+      if (selectedPlot.area_cents && selectedPlot.price_inr) {
+        setEditRatePerCent(String(Math.round(selectedPlot.price_inr / selectedPlot.area_cents)));
+      } else {
+        setEditRatePerCent('');
+      }
     }
   }, [selectedPlot?.id]);
 
@@ -1004,25 +1010,64 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
                         type="number"
                         step="0.01"
                         value={editAreaCents}
-                        onChange={(e) => setEditAreaCents(e.target.value)}
-                        placeholder="e.g. 2.50"
+                        onChange={(e) => {
+                          const newCents = e.target.value;
+                          setEditAreaCents(newCents);
+                          const r = parseFloat(editRatePerCent);
+                          const c = parseFloat(newCents);
+                          if (!isNaN(r) && !isNaN(c) && r > 0 && c > 0) {
+                            setEditPriceInr(String(Math.round(c * r)));
+                          }
+                        }}
+                        placeholder="e.g. 32.00"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
 
-                    {/* Price */}
+                    {/* Rate per Cent & Automatic Amount Calculation */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="block text-[11px] font-bold text-slate-700">Price (INR)</label>
-                        <span className="text-[11px] font-bold text-emerald-600">
+                        <label className="block text-[11px] font-bold text-slate-700">Rate / Cent (INR)</label>
+                        <span className="text-[10px] font-bold text-purple-600">Auto-calculates Price</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={editRatePerCent}
+                        onChange={(e) => {
+                          const newRate = e.target.value;
+                          setEditRatePerCent(newRate);
+                          const r = parseFloat(newRate);
+                          const c = parseFloat(editAreaCents);
+                          if (!isNaN(r) && !isNaN(c) && r > 0 && c > 0) {
+                            setEditPriceInr(String(Math.round(c * r)));
+                          }
+                        }}
+                        placeholder="e.g. 75000"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+
+                    {/* Total Price */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-bold text-slate-700">Total Price (INR)</label>
+                        <span className="text-[11px] font-black text-emerald-600">
                           {!isNaN(parseFloat(editPriceInr)) ? formatINR(parseFloat(editPriceInr)) : '₹0'}
                         </span>
                       </div>
                       <input
                         type="number"
                         value={editPriceInr}
-                        onChange={(e) => setEditPriceInr(e.target.value)}
-                        placeholder="e.g. 2500000"
+                        onChange={(e) => {
+                          const newPrice = e.target.value;
+                          setEditPriceInr(newPrice);
+                          const p = parseFloat(newPrice);
+                          const c = parseFloat(editAreaCents);
+                          if (!isNaN(p) && !isNaN(c) && c > 0) {
+                            setEditRatePerCent(String(Math.round(p / c)));
+                          }
+                        }}
+                        placeholder="e.g. 2400000"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
@@ -1096,10 +1141,18 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
               <div className="border-b border-slate-100 pb-2">
                 <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
                   <Sliders className="w-4 h-4 text-amber-600" />
-                  Configure Status, Pricing &amp; Direction
+                  Configure All (Bulk Settings)
                 </h3>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Set status, direction (facing), and pricing across all plots at once or for a range.
+                  Apply inventory status, price-per-cent, or direction to multiple plots simultaneously in 1 click.
+                </p>
+              </div>
+
+              {/* Clarification banner */}
+              <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl text-[11px] text-amber-900 space-y-1">
+                <span className="font-extrabold block text-amber-950">💡 Purpose of &quot;Configure All&quot;:</span>
+                <p className="text-amber-800 leading-relaxed">
+                  Instead of updating plots one by one, use this bulk tool to set inventory status (e.g. mark Plots 1–10 as <em>Booked</em>), calculate price across all plots based on <strong>Rate per Cent</strong>, or batch assign facing directions.
                 </p>
               </div>
 

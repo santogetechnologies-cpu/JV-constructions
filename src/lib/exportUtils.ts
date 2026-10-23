@@ -6,81 +6,109 @@ import { calculatePolygonCentroid, getStatusColor } from './utils';
 
 /**
  * Generate standard AutoCAD ASCII DXF file content from plots
+ * Uses universal AutoCAD R12 (AC1009) format with CRLF endings for 100% CAD viewer compatibility.
  */
 export function generateDxfContent(plots: Plot[], layout: ProjectLayout): string {
   const lines: string[] = [];
 
   // DXF Header
-  lines.push('0', 'SECTION', '2', 'HEADER');
-  lines.push('9', '$ACADVER', '1', 'AC1018'); // AutoCAD 2004+ format
-  lines.push('9', '$INSUNITS', '70', '4');    // Unit: 4 = Millimeters, 1 = Inches, 6 = Meters
+  lines.push('0', 'SECTION');
+  lines.push('2', 'HEADER');
+  lines.push('9', '$ACADVER');
+  lines.push('1', 'AC1009'); // Universal AutoCAD R12 format - opens in ALL CAD programs
   lines.push('0', 'ENDSEC');
 
-  // DXF Tables & Layers
-  lines.push('0', 'SECTION', '2', 'TABLES');
-  lines.push('0', 'TABLE', '2', 'LAYER', '70', '2');
-  
-  // Layer: PLOTS (Cyan/Blue boundary lines)
-  lines.push('0', 'LAYER', '2', 'PLOTS', '70', '0', '62', '4', '6', 'CONTINUOUS');
-  // Layer: PLOT_NO (Yellow text labels)
-  lines.push('0', 'LAYER', '2', 'PLOT_NO', '70', '0', '62', '2', '6', 'CONTINUOUS');
-  // Layer: BOUNDARY (Green project perimeter)
-  lines.push('0', 'LAYER', '2', 'BOUNDARY', '70', '0', '62', '3', '6', 'CONTINUOUS');
-  
+  // DXF Tables
+  lines.push('0', 'SECTION');
+  lines.push('2', 'TABLES');
+  lines.push('0', 'TABLE');
+  lines.push('2', 'LAYER');
+  lines.push('70', '3');
+
+  lines.push('0', 'LAYER');
+  lines.push('2', 'BOUNDARY');
+  lines.push('70', '0');
+  lines.push('62', '3'); // Green
+  lines.push('6', 'CONTINUOUS');
+
+  lines.push('0', 'LAYER');
+  lines.push('2', 'PLOTS');
+  lines.push('70', '0');
+  lines.push('62', '4'); // Cyan
+  lines.push('6', 'CONTINUOUS');
+
+  lines.push('0', 'LAYER');
+  lines.push('2', 'PLOT_NO');
+  lines.push('70', '0');
+  lines.push('62', '2'); // Yellow
+  lines.push('6', 'CONTINUOUS');
+
   lines.push('0', 'ENDTAB');
   lines.push('0', 'ENDSEC');
 
   // DXF Entities
-  lines.push('0', 'SECTION', '2', 'ENTITIES');
+  lines.push('0', 'SECTION');
+  lines.push('2', 'ENTITIES');
 
-  // Outer layout boundary (if available)
   const bounds = layout.layout_bounds;
+
+  // Outer boundary polyline
   if (bounds) {
-    lines.push('0', 'LWPOLYLINE');
+    const bCoords = [
+      [bounds.minX, bounds.maxY],
+      [bounds.maxX, bounds.maxY],
+      [bounds.maxX, bounds.minY],
+      [bounds.minX, bounds.minY],
+    ];
+    lines.push('0', 'POLYLINE');
     lines.push('8', 'BOUNDARY');
-    lines.push('90', '4'); // 4 vertices
-    lines.push('70', '1'); // 1 = Closed polyline
-    lines.push('10', String(bounds.minX), '20', String(bounds.maxY));
-    lines.push('10', String(bounds.maxX), '20', String(bounds.maxY));
-    lines.push('10', String(bounds.maxX), '20', String(bounds.minY));
-    lines.push('10', String(bounds.minX), '20', String(bounds.minY));
+    lines.push('66', '1');
+    lines.push('70', '1'); // Closed
+    for (const [bx, by] of bCoords) {
+      lines.push('0', 'VERTEX');
+      lines.push('8', 'BOUNDARY');
+      lines.push('10', String(Math.round(bx * 100) / 100));
+      lines.push('20', String(Math.round(by * 100) / 100));
+      lines.push('30', '0.0');
+    }
+    lines.push('0', 'SEQEND');
   }
 
-  // Each plot as a closed LWPOLYLINE entity and TEXT label
+  // Each plot as a closed POLYLINE and TEXT
   for (const plot of plots) {
     const coords = plot.geometry?.coordinates;
     if (!coords || coords.length < 3) continue;
 
-    // LWPOLYLINE on layer PLOTS
-    lines.push('0', 'LWPOLYLINE');
+    lines.push('0', 'POLYLINE');
     lines.push('8', 'PLOTS');
-    lines.push('90', String(coords.length));
+    lines.push('66', '1');
     lines.push('70', '1'); // Closed
 
-    // Write CAD vertices (CAD Y goes UP, invert Y from top-down raster if needed)
     for (const [x, y] of coords) {
+      lines.push('0', 'VERTEX');
+      lines.push('8', 'PLOTS');
       lines.push('10', String(Math.round(x * 100) / 100));
       lines.push('20', String(Math.round((bounds?.maxY ? bounds.maxY - y : y) * 100) / 100));
+      lines.push('30', '0.0');
     }
+    lines.push('0', 'SEQEND');
 
-    // TEXT entity for plot number inside the parcel
+    // Text label
     const [cx, cy] = calculatePolygonCentroid(coords);
     const textCadY = bounds?.maxY ? bounds.maxY - cy : cy;
     lines.push('0', 'TEXT');
     lines.push('8', 'PLOT_NO');
     lines.push('10', String(Math.round(cx * 100) / 100));
     lines.push('20', String(Math.round(textCadY * 100) / 100));
-    lines.push('40', '18.0'); // Text height
-    lines.push('1', plot.plot_number);
-    lines.push('72', '1'); // Center aligned
-    lines.push('11', String(Math.round(cx * 100) / 100));
-    lines.push('21', String(Math.round(textCadY * 100) / 100));
+    lines.push('30', '0.0');
+    lines.push('40', '16.0'); // Height
+    lines.push('1', String(plot.plot_number));
   }
 
   lines.push('0', 'ENDSEC');
   lines.push('0', 'EOF');
 
-  return lines.join('\n');
+  return lines.join('\r\n') + '\r\n';
 }
 
 /**

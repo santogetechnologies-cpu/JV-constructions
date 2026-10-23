@@ -20,6 +20,7 @@ import {
   uploadFileToStorage,
   createOrUpdatePlot,
   savePlotGeometry,
+  publishProjectLayout,
 } from '../../services/api';
 import { supabase } from '../../lib/supabaseClient';
 import { PlotBoundaryEditor } from '../../components/admin/PlotBoundaryEditor';
@@ -49,6 +50,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
   const [showHtmlPasteModal, setShowHtmlPasteModal] = useState(false);
   const [pastedHtml, setPastedHtml] = useState('');
   const [isImportingHtml, setIsImportingHtml] = useState(false);
+  const [uploadRatePerCent, setUploadRatePerCent] = useState('75000');
 
   const loadAll = useCallback(async () => {
     if (!projectId) return;
@@ -255,16 +257,28 @@ export const AdminProjectLayoutPage: React.FC = () => {
         layout_bounds: { minX: 0, minY: 0, maxX: parsed.width, maxY: parsed.height, width: parsed.width, height: parsed.height },
       });
 
+      // Automatically publish the layout so it displays on public site and editor immediately
+      try {
+        await publishProjectLayout(newLayout.id, project.id);
+      } catch (pubErr) {
+        console.warn('Auto-publish layout warning:', pubErr);
+      }
+
       setUploadProgress(80);
-      // Insert all parsed plots and their exact polygon coordinates into Supabase
+      const parsedRatePerCent = parseFloat(uploadRatePerCent) || 75000;
+
+      // Insert all parsed plots and their exact polygon coordinates into Supabase with automatic price calculation
       for (const p of parsed.plots) {
+        const plotCents = p.areaCentsTable || 32.0;
+        const autoPrice = p.priceInr || Math.round(plotCents * parsedRatePerCent);
+
         const plotRecord = await createOrUpdatePlot({
           project_id: project.id,
           plot_number: p.plotNumber,
-          area_cents: p.areaCentsTable || 32.0,
-          area_sqft: centsToSqft(p.areaCentsTable || 32.0),
+          area_cents: plotCents,
+          area_sqft: centsToSqft(plotCents),
           facing: (p.facing as any) || 'East',
-          price_inr: p.priceInr || 2500000,
+          price_inr: autoPrice,
           status: p.status || 'available',
         });
         await savePlotGeometry(plotRecord.id, newLayout.id, p.points, 'local_cad');
@@ -274,7 +288,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
       setUploadState('done');
       setUploadNotice({
         type: 'success',
-        text: `HTML blueprint imported! Successfully created ${parsed.plots.length} clickable plot shapes ready to configure pricing and status.`,
+        text: `HTML blueprint imported & published! Successfully created ${parsed.plots.length} clickable plot shapes with automatic price calculation (Rate: ₹${parsedRatePerCent.toLocaleString('en-IN')}/cent).`,
       });
 
       await loadAll();
@@ -319,19 +333,31 @@ export const AdminProjectLayoutPage: React.FC = () => {
           layout_bounds: { minX: 0, minY: 0, maxX: parsed.width, maxY: parsed.height, width: parsed.width, height: parsed.height },
         });
         targetLayoutId = newLayout.id;
+
+        // Auto-publish layout immediately so it's visible on public site
+        try {
+          await publishProjectLayout(newLayout.id, project.id);
+        } catch (pubErr) {
+          console.warn('Auto-publish layout warning:', pubErr);
+        }
       }
 
       if (!targetLayoutId) throw new Error('Could not initialize layout for plots.');
 
+      const parsedRatePerCent = parseFloat(uploadRatePerCent) || 75000;
+
       // Insert or update all plots and exact geometries into Supabase
       for (const p of parsed.plots) {
+        const plotCents = p.areaCentsTable || 32.0;
+        const autoPrice = p.priceInr || Math.round(plotCents * parsedRatePerCent);
+
         const plotRecord = await createOrUpdatePlot({
           project_id: project.id,
           plot_number: p.plotNumber,
-          area_cents: p.areaCentsTable || 32.0,
-          area_sqft: centsToSqft(p.areaCentsTable || 32.0),
+          area_cents: plotCents,
+          area_sqft: centsToSqft(plotCents),
           facing: (p.facing as any) || 'East',
-          price_inr: p.priceInr || 2500000,
+          price_inr: autoPrice,
           status: p.status || 'available',
         });
         await savePlotGeometry(plotRecord.id, targetLayoutId, p.points, 'local_cad');
@@ -341,7 +367,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
       setPastedHtml('');
       setUploadNotice({
         type: 'success',
-        text: `HTML blueprint imported! Successfully loaded ${parsed.plots.length} clickable plot shapes ready to configure pricing and status.`,
+        text: `HTML blueprint imported & published! Successfully loaded ${parsed.plots.length} clickable plot shapes with pricing auto-calculated (Rate: ₹${parsedRatePerCent.toLocaleString('en-IN')}/cent).`,
       });
       await loadAll();
     } catch (err: any) {
@@ -683,6 +709,34 @@ export const AdminProjectLayoutPage: React.FC = () => {
                 <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg font-bold">
                   All 63 Numbers Digitized &amp; Clickable
                 </span>
+              </div>
+
+              {/* Automatic Amount Calculation Input */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="max-w-md mx-auto p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-left space-y-1.5 cursor-default"
+              >
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <span>Rate / Price per Cent (INR):</span>
+                  </label>
+                  <span className="text-[11px] font-bold text-emerald-600">
+                    ₹{parseInt(uploadRatePerCent || '0', 10).toLocaleString('en-IN')} / Cent
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-slate-500 pl-1">₹</span>
+                  <input
+                    type="number"
+                    value={uploadRatePerCent}
+                    onChange={(e) => setUploadRatePerCent(e.target.value)}
+                    placeholder="e.g. 75000"
+                    className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500">
+                  Every plot's total price will calculate automatically based on its surveyed cents (e.g. 32 cents × ₹{parseInt(uploadRatePerCent || '0', 10).toLocaleString('en-IN')} = ₹{(32 * (parseInt(uploadRatePerCent || '0', 10) || 75000)).toLocaleString('en-IN')}).
+                </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
