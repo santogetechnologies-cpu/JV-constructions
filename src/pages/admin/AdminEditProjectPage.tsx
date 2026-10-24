@@ -24,6 +24,7 @@ import {
 import { Project, ProjectStatus } from '../../types/database';
 import { getProjectById, updateProject, deleteProject } from '../../services/api';
 import { OFFICIAL_CONTACTS } from '../../constants/contacts';
+import { parseMapInput } from '../../lib/mapUtils';
 
 export const AdminEditProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -49,6 +50,7 @@ export const AdminEditProjectPage: React.FC = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('Tamil Nadu');
   const [postalCode, setPostalCode] = useState('');
+  const [mapLink, setMapLink] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [totalLandArea, setTotalLandArea] = useState('');
@@ -92,6 +94,12 @@ export const AdminEditProjectPage: React.FC = () => {
         setCity(data.city || '');
         setState(data.state || 'Tamil Nadu');
         setPostalCode(data.postal_code || '');
+        const initialMapLink =
+          (data as any).map_link ||
+          data.contact_information?.map_link ||
+          data.booking_policy?.map_link ||
+          (data.latitude && data.longitude ? `https://www.google.com/maps?q=${data.latitude},${data.longitude}` : '');
+        setMapLink(initialMapLink);
         setLatitude(data.latitude != null ? String(data.latitude) : '');
         setLongitude(data.longitude != null ? String(data.longitude) : '');
         setTotalLandArea(data.total_land_area || '');
@@ -111,6 +119,15 @@ export const AdminEditProjectPage: React.FC = () => {
 
     fetchProject();
   }, [projectId]);
+
+  const handleMapLinkChange = (val: string) => {
+    setMapLink(val);
+    const parsed = parseMapInput(val);
+    if (parsed.latitude != null && parsed.longitude != null) {
+      setLatitude(String(parsed.latitude));
+      setLongitude(String(parsed.longitude));
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,6 +158,11 @@ export const AdminEditProjectPage: React.FC = () => {
           : 'DTCP Approved';
 
       const finalSlug = (slug || name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-')).trim();
+      const parsedMap = parseMapInput(mapLink);
+      const finalLat = parsedMap.latitude ?? (latitude ? parseFloat(latitude) : null);
+      const finalLng = parsedMap.longitude ?? (longitude ? parseFloat(longitude) : null);
+      const cleanMapUrl = parsedMap.cleanUrl || mapLink.trim();
+
       const updated = await updateProject(projectId, {
         name: name.trim(),
         slug: finalSlug,
@@ -149,20 +171,22 @@ export const AdminEditProjectPage: React.FC = () => {
         city: city.trim(),
         state: state.trim(),
         postal_code: postalCode.trim() || null,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
+        latitude: finalLat,
+        longitude: finalLng,
         total_land_area: totalLandArea.trim() || null,
         status,
         contact_information: {
           phone: phone.trim(),
           email: email.trim(),
           sales_office: salesOffice.trim(),
+          map_link: cleanMapUrl || undefined,
         },
         booking_policy: {
           allow_enquiries: allowEnquiries,
           hold_duration_hours: Number(holdDurationHours) || 48,
           require_approval: requireApproval,
           approval_type: finalApproval,
+          map_link: cleanMapUrl || undefined,
         },
       });
 
@@ -507,25 +531,61 @@ export const AdminEditProjectPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">GPS Coordinates (Latitude, Longitude)</label>
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  value={latitude}
-                  onChange={(e) => setLatitude(e.target.value)}
-                  placeholder="Latitude (e.g. 11.0168)"
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900"
-                />
-                <input
-                  type="text"
-                  value={longitude}
-                  onChange={(e) => setLongitude(e.target.value)}
-                  placeholder="Longitude (e.g. 76.9558)"
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900"
-                />
-              </div>
+              <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-emerald-600" />
+                  Google Maps Link (for Live Map in Public Site)
+                </span>
+                {mapLink && (
+                  <a
+                    href={mapLink.startsWith('http') ? mapLink : `https://www.google.com/maps?q=${encodeURIComponent(mapLink)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center gap-1"
+                  >
+                    <span>Preview Live Map</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </label>
+              <input
+                type="text"
+                value={mapLink}
+                onChange={(e) => handleMapLinkChange(e.target.value)}
+                placeholder="Paste Google Maps URL (e.g. https://maps.app.goo.gl/... or https://maps.google.com/?q=...)"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <p className="text-xs text-slate-500 mt-1.5">
+                Paste any Google Maps link, share URL, or coordinates. It will automatically open in the live map modal and navigation buttons on the public site.
+              </p>
+              {latitude && longitude && (
+                <div className="mt-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1 inline-flex items-center gap-1.5 font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Coordinates detected: {latitude}, {longitude}</span>
+                </div>
+              )}
             </div>
           </div>
+        </div>
+
+        {/* INTERACTIVE CAD PLOT MAP & BLUEPRINT SECTION */}
+        <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-white rounded-3xl border border-blue-200 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <PenTool className="w-4 h-4 text-blue-600" />
+              <h2 className="font-bold text-slate-900 text-base">Interactive CAD Layout & Plot Boundaries</h2>
+            </div>
+            <p className="text-xs text-slate-600 max-w-xl">
+              Upload or edit CAD SVG blueprint, plot vector boundaries, pinpoint coordinates, and real-time availability colors displayed on the customer plot map.
+            </p>
+          </div>
+          <Link
+            to={`/admin/projects/${project?.id || projectId}/layout`}
+            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold inline-flex items-center gap-2 shadow-sm transition-all hover:scale-105 shrink-0"
+          >
+            <PenTool className="w-3.5 h-3.5" />
+            <span>Update Layout Blueprint & Map</span>
+          </Link>
         </div>
 
         {/* CONTACT & SALES DESK */}

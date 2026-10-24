@@ -341,7 +341,7 @@ export const InteractiveMapPage: React.FC = () => {
             <button
               onClick={() => setIsLocationOpen(true)}
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-slate-800 hover:bg-slate-50 border border-slate-200 shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-              title="View Satellite Map"
+              title="View Live Satellite & Location Map"
             >
               <MapPin className="w-4 h-4 text-slate-700" />
             </button>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Building2, MapPin, Phone, ShieldCheck, Trees, Sparkles, Check } from 'lucide-react';
+import { ArrowLeft, Save, Building2, MapPin, Phone, ShieldCheck, Trees, Sparkles, Check, ExternalLink } from 'lucide-react';
 import { createProject } from '../../services/api';
 import { ProjectStatus } from '../../types/database';
 import { OFFICIAL_CONTACTS } from '../../constants/contacts';
+import { parseMapInput } from '../../lib/mapUtils';
 
 export const AdminNewProjectPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export const AdminNewProjectPage: React.FC = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('Tamil Nadu');
   const [postalCode, setPostalCode] = useState('');
+  const [mapLink, setMapLink] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [totalLandArea, setTotalLandArea] = useState('10.5 Acres');
@@ -48,6 +50,15 @@ export const AdminNewProjectPage: React.FC = () => {
     setSlug(generateSlugFromName(val));
   };
 
+  const handleMapLinkChange = (val: string) => {
+    setMapLink(val);
+    const parsed = parseMapInput(val);
+    if (parsed.latitude != null && parsed.longitude != null) {
+      setLatitude(String(parsed.latitude));
+      setLongitude(String(parsed.longitude));
+    }
+  };
+
   const getFinalApprovalType = () => {
     if (approvalOption === 'farmland') return 'Farm Land';
     if (approvalOption === 'custom') return customApproval.trim() || 'Custom Layout';
@@ -66,6 +77,10 @@ export const AdminNewProjectPage: React.FC = () => {
     setError(null);
 
     const finalApproval = getFinalApprovalType();
+    const parsedMap = parseMapInput(mapLink);
+    const finalLat = parsedMap.latitude ?? (latitude ? parseFloat(latitude) : null);
+    const finalLng = parsedMap.longitude ?? (longitude ? parseFloat(longitude) : null);
+    const cleanMapUrl = parsedMap.cleanUrl || mapLink.trim();
 
     try {
       const newProj = await createProject({
@@ -76,8 +91,8 @@ export const AdminNewProjectPage: React.FC = () => {
         city: city.trim(),
         state: state.trim(),
         postal_code: postalCode.trim() || null,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
+        latitude: finalLat,
+        longitude: finalLng,
         total_land_area: totalLandArea.trim() || null,
         status,
         booking_policy: {
@@ -85,11 +100,13 @@ export const AdminNewProjectPage: React.FC = () => {
           hold_duration_hours: 48,
           require_approval: true,
           approval_type: finalApproval,
+          map_link: cleanMapUrl || undefined,
         },
         contact_information: {
           phone: phone.trim(),
           email: email.trim(),
           sales_office: salesOffice.trim() || 'Site Marketing Office',
+          map_link: cleanMapUrl || undefined,
         },
       });
 
@@ -337,31 +354,40 @@ export const AdminNewProjectPage: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  Latitude (for Satellite Map switch)
+              <div className="md:col-span-2">
+                <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-emerald-600" />
+                    Google Maps Link (for Live Map in Public Site)
+                  </span>
+                  {mapLink && (
+                    <a
+                      href={mapLink.startsWith('http') ? mapLink : `https://www.google.com/maps?q=${encodeURIComponent(mapLink)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center gap-1"
+                    >
+                      <span>Preview Live Map</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
                 </label>
                 <input
-                  type="number"
-                  step="any"
-                  placeholder="11.0168"
-                  value={latitude}
-                  onChange={(e) => setLatitude(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  placeholder="Paste Google Maps URL (e.g. https://maps.app.goo.gl/... or https://maps.google.com/?q=...)"
+                  value={mapLink}
+                  onChange={(e) => handleMapLinkChange(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  Longitude (for Satellite Map switch)
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="76.9558"
-                  value={longitude}
-                  onChange={(e) => setLongitude(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <p className="text-xs text-slate-500 mt-1.5">
+                  Paste any Google Maps share link or coordinates. It will automatically open in the live map view on the public site.
+                </p>
+                {latitude && longitude && (
+                  <div className="mt-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1 inline-flex items-center gap-1.5 font-medium">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Coordinates detected: {latitude}, {longitude}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

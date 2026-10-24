@@ -34,14 +34,17 @@ export interface Project {
     phone?: string;
     email?: string;
     sales_office?: string;
+    map_link?: string;
   };
   booking_policy: {
     allow_enquiries: boolean;
     hold_duration_hours: number;
     require_approval: boolean;
     approval_type?: string;
+    map_link?: string;
   };
   approval_type?: string;
+  map_link?: string;
   total_land_area: string | null;
   created_by: string | null;
   created_at: string;
@@ -54,6 +57,18 @@ export function getProjectApprovalType(project?: Partial<Project> | null): strin
     project.booking_policy?.approval_type ||
     (project as any).approval_type ||
     'DTCP Approved'
+  );
+}
+
+export function getProjectMapLink(project?: Partial<Project> | null): string {
+  if (!project) return '';
+  return (
+    (project as any).map_link ||
+    project.contact_information?.map_link ||
+    project.booking_policy?.map_link ||
+    (project.latitude && project.longitude
+      ? `https://www.google.com/maps?q=${project.latitude},${project.longitude}`
+      : '')
   );
 }
 

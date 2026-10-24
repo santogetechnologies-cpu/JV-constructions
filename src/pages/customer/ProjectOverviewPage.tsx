@@ -12,6 +12,8 @@ import {
   Calendar,
   MessageSquare,
   Trees,
+  ExternalLink,
+  Navigation,
 } from 'lucide-react';
 import { Project, Plot, ProjectDocument, getProjectApprovalType } from '../../types/database';
 import { OFFICIAL_CONTACTS } from '../../constants/contacts';
@@ -21,6 +23,8 @@ import {
   getProjectDocuments,
 } from '../../services/api';
 import { formatPriceCompact } from '../../lib/utils';
+import { getProjectLiveMapUrl } from '../../lib/mapUtils';
+import { ProjectLocationModal } from '../../components/map/ProjectLocationModal';
 
 export const ProjectOverviewPage: React.FC = () => {
   const { projectSlug } = useParams<{ projectSlug: string }>();
@@ -29,6 +33,7 @@ export const ProjectOverviewPage: React.FC = () => {
   const [documents, setDocuments] = useState<ProjectDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -169,8 +174,24 @@ export const ProjectOverviewPage: React.FC = () => {
           {/* LEFT: LOCATION & POLICY */}
           <div className="md:col-span-2 space-y-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-              <h3 className="font-extrabold text-base text-slate-900 mb-4">Location & Address</h3>
-              <div className="space-y-2 text-xs text-slate-600">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-emerald-600" />
+                  <span>Location & Live Map</span>
+                </h3>
+                <a
+                  href={getProjectLiveMapUrl(project)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition-colors"
+                >
+                  <Navigation className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Open in Google Maps</span>
+                  <ExternalLink className="w-3 h-3 text-emerald-600" />
+                </a>
+              </div>
+
+              <div className="space-y-2 text-xs text-slate-600 mb-4">
                 <p>
                   <strong>Address:</strong> {project.address || 'Central layout sector'}
                 </p>
@@ -180,10 +201,29 @@ export const ProjectOverviewPage: React.FC = () => {
                 </p>
                 {project.latitude && project.longitude && (
                   <p>
-                    <strong>Geographic Coordinates:</strong> {project.latitude.toFixed(6)},{' '}
-                    {project.longitude.toFixed(6)} ({project.coordinate_reference})
+                    <strong>GPS Coordinates:</strong> {project.latitude.toFixed(6)},{' '}
+                    {project.longitude.toFixed(6)}
                   </p>
                 )}
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsMapModalOpen(true)}
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold inline-flex items-center gap-2 shadow-xs transition-colors"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>View Satellite & Live Map</span>
+                </button>
+                <Link
+                  to={`/projects/${project.slug}/map`}
+                  className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold inline-flex items-center gap-2 transition-colors"
+                >
+                  <Map className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Explore Interactive Plot Map</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
 
@@ -334,6 +374,14 @@ export const ProjectOverviewPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {project && (
+        <ProjectLocationModal
+          isOpen={isMapModalOpen}
+          onClose={() => setIsMapModalOpen(false)}
+          project={project}
+        />
+      )}
     </div>
   );
 };
