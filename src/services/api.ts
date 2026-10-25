@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { sendLeadNotificationEmail } from './emailService';
 import {
   Project,
   Plot,
@@ -274,6 +275,22 @@ export async function submitBookingEnquiry(payload: BookingEnquiryPayload) {
   });
 
   if (error) throw error;
+
+  // Send email alert immediately to mail2baskar88@gmail.com via Web3Forms
+  if (data?.success) {
+    sendLeadNotificationEmail({
+      customerName: payload.customerName,
+      phone: payload.phone,
+      email: payload.email,
+      location: payload.location,
+      projectName: data.project_name,
+      plotNumber: data.plot_number,
+      preferredContactMethod: payload.preferredContactMethod,
+      message: payload.message,
+      bookingReference: data.booking_reference,
+      source: 'Plot Booking Enquiry',
+    }).catch((emailErr) => console.warn('Web3Forms notification error:', emailErr));
+  }
 
   // Asynchronously trigger notification edge function (fire-and-forget)
   if (data?.success && data?.booking_reference) {

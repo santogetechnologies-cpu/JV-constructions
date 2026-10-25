@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
+import { sendLeadNotificationEmail } from '../../services/emailService';
 
 interface ExclusiveOfferModalProps {
   isOpen: boolean;
@@ -47,6 +48,16 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
       ]);
 
       if (error) throw error;
+
+      // Automatically send lead email to mail2baskar88@gmail.com via Web3Forms
+      sendLeadNotificationEmail({
+        customerName: name.trim(),
+        phone: phone.trim(),
+        location: city.trim() || undefined,
+        projectName: projectName,
+        source: 'Exclusive Offer / Callback Request',
+        message: `Customer requested callback / exclusive offer enquiry for project: ${projectName}`,
+      }).catch((emailErr) => console.warn('Web3Forms notification error:', emailErr));
 
       setSubmitted(true);
       setTimeout(() => {
