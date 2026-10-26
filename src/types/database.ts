@@ -51,6 +51,29 @@ export interface Project {
   updated_at: string;
 }
 
+export interface ProjectStats {
+  totalPlots: number;
+  availablePlots: number;
+  soldPlots: number;
+  bookedPlots: number;
+  onHoldPlots: number;
+  blockedPlots: number;
+  startingPrice: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+  totalValuation: number;
+  minAreaCents: number | null;
+  maxAreaCents: number | null;
+  minAreaSqft: number | null;
+  maxAreaSqft: number | null;
+  avgRatePerCent: number | null;
+}
+
+export interface ProjectWithStats extends Project {
+  stats: ProjectStats;
+  plots: Plot[];
+}
+
 export function getProjectApprovalType(project?: Partial<Project> | null): string {
   if (!project) return 'DTCP Approved';
   return (
@@ -219,16 +242,6 @@ export interface AuditLog {
   created_at: string;
   // Join field
   actor?: UserProfile | null;
-}
-
-export interface ProjectStats {
-  totalPlots: number;
-  availablePlots: number;
-  bookedPlots: number;
-  onHoldPlots: number;
-  soldPlots: number;
-  blockedPlots: number;
-  startingPrice: number | null;
 }
 
 export interface DashboardMetrics {

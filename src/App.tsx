@@ -66,6 +66,7 @@ export const App: React.FC = () => {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboardPage />} />
               <Route path="projects" element={<AdminProjectsPage />} />
+              <Route path="all-projects" element={<Navigate to="/admin/projects" replace />} />
               <Route path="projects/new" element={<AdminNewProjectPage />} />
               <Route
                 path="projects/:projectId"

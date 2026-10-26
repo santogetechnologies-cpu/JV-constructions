@@ -2,6 +2,8 @@ import { supabase } from '../lib/supabaseClient';
 import { sendLeadNotificationEmail } from './emailService';
 import {
   Project,
+  ProjectWithStats,
+  ProjectStats,
   Plot,
   ProjectLayout,
   ProjectDocument,
@@ -378,6 +380,105 @@ export async function getAllProjectsAdmin(): Promise<Project[]> {
   if (error) throw error;
   const list = (data as Project[]) || [];
   return list.filter((p) => !deletedIds.includes(p.id) && p.status !== 'archived');
+}
+
+export async function getAllProjectsWithStatsAdmin(): Promise<ProjectWithStats[]> {
+  const projects = await getAllProjectsAdmin();
+  if (projects.length === 0) return [];
+
+  // Fetch all plots for active projects
+  const { data: allPlots, error: plotsError } = await supabase
+    .from('plots')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (plotsError) {
+    console.error('Error fetching plots for project stats:', plotsError);
+  }
+
+  const plotsList = (allPlots as Plot[]) || [];
+
+  // Group plots by project_id
+  const plotsByProject = new Map<string, Plot[]>();
+  for (const plot of plotsList) {
+    if (!plotsByProject.has(plot.project_id)) {
+      plotsByProject.set(plot.project_id, []);
+    }
+    plotsByProject.get(plot.project_id)!.push(plot);
+  }
+
+  return projects.map((project) => {
+    const rawPlots = plotsByProject.get(project.id) || [];
+    // Sort plots numerically if numeric or alphanumeric
+    const plots = [...rawPlots].sort((a, b) => {
+      const numA = parseInt(a.plot_number, 10);
+      const numB = parseInt(b.plot_number, 10);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      return a.plot_number.localeCompare(b.plot_number, undefined, { numeric: true });
+    });
+
+    const totalPlots = plots.length;
+    const availablePlots = plots.filter((p) => p.status === 'available').length;
+    const soldPlots = plots.filter((p) => p.status === 'sold').length;
+    const bookedPlots = plots.filter((p) => p.status === 'booked').length;
+    const onHoldPlots = plots.filter((p) => p.status === 'on_hold').length;
+    const blockedPlots = plots.filter((p) => p.status === 'blocked').length;
+
+    const prices = plots
+      .map((p) => p.price_inr)
+      .filter((price): price is number => typeof price === 'number' && price > 0);
+
+    const areasCents = plots
+      .map((p) => p.area_cents)
+      .filter((c): c is number => typeof c === 'number' && c > 0);
+
+    const areasSqft = plots
+      .map((p) => p.area_sqft)
+      .filter((s): s is number => typeof s === 'number' && s > 0);
+
+    const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
+    const totalValuation = prices.reduce((acc, p) => acc + p, 0);
+
+    const minAreaCents = areasCents.length > 0 ? Math.min(...areasCents) : null;
+    const maxAreaCents = areasCents.length > 0 ? Math.max(...areasCents) : null;
+
+    const minAreaSqft = areasSqft.length > 0 ? Math.min(...areasSqft) : null;
+    const maxAreaSqft = areasSqft.length > 0 ? Math.max(...areasSqft) : null;
+
+    let avgRatePerCent: number | null = null;
+    const rates: number[] = [];
+    for (const p of plots) {
+      if (p.price_inr && p.area_cents && p.area_cents > 0) {
+        rates.push(p.price_inr / p.area_cents);
+      }
+    }
+    if (rates.length > 0) {
+      avgRatePerCent = Math.round(rates.reduce((a, b) => a + b, 0) / rates.length);
+    }
+
+    return {
+      ...project,
+      plots,
+      stats: {
+        totalPlots,
+        availablePlots,
+        soldPlots,
+        bookedPlots,
+        onHoldPlots,
+        blockedPlots,
+        minPrice,
+        startingPrice: minPrice,
+        maxPrice,
+        totalValuation,
+        minAreaCents,
+        maxAreaCents,
+        minAreaSqft,
+        maxAreaSqft,
+        avgRatePerCent,
+      },
+    };
+  });
 }
 
 export async function createProject(projectData: Partial<Project>): Promise<Project> {
