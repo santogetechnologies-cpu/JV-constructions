@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FolderKanban,
@@ -21,24 +21,24 @@ import {
   ShieldCheck,
   Trees,
   Sparkles,
-  Check,
+  Search,
+  RefreshCw,
   Layers,
-  LayoutGrid,
-  Table as TableIcon,
 } from 'lucide-react';
-import { Project, ProjectWithStats, ProjectStatus, getProjectApprovalType } from '../../types/database';
+import { ProjectWithStats, ProjectStatus, getProjectApprovalType } from '../../types/database';
 import { getAllProjectsWithStatsAdmin, updateProject, deleteProject } from '../../services/api';
 import { PRIMARY_CONTACT_PHONE } from '../../constants/contacts';
-import { useAllProjectsSidebar } from '../../context/AllProjectsSidebarContext';
 import { ProjectBigCard } from '../../components/admin/ProjectBigCard';
 
 export const AdminProjectsPage: React.FC = () => {
-  const { openSidebar } = useAllProjectsSidebar();
   const [projects, setProjects] = useState<ProjectWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'published' | 'draft' | 'farmland' | 'dtcp'>('all');
 
   // Edit Modal State
   const [editingProject, setEditingProject] = useState<ProjectWithStats | null>(null);
@@ -78,6 +78,33 @@ export const AdminProjectsPage: React.FC = () => {
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // Filtered projects
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) => {
+      const matchesSearch =
+        !searchQuery ||
+        project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (project.address && project.address.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        getProjectApprovalType(project).toLowerCase().includes(searchQuery.toLowerCase());
+
+      const approval = getProjectApprovalType(project).toLowerCase();
+      let matchesFilter = true;
+      if (filterType === 'published') matchesFilter = project.status === 'published';
+      else if (filterType === 'draft') matchesFilter = project.status === 'draft';
+      else if (filterType === 'farmland') matchesFilter = approval.includes('farm');
+      else if (filterType === 'dtcp') matchesFilter = approval.includes('dtcp');
+
+      return matchesSearch && matchesFilter;
+    });
+  }, [projects, searchQuery, filterType]);
+
+  // Overall live aggregate metrics
+  const totalPlots = projects.reduce((acc, p) => acc + p.stats.totalPlots, 0);
+  const totalAvailable = projects.reduce((acc, p) => acc + p.stats.availablePlots, 0);
+  const totalSold = projects.reduce((acc, p) => acc + p.stats.soldPlots, 0);
+  const totalBooked = projects.reduce((acc, p) => acc + p.stats.bookedPlots + p.stats.onHoldPlots, 0);
 
   const handleTogglePublish = async (project: ProjectWithStats) => {
     const newStatus = project.status === 'published' ? 'draft' : 'published';
@@ -188,7 +215,7 @@ export const AdminProjectsPage: React.FC = () => {
       setProjects((prev) => prev.filter((p) => p.id !== targetId));
       setNotice({
         type: 'success',
-        text: `Project "${targetName}" and all associated data were successfully deleted.`,
+        text: `Project "${targetName}" was successfully removed.`,
       });
       setDeletingProject(null);
     } catch (err: any) {
@@ -205,66 +232,36 @@ export const AdminProjectsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
-      {/* HEADER */}
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* PAGE HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">All Projects</h1>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-extrabold bg-blue-100 text-blue-800 border border-blue-200">
-              {projects.length} Total
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              All Projects
+            </h1>
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-black bg-slate-200 text-slate-800">
+              {projects.length} {projects.length === 1 ? 'Project' : 'Projects'}
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Live inventory overview: plot availability, sold counts, size dimensions, and pricing breakdown.
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Real-time plot inventory, availability counts, sold status, pricing, and size details.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Quick Drawer Sidebar Toggle Button */}
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
-            onClick={() => openSidebar()}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-950 text-emerald-300 hover:text-white border border-emerald-800 text-xs font-bold shadow-xs hover:bg-emerald-900 transition-all"
-            title="Open All Projects Quick Drawer Sidebar"
+            onClick={loadProjects}
+            title="Refresh Data"
+            className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 shadow-2xs hover:bg-slate-50 transition-colors"
           >
-            <Layers className="w-4 h-4 text-amber-400" />
-            <span>Open Projects Drawer</span>
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
-
-          {/* View Mode Toggle */}
-          <div className="bg-slate-200/80 p-1 rounded-xl flex items-center border border-slate-300/80">
-            <button
-              type="button"
-              onClick={() => setViewMode('cards')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'cards'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="Big Cards View"
-            >
-              <LayoutGrid className="w-3.5 h-3.5 text-blue-600" />
-              <span>Big Boxes</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'table'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="Table View"
-            >
-              <TableIcon className="w-3.5 h-3.5 text-slate-600" />
-              <span>Table</span>
-            </button>
-          </div>
 
           <Link
             to="/admin/projects/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition-all self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all"
           >
             <Plus className="w-4 h-4 text-white" />
             <span>New Project</span>
@@ -272,17 +269,50 @@ export const AdminProjectsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* OVERALL INVENTORY SUMMARY BANNER */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Projects</span>
+          <span className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 block">{projects.length}</span>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-black text-emerald-800 uppercase tracking-wider">Available Plots</span>
+          </div>
+          <span className="text-2xl sm:text-3xl font-black text-emerald-700 mt-1 block">{totalAvailable}</span>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-500" />
+            <span className="text-xs font-black text-rose-800 uppercase tracking-wider">Sold Plots</span>
+          </div>
+          <span className="text-2xl sm:text-3xl font-black text-rose-700 mt-1 block">{totalSold}</span>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-slate-400" />
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Inventory</span>
+          </div>
+          <span className="text-2xl sm:text-3xl font-black text-slate-800 mt-1 block">{totalPlots}</span>
+        </div>
+      </div>
+
+      {/* NOTICES */}
       {notice && (
         <div
           className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-2.5 ${
             notice.type === 'success'
-              ? 'bg-blue-50 border-blue-200 text-blue-800'
-              : 'bg-red-50 border-red-200 text-red-800'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+              : 'bg-red-50 border-red-200 text-red-900'
           }`}
         >
           <div className="flex items-center gap-2">
             {notice.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             ) : (
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
             )}
@@ -290,7 +320,7 @@ export const AdminProjectsPage: React.FC = () => {
           </div>
           <button
             onClick={() => setNotice(null)}
-            className="p-1 hover:bg-blue-100 rounded-lg transition-colors text-slate-500"
+            className="p-1 hover:bg-emerald-100 rounded-lg transition-colors text-slate-500"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -298,223 +328,102 @@ export const AdminProjectsPage: React.FC = () => {
       )}
 
       {error && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800">
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-800">
           {error}
         </div>
       )}
 
-      {/* BIG BOXES CARDS VIEW (DEFAULT) */}
-      {viewMode === 'cards' && (
-        <div className="space-y-6">
-          {loading ? (
-            <div className="p-16 text-center text-xs text-slate-500">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-3" />
-              <p className="font-bold text-slate-700">Loading project inventory & plot statistics...</p>
-            </div>
-          ) : projects.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center text-xs text-slate-500 shadow-xs">
-              <FolderKanban className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h3 className="font-bold text-slate-700 text-base">No Projects Found</h3>
-              <p className="mt-1">
-                Click "New Project" to register your first layout and start plotting.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-5">
-              {projects.map((project) => (
-                <ProjectBigCard
-                  key={project.id}
-                  project={project}
-                  onTogglePublish={handleTogglePublish}
-                  onEdit={openEditModal}
-                  onDelete={setDeletingProject}
-                />
-              ))}
-            </div>
+      {/* SEARCH & FILTERS BAR */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        {/* Search Input */}
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search projects by name, city, location or approval..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700"
+            >
+              Clear
+            </button>
           )}
         </div>
-      )}
 
-      {/* PROJECTS TABLE VIEW */}
-      {viewMode === 'table' && (
-        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
-          {loading ? (
-            <div className="p-12 text-center text-xs text-slate-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-900 mx-auto mb-2" />
-              <span>Loading projects...</span>
-            </div>
-          ) : projects.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-500">
-                    <th className="py-3.5 px-6">Project Name & Location</th>
-                    <th className="py-3.5 px-4">Plots Overview</th>
-                    <th className="py-3.5 px-4">Status</th>
-                    <th className="py-3.5 px-4">Created Date</th>
-                    <th className="py-3.5 px-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {projects.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-4 px-6">
-                        <div className="font-extrabold text-slate-900 text-sm">{p.name}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1 flex-wrap">
-                          <span
-                            className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] inline-flex items-center gap-1 border ${
-                              getProjectApprovalType(p).toLowerCase().includes('farm')
-                                ? 'bg-emerald-100/90 text-emerald-950 border-emerald-300'
-                                : 'bg-amber-100/80 text-amber-950 border-amber-300'
-                            }`}
-                          >
-                            {getProjectApprovalType(p).toLowerCase().includes('farm') ? (
-                              <Trees className="w-3 h-3 text-emerald-700" />
-                            ) : (
-                              <ShieldCheck className="w-3 h-3 text-amber-700" />
-                            )}
-                            {getProjectApprovalType(p)}
-                          </span>
-                          <span className="flex items-center gap-0.5">
-                            <MapPin className="w-3 h-3 text-slate-400" />
-                            <span>{p.city}, {p.state}</span>
-                          </span>
-                          {p.total_land_area && (
-                            <span className="text-slate-500 font-bold">• {p.total_land_area}</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold text-[10px]">
-                            {p.stats.availablePlots} Avail
-                          </span>
-                          <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 font-extrabold text-[10px]">
-                            {p.stats.soldPlots} Sold
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-semibold">
-                            / {p.stats.totalPlots} total
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <button
-                          onClick={() => handleTogglePublish(p)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors ${
-                            p.status === 'published'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                              : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
-                          }`}
-                          title="Click to toggle publication status"
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              p.status === 'published' ? 'bg-emerald-500' : 'bg-slate-400'
-                            }`}
-                          />
-                          <span className="capitalize">{p.status}</span>
-                        </button>
-                      </td>
-                      <td className="py-4 px-4 text-slate-400 text-[11px]">
-                        {new Date(p.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                          <Link
-                            to={`/admin/projects/${p.id}/layout`}
-                            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-colors"
-                            title="Open Vector Layout & Boundary Editor"
-                          >
-                            <PenTool className="w-3 h-3 text-blue-600" />
-                            <span>CAD Layout</span>
-                          </Link>
-
-                          <Link
-                            to={`/admin/projects/${p.id}/plots`}
-                            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-colors"
-                            title="Manage Plot Inventory & Prices"
-                          >
-                            <Grid className="w-3 h-3 text-blue-600" />
-                            <span>Plots</span>
-                          </Link>
-
-                          <Link
-                            to={`/admin/projects/${p.id}/bookings`}
-                            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-colors"
-                            title="View Reservations & Leads"
-                          >
-                            <CalendarCheck className="w-3 h-3 text-purple-600" />
-                            <span>Bookings</span>
-                          </Link>
-
-                          <Link
-                            to={`/admin/projects/${p.id}/documents`}
-                            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-colors"
-                            title="Upload DTCP / LP Documents"
-                          >
-                            <FileText className="w-3 h-3 text-amber-600" />
-                            <span>Docs</span>
-                          </Link>
-
-                          <button
-                            onClick={() => openEditModal(p)}
-                            className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 rounded-lg font-bold text-[11px] flex items-center gap-1 transition-colors"
-                            title="Edit Project Details"
-                          >
-                            <Pencil className="w-3 h-3 text-blue-600" />
-                            <span>Edit</span>
-                          </button>
-
-                          <button
-                            onClick={() => setDeletingProject(p)}
-                            className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-100 rounded-lg font-bold text-[11px] flex items-center gap-1 transition-colors"
-                            title="Delete project"
-                          >
-                            <Trash2 className="w-3 h-3 text-red-600" />
-                            <span>Delete</span>
-                          </button>
-
-                          {p.status === 'published' && (
-                            <Link
-                              to={`/projects/${p.slug}/map`}
-                              target="_blank"
-                              className="p-1.5 text-slate-400 hover:text-slate-800 transition-colors"
-                              title="Preview Public Map"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Link>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="p-12 text-center text-xs text-slate-500">
-              <FolderKanban className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-              <h3 className="font-bold text-slate-700 text-sm">No Projects in Database</h3>
-              <p className="mt-1">
-                Click the "New Project" button to set up your first approved layout project.
-              </p>
-            </div>
-          )}
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {(
+            [
+              { key: 'all', label: 'All' },
+              { key: 'published', label: 'Published' },
+              { key: 'draft', label: 'Draft' },
+              { key: 'dtcp', label: 'DTCP' },
+              { key: 'farmland', label: 'Farmland' },
+            ] as const
+          ).map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => setFilterType(item.key)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                filterType === item.key
+                  ? 'bg-slate-900 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
 
-      {/* INLINE EDIT MODAL */}
+      {/* BIG BOX CARDS LIST */}
+      <div className="space-y-6">
+        {loading ? (
+          <div className="p-16 text-center text-xs text-slate-500 bg-white rounded-3xl border border-slate-200 shadow-2xs">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mx-auto mb-3" />
+            <p className="font-bold text-slate-700 text-sm">Loading projects & live plot counts...</p>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-16 text-center text-xs text-slate-500 shadow-2xs space-y-2">
+            <FolderKanban className="w-12 h-12 text-slate-300 mx-auto" />
+            <h3 className="font-bold text-slate-800 text-base">No Projects Found</h3>
+            <p className="text-slate-400 max-w-sm mx-auto">
+              {searchQuery
+                ? `No projects match "${searchQuery}". Try clearing your search.`
+                : 'Click the "New Project" button to set up your first layout.'}
+            </p>
+          </div>
+        ) : (
+          filteredProjects.map((project) => (
+            <ProjectBigCard
+              key={project.id}
+              project={project}
+              onTogglePublish={handleTogglePublish}
+              onEdit={openEditModal}
+              onDelete={setDeletingProject}
+            />
+          ))
+        )}
+      </div>
+
+      {/* EDIT MODAL */}
       {editingProject && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 my-8">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-black text-slate-900">Edit Project Details</h3>
-                  <p className="text-[11px] text-slate-500">Update identity, location, and contact information</p>
+                  <p className="text-xs text-slate-500">Update identity, approval, and location info</p>
                 </div>
               </div>
               <button
@@ -526,7 +435,6 @@ export const AdminProjectsPage: React.FC = () => {
             </div>
 
             <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-              {/* Name & Slug */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -549,15 +457,14 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editSlug}
                     onChange={(e) => setEditSlug(e.target.value)}
                     className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50 font-mono"
-                    placeholder="e.g. vallalar-nagar"
                   />
                 </div>
               </div>
 
-              {/* Approval Type Selection */}
+              {/* Approval Options */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Approval & Project Classification
+                  Approval & Classification
                 </label>
                 <div className="grid grid-cols-3 gap-2.5">
                   <button
@@ -592,7 +499,7 @@ export const AdminProjectsPage: React.FC = () => {
                     }`} />
                     <div>
                       <p className="text-xs font-black text-slate-900">Managed Farmland</p>
-                      <p className="text-[10px] text-slate-500">Agri/Farm developments</p>
+                      <p className="text-[10px] text-slate-500">Agri/Farm plots</p>
                     </div>
                   </button>
 
@@ -620,7 +527,7 @@ export const AdminProjectsPage: React.FC = () => {
                     type="text"
                     value={editCustomApproval}
                     onChange={(e) => setEditCustomApproval(e.target.value)}
-                    placeholder="Enter custom approval (e.g. CMDA Approved, RERA Registered)"
+                    placeholder="Enter approval type..."
                     className="mt-2 w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 )}
@@ -649,16 +556,16 @@ export const AdminProjectsPage: React.FC = () => {
                     onChange={(e) => setEditStatus(e.target.value as ProjectStatus)}
                     className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
                   >
-                    <option value="draft">Draft (Visible only to Admin)</option>
-                    <option value="published">Published (Live on Public Portal)</option>
-                    <option value="archived">Archived (Hidden)</option>
+                    <option value="draft">Draft (Admin only)</option>
+                    <option value="published">Published (Live to public)</option>
+                    <option value="archived">Archived</option>
                   </select>
                 </div>
               </div>
 
-              {/* Location Fields */}
+              {/* Location */}
               <div className="space-y-3 pt-2 border-t border-slate-100">
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                   Location & Address
                 </span>
                 <div>
@@ -670,14 +577,12 @@ export const AdminProjectsPage: React.FC = () => {
                     value={editAddress}
                     onChange={(e) => setEditAddress(e.target.value)}
                     className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    placeholder="e.g. Near New Bus Stand, Salem Main Road"
+                    placeholder="e.g. Salem Main Road"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      City
-                    </label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">City</label>
                     <input
                       type="text"
                       value={editCity}
@@ -686,9 +591,7 @@ export const AdminProjectsPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      State
-                    </label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">State</label>
                     <input
                       type="text"
                       value={editState}
@@ -697,9 +600,7 @@ export const AdminProjectsPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Postal Code
-                    </label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Postal Code</label>
                     <input
                       type="text"
                       value={editPostalCode}
@@ -712,15 +613,12 @@ export const AdminProjectsPage: React.FC = () => {
 
               {/* Contacts */}
               <div className="space-y-3 pt-2 border-t border-slate-100">
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
-                  Project Contact Overrides
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+                  Project Contact Info
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                      <Phone className="w-3 h-3 text-slate-400" />
-                      <span>Phone Number</span>
-                    </label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
                     <input
                       type="text"
                       value={editPhone}
@@ -729,10 +627,7 @@ export const AdminProjectsPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                      <Mail className="w-3 h-3 text-slate-400" />
-                      <span>Email</span>
-                    </label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Email</label>
                     <input
                       type="email"
                       value={editEmail}
@@ -741,35 +636,21 @@ export const AdminProjectsPage: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Sales Office Address
-                  </label>
-                  <input
-                    type="text"
-                    value={editSalesOffice}
-                    onChange={(e) => setEditSalesOffice(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  />
-                </div>
               </div>
 
               {/* Description */}
               <div className="pt-2 border-t border-slate-100">
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Description
-                </label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="Provide project highlights, amenities, and connectivity..."
+                  placeholder="Highlights and details..."
                 />
               </div>
             </div>
 
-            {/* Modal Actions */}
             <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
               <button
                 type="button"
@@ -782,7 +663,7 @@ export const AdminProjectsPage: React.FC = () => {
                 type="button"
                 onClick={handleSaveEdit}
                 disabled={isSaving}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50"
+                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50"
               >
                 {isSaving ? (
                   <>
@@ -801,7 +682,7 @@ export const AdminProjectsPage: React.FC = () => {
         </div>
       )}
 
-      {/* DELETE CONFIRMATION MODAL */}
+      {/* DELETE MODAL */}
       {deletingProject && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
@@ -812,8 +693,7 @@ export const AdminProjectsPage: React.FC = () => {
               <h3 className="text-base font-black text-slate-900">Delete Project?</h3>
               <p className="text-xs text-slate-500">
                 Are you sure you want to permanently delete{' '}
-                <strong className="text-slate-900 font-extrabold">"{deletingProject.name}"</strong>?
-                This will archive the project and its layout blueprints and plots.
+                <strong className="text-slate-900 font-black">"{deletingProject.name}"</strong>?
               </p>
             </div>
             <div className="flex items-center justify-center gap-2.5 pt-2">
