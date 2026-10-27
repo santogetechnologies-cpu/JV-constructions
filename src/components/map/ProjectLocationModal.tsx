@@ -66,6 +66,7 @@ export const ProjectLocationModal: React.FC<ProjectLocationModalProps> = ({
             className="w-full h-full border-0"
             loading="lazy"
             allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
           />
 
           {/* Quick Floating Action for Mobile */}

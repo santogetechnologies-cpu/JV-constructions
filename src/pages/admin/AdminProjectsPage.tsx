@@ -29,6 +29,7 @@ import { ProjectWithStats, ProjectStatus, getProjectApprovalType } from '../../t
 import { getAllProjectsWithStatsAdmin, updateProject, deleteProject } from '../../services/api';
 import { PRIMARY_CONTACT_PHONE } from '../../constants/contacts';
 import { ProjectBigCard } from '../../components/admin/ProjectBigCard';
+import { parseMapInput, isValidCoordinate, getProjectLiveMapUrl } from '../../lib/mapUtils';
 
 export const AdminProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<ProjectWithStats[]>([]);
@@ -56,6 +57,10 @@ export const AdminProjectsPage: React.FC = () => {
   const [editPhone, setEditPhone] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editSalesOffice, setEditSalesOffice] = useState('');
+  const [editMapLink, setEditMapLink] = useState('');
+  const [editLatitude, setEditLatitude] = useState('');
+  const [editLongitude, setEditLongitude] = useState('');
+  const [detectedCoords, setDetectedCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // Delete Modal State
@@ -127,12 +132,42 @@ export const AdminProjectsPage: React.FC = () => {
     setEditName(p.name || '');
     setEditSlug(p.slug || '');
     setEditDescription(p.description || '');
-    setEditAddress(p.address || '');
+    const rawAddr = p.address || '';
+    const hasUrlInAddr = rawAddr.startsWith('http://') || rawAddr.startsWith('https://');
+    const initialMapLink =
+      (p as any).map_link ||
+      p.contact_information?.map_link ||
+      p.booking_policy?.map_link ||
+      (hasUrlInAddr ? rawAddr : '');
+
+    setEditAddress(hasUrlInAddr ? '' : rawAddr);
     setEditCity(p.city || '');
     setEditState(p.state || 'Tamil Nadu');
     setEditPostalCode(p.postal_code || '');
     setEditTotalLandArea(p.total_land_area || '');
     setEditStatus(p.status || 'draft');
+
+    setEditMapLink(initialMapLink || '');
+    if (isValidCoordinate(p.latitude, p.longitude)) {
+      setEditLatitude(String(p.latitude));
+      setEditLongitude(String(p.longitude));
+      setDetectedCoords({ lat: p.latitude!, lng: p.longitude! });
+    } else if (initialMapLink) {
+      const parsed = parseMapInput(initialMapLink);
+      if (parsed.latitude != null && parsed.longitude != null) {
+        setEditLatitude(String(parsed.latitude));
+        setEditLongitude(String(parsed.longitude));
+        setDetectedCoords({ lat: parsed.latitude, lng: parsed.longitude });
+      } else {
+        setEditLatitude('');
+        setEditLongitude('');
+        setDetectedCoords(null);
+      }
+    } else {
+      setEditLatitude('');
+      setEditLongitude('');
+      setDetectedCoords(null);
+    }
 
     const appType = getProjectApprovalType(p);
     if (appType.toLowerCase().includes('dtcp')) {
@@ -151,6 +186,31 @@ export const AdminProjectsPage: React.FC = () => {
     setEditSalesOffice(p.contact_information?.sales_office || 'Kallakurichi, Tamil Nadu');
   };
 
+  const handleMapInputChange = (val: string) => {
+    setEditMapLink(val);
+    const parsed = parseMapInput(val);
+    if (parsed.latitude != null && parsed.longitude != null) {
+      setEditLatitude(String(parsed.latitude));
+      setEditLongitude(String(parsed.longitude));
+      setDetectedCoords({ lat: parsed.latitude, lng: parsed.longitude });
+    }
+  };
+
+  const handleCoordChange = (newLat: string, newLng: string) => {
+    setEditLatitude(newLat);
+    setEditLongitude(newLng);
+    const lat = parseFloat(newLat);
+    const lng = parseFloat(newLng);
+    if (isValidCoordinate(lat, lng)) {
+      setDetectedCoords({ lat, lng });
+      if (!editMapLink) {
+        setEditMapLink(`https://www.google.com/maps?q=${lat},${lng}`);
+      }
+    } else {
+      setDetectedCoords(null);
+    }
+  };
+
   const handleSaveEdit = async () => {
     if (!editingProject) return;
 
@@ -166,6 +226,12 @@ export const AdminProjectsPage: React.FC = () => {
       else if (editApprovalOption === 'farmland') finalApproval = 'Managed Farmland';
       else finalApproval = editCustomApproval.trim() || 'DTCP Approved';
 
+      const numLat = parseFloat(editLatitude);
+      const numLng = parseFloat(editLongitude);
+      const finalLat = isValidCoordinate(numLat, numLng) ? numLat : null;
+      const finalLng = isValidCoordinate(numLat, numLng) ? numLng : null;
+      const cleanMapUrl = editMapLink.trim() || (finalLat && finalLng ? `https://www.google.com/maps?q=${finalLat},${finalLng}` : null);
+
       const updated = await updateProject(editingProject.id, {
         name: editName.trim(),
         slug: editSlug.trim() || editingProject.slug,
@@ -174,6 +240,9 @@ export const AdminProjectsPage: React.FC = () => {
         city: editCity.trim(),
         state: editState.trim(),
         postal_code: editPostalCode.trim() || null,
+        latitude: finalLat,
+        longitude: finalLng,
+        map_link: cleanMapUrl || undefined,
         total_land_area: editTotalLandArea.trim() || null,
         status: editStatus,
         booking_policy: {
@@ -182,11 +251,13 @@ export const AdminProjectsPage: React.FC = () => {
           hold_duration_hours: editingProject.booking_policy?.hold_duration_hours ?? 48,
           require_approval: editingProject.booking_policy?.require_approval ?? true,
           approval_type: finalApproval,
+          map_link: cleanMapUrl || undefined,
         },
         contact_information: {
           phone: editPhone.trim(),
           email: editEmail.trim(),
           sales_office: editSalesOffice.trim(),
+          map_link: cleanMapUrl || undefined,
         },
       });
 
@@ -607,6 +678,94 @@ export const AdminProjectsPage: React.FC = () => {
                       onChange={(e) => setEditPostalCode(e.target.value)}
                       className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
+                  </div>
+                </div>
+
+                {/* Dedicated Google Maps Link & GPS Coordinates */}
+                <div className="mt-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Google Maps Link or GPS Coordinates</span>
+                      </label>
+                      {editMapLink && (
+                        <a
+                          href={getProjectLiveMapUrl({
+                            latitude: detectedCoords?.lat,
+                            longitude: detectedCoords?.lng,
+                            map_link: editMapLink,
+                            name: editName,
+                            city: editCity,
+                            state: editState,
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] text-blue-600 hover:text-blue-700 font-bold inline-flex items-center gap-1"
+                        >
+                          <span>Test in Maps</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={editMapLink}
+                      onChange={(e) => handleMapInputChange(e.target.value)}
+                      placeholder="Paste link (https://maps.app.goo.gl/...) or coordinates (8°30'48.9&quot;N 77°40'12.3&quot;E or 8.5135, 77.6700)"
+                      className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Paste any Google Maps link, share URL, or GPS coordinates. Public site visitors will see this exact location on the satellite map modal and navigation buttons.
+                    </p>
+                  </div>
+
+                  {/* Coordinate verification pill */}
+                  {detectedCoords ? (
+                    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>
+                          <strong>GPS Coordinates Verified:</strong> {detectedCoords.lat.toFixed(6)}°, {detectedCoords.lng.toFixed(6)}°
+                        </span>
+                      </div>
+                      <a
+                        href={`https://www.google.com/maps?q=${detectedCoords.lat},${detectedCoords.lng}&t=k&z=17`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 underline shrink-0 ml-2"
+                      >
+                        Satellite Preview ↗
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-amber-700 bg-amber-50/80 border border-amber-200 rounded-xl p-2 font-medium">
+                      Tip: You can paste DMS coordinates like <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[10px]">8°30'48.9&quot;N 77°40'12.3&quot;E</code> or decimal <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[10px]">8.5135, 77.6700</code> below.
+                    </p>
+                  )}
+
+                  {/* Explicit Latitude / Longitude input controls */}
+                  <div className="grid grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Latitude (e.g. 8.513583)</label>
+                      <input
+                        type="text"
+                        value={editLatitude}
+                        onChange={(e) => handleCoordChange(e.target.value, editLongitude)}
+                        placeholder="8.513583"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Longitude (e.g. 77.670083)</label>
+                      <input
+                        type="text"
+                        value={editLongitude}
+                        onChange={(e) => handleCoordChange(editLatitude, e.target.value)}
+                        placeholder="77.670083"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
