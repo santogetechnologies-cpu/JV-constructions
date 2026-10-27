@@ -749,9 +749,10 @@ export async function savePlotGeometry(
   return data;
 }
 
-export async function deletePlot(plotId: string) {
-  const { error } = await supabase.from('plots').delete().eq('id', plotId);
-  if (error) throw error;
+export async function deletePlot(_plotId: string) {
+  // Prevent deletion of blueprint plots to preserve layout integrity
+  console.warn('Plot deletion blocked: plots cannot be deleted once configured in blueprint.');
+  throw new Error('Plots cannot be deleted to preserve layout blueprint mapping and inventory integrity.');
 }
 
 export async function getBookingsAdmin(projectId?: string): Promise<Booking[]> {

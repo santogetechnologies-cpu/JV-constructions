@@ -196,16 +196,12 @@ export const AdminProjectPlotsPage: React.FC = () => {
     }
   };
 
-  // Delete plot
-  const handleDeletePlot = async (plotId: string, plotNumber: string) => {
-    if (!confirm(`Are you sure you want to delete Plot #${plotNumber}?`)) return;
-    try {
-      await deletePlot(plotId);
-      setPlots((prev) => prev.filter((p) => p.id !== plotId));
-      setNotice({ type: 'success', text: `Plot #${plotNumber} deleted.` });
-    } catch (err: any) {
-      setNotice({ type: 'error', text: err.message || 'Failed to delete plot' });
-    }
+  // Delete plot is disabled to preserve CAD layout and inventory integrity
+  const handleDeletePlot = async (_plotId: string, _plotNumber: string) => {
+    setNotice({
+      type: 'error',
+      text: 'Plots cannot be deleted to preserve CAD layout blueprint mapping and inventory integrity.',
+    });
   };
 
   // Create new plot manually
@@ -507,14 +503,6 @@ export const AdminProjectPlotsPage: React.FC = () => {
                           title="Edit Plot Details"
                         >
                           <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeletePlot(plot.id, plot.plot_number)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete Plot"
-                        >
-                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>

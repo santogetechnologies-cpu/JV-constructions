@@ -45,7 +45,6 @@ import {
   savePlotGeometry,
   createOrUpdatePlot,
   publishProjectLayout,
-  deletePlot,
   updatePlotStatusAtomic,
   getStorageFileUrl,
 } from '../../services/api';
@@ -499,19 +498,7 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
     });
   };
 
-  // Delete plot
-  const handleDeleteSelectedPlot = async () => {
-    if (!selectedPlot) return;
-    if (!confirm(`Delete Plot #${selectedPlot.plot_number}?`)) return;
-    try {
-      await deletePlot(selectedPlot.id);
-      setSelectedPlot(null);
-      setStatusMessage({ type: 'success', text: 'Plot deleted.' });
-      onRefresh();
-    } catch (err: any) {
-      setStatusMessage({ type: 'error', text: err.message || 'Failed to delete' });
-    }
-  };
+
 
   // Re-trace selected plot corners
   const handleRetraceSelectedPlot = () => {
@@ -1112,17 +1099,6 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
                     </div>
                   </div>
 
-                  {/* Delete Option */}
-                  <div className="pt-2 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={handleDeleteSelectedPlot}
-                      className="py-1.5 px-3 bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs rounded-xl border border-red-200 flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Delete Plot</span>
-                    </button>
-                  </div>
                 </>
               ) : (
                 <div className="py-12 text-center space-y-3">
