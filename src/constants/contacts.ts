@@ -7,24 +7,12 @@ export interface ContactPerson {
 
 export const OFFICIAL_CONTACTS: ContactPerson[] = [
   {
-    name: 'Baskar',
-    phone: '+91 96005 89191',
-    phoneRaw: '+919600589191',
-    role: 'Sales & Enquiries',
-  },
-  {
-    name: 'Anto',
-    phone: '+91 744 892 6902',
-    phoneRaw: '+917448926902',
-    role: 'Site Visits & Verification',
-  },
-  {
-    name: 'Dhinakaran',
-    phone: '+91 97904 93891',
-    phoneRaw: '+919790493891',
-    role: 'Customer Relations & Booking',
+    name: 'JV Constructions Executive',
+    phone: '+91 00000 00000',
+    phoneRaw: '+910000000000',
+    role: 'Sales & Project Enquiries',
   },
 ];
 
-export const PRIMARY_CONTACT_PHONE = '+91 96005 89191';
-export const ALL_CONTACTS_DISPLAY = 'Baskar (+91 96005 89191) • Anto (+91 744 892 6902) • Dhinakaran (+91 97904 93891)';
+export const PRIMARY_CONTACT_PHONE = '+91 00000 00000';
+export const ALL_CONTACTS_DISPLAY = 'JV Constructions Executive (+91 00000 00000)';

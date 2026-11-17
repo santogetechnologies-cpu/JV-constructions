@@ -184,7 +184,7 @@ export const AdminLeadsPage: React.FC = () => {
           </div>
           <div className="text-xs">
             <span className="font-extrabold block text-emerald-950">Auto Email Alerts Active</span>
-            <span className="text-[11px] text-emerald-700 font-mono">mail2baskar88@gmail.com</span>
+            <span className="text-[11px] text-teal-700 font-mono">contact@jvconstructions.com</span>
           </div>
         </div>
       </div>
