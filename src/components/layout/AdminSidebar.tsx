@@ -33,21 +33,21 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
   ];
 
   return (
-    <aside className="w-64 bg-[#051c13] text-slate-300 flex flex-col justify-between shrink-0 h-screen sticky top-0 border-r border-emerald-950/80 shadow-2xl">
+    <aside className="w-64 bg-[#041624] text-slate-300 flex flex-col justify-between shrink-0 h-screen sticky top-0 border-r border-[#0c3757] shadow-2xl">
       <div>
         {/* LOGO */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-emerald-950/80 bg-[#03140d]">
+        <div className="h-16 flex items-center justify-between px-5 border-b border-[#0c3757] bg-[#03101c]">
           <div className="flex items-center gap-3 truncate">
             <img
               src="/logo.png"
-              alt="Yazh Land Promoters"
-              className="w-9 h-9 rounded-full object-contain ring-1 ring-amber-400/50 shadow-md bg-[#05281b]"
+              alt="JV Constructions"
+              className="w-9 h-9 rounded-full object-contain ring-1 ring-teal-400/50 shadow-md bg-white"
             />
             <div className="truncate">
               <span className="text-white font-extrabold text-sm block leading-tight truncate">
-                Yazh <span className="text-emerald-400">Promoters</span>
+                JV <span className="text-teal-400">Constructions</span>
               </span>
-              <span className="text-[10px] uppercase font-bold text-amber-400/90 block -mt-0.5">
+              <span className="text-[10px] uppercase font-bold text-teal-300 block -mt-0.5">
                 Admin Console
               </span>
             </div>
@@ -58,7 +58,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
             <button
               type="button"
               onClick={onCloseMobile}
-              className="md:hidden p-1.5 rounded-lg text-emerald-300 hover:text-white hover:bg-emerald-900/60 transition-colors"
+              className="md:hidden p-1.5 rounded-lg text-teal-300 hover:text-white hover:bg-[#0c3757] transition-colors"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />
@@ -68,7 +68,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
 
         {/* NAVIGATION */}
         <nav className="p-4 space-y-1">
-          <span className="text-[10px] uppercase font-extrabold text-slate-500 px-3 tracking-wider block mb-2">
+          <span className="text-[10px] uppercase font-extrabold text-slate-400 px-3 tracking-wider block mb-2">
             Management
           </span>
           {navItems.slice(0, 2).map((item) => {
@@ -81,16 +81,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
                 onClick={onCloseMobile}
                 className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                   active
-                    ? 'bg-glossy-green-btn text-white shadow-md border border-amber-400/30'
-                    : 'text-emerald-100/70 hover:text-white hover:bg-emerald-950/50'
+                    ? 'bg-jv-btn text-white shadow-md border border-teal-400/30'
+                    : 'text-slate-300/80 hover:text-white hover:bg-[#0c3757]/60'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 shrink-0 text-amber-400" />
+                  <Icon className="w-4 h-4 shrink-0 text-teal-400" />
                   <span>{item.label}</span>
                 </div>
                 {item.path === '/admin/projects' && (
-                  <span className="text-[9px] bg-emerald-800/80 text-amber-300 font-extrabold px-1.5 py-0.5 rounded border border-emerald-700/50">
+                  <span className="text-[9px] bg-[#0c3757] text-teal-300 font-extrabold px-1.5 py-0.5 rounded border border-teal-500/30">
                     Live
                   </span>
                 )}
@@ -109,11 +109,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
                 onClick={onCloseMobile}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                   active
-                    ? 'bg-glossy-green-btn text-white shadow-md border border-amber-400/30'
-                    : 'text-emerald-100/70 hover:text-white hover:bg-emerald-950/50'
+                    ? 'bg-jv-btn text-white shadow-md border border-teal-400/30'
+                    : 'text-slate-300/80 hover:text-white hover:bg-[#0c3757]/60'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0 text-amber-400" />
+                <Icon className="w-4 h-4 shrink-0 text-teal-400" />
                 <span>{item.label}</span>
               </Link>
             );
@@ -124,13 +124,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
             <Link
               to="/"
               target="_blank"
-              className="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-emerald-900/60 hover:bg-emerald-800/80 rounded-xl transition-all border border-emerald-700/60 shadow-xs"
+              className="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-[#0c3757]/70 hover:bg-[#0c3757] rounded-xl transition-all border border-[#11476f] shadow-xs"
             >
               <div className="flex items-center gap-2.5">
-                <ExternalLink className="w-4 h-4 text-amber-400" />
+                <ExternalLink className="w-4 h-4 text-teal-400" />
                 <span>View Public Site</span>
               </div>
-              <span className="text-[10px] bg-emerald-800/90 text-amber-300 font-bold px-1.5 py-0.5 rounded">Live</span>
+              <span className="text-[10px] bg-[#07263e] text-teal-300 font-bold px-1.5 py-0.5 rounded border border-teal-500/30">Live</span>
             </Link>
           </div>
 
@@ -145,11 +145,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
                 onClick={onCloseMobile}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                   active
-                    ? 'bg-glossy-green-btn text-white shadow-md border border-amber-400/30'
-                    : 'text-emerald-100/70 hover:text-white hover:bg-emerald-950/50'
+                    ? 'bg-jv-btn text-white shadow-md border border-teal-400/30'
+                    : 'text-slate-300/80 hover:text-white hover:bg-[#0c3757]/60'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0 text-amber-400" />
+                <Icon className="w-4 h-4 shrink-0 text-teal-400" />
                 <span>{item.label}</span>
               </Link>
             );
@@ -158,20 +158,21 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
       </div>
 
       {/* USER PROFILE & LOGOUT */}
-      <div className="p-4 border-t border-emerald-950/80 bg-[#03140d]/60">
-        <div className="flex items-center justify-between px-2">
-          <div className="truncate mr-2">
-            <p className="text-xs font-bold text-white truncate">
-              {profile?.full_name || 'admin'}
-            </p>
-            <p className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">
-              {profile?.role || 'SUPER_ADMIN'}
-            </p>
+      <div className="p-4 border-t border-[#0c3757] bg-[#03101c]">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <span className="text-xs font-extrabold text-white truncate block">
+              {profile?.full_name || 'Administrator'}
+            </span>
+            <span className="text-[10px] text-teal-300 truncate block font-mono">
+              {profile?.email || 'admin@jvconstructions.com'}
+            </span>
           </div>
+
           <button
             onClick={handleSignOut}
+            className="p-2 text-slate-400 hover:text-red-400 hover:bg-[#0c3757] rounded-lg transition-colors cursor-pointer shrink-0"
             title="Sign Out"
-            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
           >
             <LogOut className="w-4 h-4" />
           </button>

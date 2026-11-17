@@ -99,15 +99,15 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
             <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
-                alt="Yazh Land Promoters"
-                className="w-12 h-12 rounded-full object-contain ring-2 ring-amber-400/60 shadow-md bg-[#05281b] shrink-0"
+                alt="JV Constructions"
+                className="w-12 h-12 rounded-full object-contain ring-2 ring-teal-400/60 shadow-md bg-white shrink-0"
               />
               <div>
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Exclusive Site Offer
                 </h2>
-                <p className="text-[10px] uppercase font-bold text-amber-600">
-                  Yazh Land Promoters
+                <p className="text-[10px] uppercase font-bold text-teal-600">
+                  JV Constructions
                 </p>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, MessageSquare, ChevronDown, X, User } from 'lucide-react';
+import { Phone, ChevronDown, X } from 'lucide-react';
 import { OFFICIAL_CONTACTS } from '../../constants/contacts';
 
 export const Navbar: React.FC = () => {
@@ -19,25 +19,25 @@ export const Navbar: React.FC = () => {
 
   return (
     <div className="sticky top-2.5 sm:top-4 z-40 w-full px-3 sm:px-6 lg:px-8 pointer-events-none">
-      <header className="max-w-7xl mx-auto bg-glossy-green text-white rounded-3xl sm:rounded-full border border-amber-400/50 shadow-2xl shadow-emerald-950/40 relative pointer-events-auto backdrop-blur-md">
+      <header className="max-w-7xl mx-auto bg-glossy-navy text-white rounded-3xl sm:rounded-full border border-teal-500/40 shadow-2xl shadow-slate-950/40 relative pointer-events-auto backdrop-blur-md">
         {/* Subtle luxury ambient glows */}
-        <div className="absolute -right-10 -top-10 w-48 h-48 bg-amber-400/15 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute left-1/4 -bottom-10 w-64 h-32 bg-emerald-400/15 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -right-10 -top-10 w-48 h-48 bg-teal-400/15 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute left-1/4 -bottom-10 w-64 h-32 bg-sky-400/15 rounded-full blur-2xl pointer-events-none" />
 
         <div className="px-3.5 sm:px-8 py-2 sm:py-2.5 flex items-center justify-between gap-4 relative z-10">
           {/* BRAND LOGO EMBLEM ONLY */}
           <Link
             to="/"
             className="flex items-center group transition-transform hover:scale-105 active:scale-95 shrink-0"
-            title="Yazh Land Promoters"
+            title="JV Constructions"
           >
             <div className="relative">
               <img
                 src="/logo.png"
-                alt="Yazh Land Promoters"
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-contain ring-2 sm:ring-4 ring-amber-400/80 shadow-2xl bg-[#05281b] drop-shadow-md"
+                alt="JV Constructions"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-contain ring-2 sm:ring-4 ring-teal-400/80 shadow-2xl bg-white drop-shadow-md"
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 sm:w-3.5 h-3 sm:h-3.5 bg-emerald-400 border-2 border-[#05281b] rounded-full" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 sm:w-3.5 h-3 sm:h-3.5 bg-teal-400 border-2 border-[#062542] rounded-full" />
             </div>
           </Link>
 
@@ -45,7 +45,7 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-4">
             <Link
               to="/projects"
-              className="text-xs sm:text-sm font-black text-emerald-100 hover:text-amber-300 transition-colors px-3.5 py-2 rounded-full hover:bg-white/10"
+              className="text-xs sm:text-sm font-black text-slate-100 hover:text-teal-300 transition-colors px-3.5 py-2 rounded-full hover:bg-white/10"
             >
               All Layouts
             </Link>
@@ -54,7 +54,7 @@ export const Navbar: React.FC = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowContacts(!showContacts)}
-                className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-6 sm:py-2.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 text-xs sm:text-sm font-black shadow-lg shadow-amber-400/25 transition-all transform hover:scale-[1.03] active:scale-100 border border-amber-300 cursor-pointer"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-6 sm:py-2.5 rounded-full bg-gradient-to-r from-teal-400 via-teal-300 to-emerald-400 hover:from-teal-300 hover:to-emerald-300 text-slate-950 text-xs sm:text-sm font-black shadow-lg shadow-teal-500/25 transition-all transform hover:scale-[1.03] active:scale-100 border border-teal-200 cursor-pointer"
                 title="Contact Direct Property Advisors"
               >
                 <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 shrink-0" />
@@ -91,7 +91,7 @@ export const Navbar: React.FC = () => {
                           <div className="text-xs font-semibold text-slate-500 leading-tight">
                             {contact.role}
                           </div>
-                          <a href={`tel:${contact.phoneRaw}`} className="font-extrabold text-slate-800 text-xs block font-mono hover:text-emerald-700 transition-colors pt-0.5">
+                          <a href={`tel:${contact.phoneRaw}`} className="font-extrabold text-slate-800 text-xs block font-mono hover:text-teal-700 transition-colors pt-0.5">
                             {contact.phone}
                           </a>
                         </div>
@@ -99,29 +99,14 @@ export const Navbar: React.FC = () => {
                         <div className="flex items-center gap-1.5 shrink-0">
                           <a
                             href={`tel:${contact.phoneRaw}`}
-                            className="p-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-transform active:scale-90"
-                            title={`Call ${contact.name}`}
+                            className="p-2 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition-colors"
+                            title="Call directly"
                           >
                             <Phone className="w-3.5 h-3.5" />
-                          </a>
-                          <a
-                            href={`https://wa.me/${contact.phoneRaw.replace(/[^0-9]/g, '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white shadow-xs transition-transform active:scale-90"
-                            title={`WhatsApp ${contact.name}`}
-                          >
-                            <MessageSquare className="w-3.5 h-3.5" />
                           </a>
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  <div className="mt-3 pt-2 border-t border-slate-100 text-center">
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      Site visits • Live CAD Demo • Instant Booking
-                    </p>
                   </div>
                 </div>
               )}

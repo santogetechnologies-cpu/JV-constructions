@@ -24,13 +24,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, currentUser?: User | null) => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
+
+      // If no profile exists yet, create an admin profile automatically
+      if ((error || !data)) {
+        const u = currentUser || user || session?.user;
+        const fallbackName =
+          u?.user_metadata?.full_name ||
+          (u?.email ? u.email.split('@')[0] : 'Admin');
+        const fallbackEmail = u?.email || `${userId}@user.local`;
+
+        const { data: createdProfile } = await supabase
+          .from('profiles')
+          .insert({
+            id: userId,
+            full_name: fallbackName,
+            email: fallbackEmail,
+            role: 'super_admin',
+            is_active: true,
+          })
+          .select()
+          .single();
+
+        if (createdProfile) {
+          data = createdProfile;
+          error = null;
+        }
+      }
 
       if (!error && data) {
         setProfile(data as UserProfile);
@@ -49,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id).finally(() => setIsLoading(false));
+        fetchProfile(session.user.id, session.user).finally(() => setIsLoading(false));
       } else {
         setIsLoading(false);
       }
@@ -62,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        await fetchProfile(session.user.id, session.user);
       } else {
         setProfile(null);
       }
@@ -82,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       if (error) throw error;
       if (data.user) {
-        await fetchProfile(data.user.id);
+        await fetchProfile(data.user.id, data.user);
       }
       return { error: null };
     } catch (err: any) {
@@ -99,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id);
+      await fetchProfile(user.id, user);
     }
   };
 

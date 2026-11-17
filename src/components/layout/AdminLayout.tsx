@@ -17,7 +17,7 @@ export const AdminLayout: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500" />
       </div>
     );
   }
@@ -30,18 +30,18 @@ export const AdminLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* MOBILE TOP BAR (visible on screens < md) */}
-      <header className="md:hidden bg-[#03140d] border-b border-emerald-950/80 px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
+      <header className="md:hidden bg-[#041624] border-b border-[#0c3757] px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
         <div className="flex items-center gap-2.5">
           <img
             src="/logo.png"
-            alt="Yazh Land Promoters"
-            className="w-8 h-8 rounded-full object-contain ring-1 ring-amber-400/50 bg-[#05281b]"
+            alt="JV Constructions"
+            className="w-8 h-8 rounded-full object-contain ring-1 ring-teal-400/50 bg-white"
           />
           <div>
             <span className="text-white font-extrabold text-sm block leading-tight">
-              Yazh <span className="text-emerald-400">Promoters</span>
+              JV <span className="text-teal-400">Constructions</span>
             </span>
-            <span className="text-[9px] uppercase font-bold text-amber-400/90 block -mt-0.5">
+            <span className="text-[9px] uppercase font-bold text-teal-300 block -mt-0.5">
               Admin Console
             </span>
           </div>
@@ -50,7 +50,7 @@ export const AdminLayout: React.FC = () => {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-xl bg-emerald-950/80 text-emerald-300 hover:text-white border border-emerald-900/60 focus:outline-none"
+          className="p-2 rounded-xl bg-[#0c3757] text-teal-300 hover:text-white border border-[#11476f] focus:outline-none"
           aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

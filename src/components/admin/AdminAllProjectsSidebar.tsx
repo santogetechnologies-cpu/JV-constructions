@@ -197,10 +197,10 @@ export const AdminAllProjectsSidebar: React.FC = () => {
         </div>
 
         {/* SIDEBAR FOOTER */}
-        <div className="p-4 bg-[#020e0a] border-t border-emerald-950/80 flex items-center justify-between text-xs text-slate-400 shrink-0">
+        <div className="p-4 bg-[#03101c] border-t border-[#0c3757] flex items-center justify-between text-xs text-slate-400 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-[11px] font-semibold text-emerald-300/80">Yazh Land Inventory Engine</span>
+            <span className="w-2 h-2 rounded-full bg-teal-400" />
+            <span className="text-[11px] font-semibold text-teal-300/80">JV Constructions Inventory Engine</span>
           </div>
 
           <button
@@ -208,7 +208,7 @@ export const AdminAllProjectsSidebar: React.FC = () => {
               closeSidebar();
               navigate('/admin/projects');
             }}
-            className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors"
+            className="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1 transition-colors"
           >
             <span>Full Projects Page</span>
             <ArrowRight className="w-3.5 h-3.5" />

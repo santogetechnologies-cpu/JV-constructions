@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Compass, Lock, Mail, AlertTriangle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Lock, Mail, AlertTriangle, ArrowRight, UserPlus, LogIn, User, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, user, isStaff } = useAuth();
+  const { signIn, user, isStaff, refreshProfile } = useAuth();
 
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // If already logged in as staff, redirect to /admin
@@ -22,14 +26,43 @@ export const AdminLoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessNotice(null);
     setLoading(true);
 
-    const { error: signInErr } = await signIn(email, password);
-    if (signInErr) {
-      setError(signInErr.message || 'Invalid credentials');
-      setLoading(false);
+    if (isSignUp) {
+      try {
+        const { data, error: signUpErr } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            data: {
+              full_name: fullName.trim() || 'Admin',
+            },
+          },
+        });
+
+        if (signUpErr) throw signUpErr;
+
+        if (data.session) {
+          await refreshProfile();
+          navigate('/admin');
+        } else {
+          setSuccessNotice('Account created! Please sign in with your credentials.');
+          setIsSignUp(false);
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to create admin account');
+      } finally {
+        setLoading(false);
+      }
     } else {
-      navigate('/admin');
+      const { error: signInErr } = await signIn(email, password);
+      if (signInErr) {
+        setError(signInErr.message || 'Invalid credentials');
+        setLoading(false);
+      } else {
+        navigate('/admin');
+      }
     }
   };
 
@@ -41,17 +74,52 @@ export const AdminLoginPage: React.FC = () => {
           <div className="inline-block relative mb-2 sm:mb-3">
             <img
               src="/logo.png"
-              alt="Yazh Land Promoters"
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain mx-auto ring-4 ring-amber-400/60 shadow-xl bg-[#05281b]"
+              alt="JV Constructions"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain mx-auto ring-4 ring-teal-400/60 shadow-xl bg-white"
             />
           </div>
+          <h2 className="text-lg font-black text-slate-900 tracking-tight">JV Constructions</h2>
           <p className="text-xs text-slate-500 mt-1 px-2">
-            Sign in to manage CAD layouts, plot inventories, and reservations.
+            Admin console for managing layouts, plot inventories, and reservations.
           </p>
         </div>
 
         {/* LOGIN CARD */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-5 sm:p-8">
+          {/* TABS: SIGN IN vs CREATE ACCOUNT */}
+          <div className="flex bg-slate-100 p-1 rounded-2xl mb-6">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(false);
+                setError(null);
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                !isSignUp
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(true);
+                setError(null);
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                isSignUp
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>Register Admin</span>
+            </button>
+          </div>
+
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 font-medium flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
@@ -59,7 +127,31 @@ export const AdminLoginPage: React.FC = () => {
             </div>
           )}
 
+          {successNotice && (
+            <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <span>{successNotice}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            {isSignUp && (
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Full Name</label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Admin Name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 text-slate-900 font-medium"
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block font-bold text-slate-700 mb-1">Email Address</label>
               <div className="relative">
@@ -67,10 +159,10 @@ export const AdminLoginPage: React.FC = () => {
                 <input
                   type="email"
                   required
-                  placeholder="admin@yazhlandpromoters.com"
+                  placeholder="admin@jvconstructions.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-900 font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 text-slate-900 font-medium"
                 />
               </div>
             </div>
@@ -85,7 +177,7 @@ export const AdminLoginPage: React.FC = () => {
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-900 font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 text-slate-900 font-medium"
                 />
               </div>
             </div>
@@ -93,17 +185,22 @@ export const AdminLoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-glossy-green-btn hover:opacity-95 text-white font-bold text-xs shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2 border border-amber-400/30"
+              className="w-full py-3 rounded-xl bg-jv-btn hover:opacity-95 text-white font-bold text-xs shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2 border border-teal-400/30"
             >
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                  <span>Verifying Credentials...</span>
+                  <span>Processing...</span>
+                </>
+              ) : isSignUp ? (
+                <>
+                  <span>Create Admin Account</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-teal-200" />
                 </>
               ) : (
                 <>
                   <span>Sign In to Dashboard</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
+                  <ArrowRight className="w-3.5 h-3.5 text-teal-200" />
                 </>
               )}
             </button>

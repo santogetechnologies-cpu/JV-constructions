@@ -182,7 +182,7 @@ export const AdminProjectsPage: React.FC = () => {
     }
 
     setEditPhone(p.contact_information?.phone || PRIMARY_CONTACT_PHONE);
-    setEditEmail(p.contact_information?.email || 'yazhpromoters@gmail.com');
+    setEditEmail(p.contact_information?.email || 'contact@jvconstructions.com');
     setEditSalesOffice(p.contact_information?.sales_office || 'Kallakurichi, Tamil Nadu');
   };
 

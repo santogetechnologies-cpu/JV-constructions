@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Dedicated default credentials for Yazh Land Promoters database so app never throws unhandled "supabaseUrl is required" fatal error
-const defaultUrl = 'https://gphhlkksrkzppxrihtnm.supabase.co';
-const defaultKey = 'sb_publishable_yh2rwDeBD53jA2eoPeKJLg_QFx3kjP_';
+// Dedicated default credentials for JV Constructions database so app never throws unhandled "supabaseUrl is required" fatal error
+const defaultUrl = 'https://nskuwglyfuqqiorznost.supabase.co';
+const defaultKey = 'sb_publishable_ul_Iaqf37LVS_9SHEhk40w_VgY_OccU';
 
 const envUrl = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_SUPABASE_URL : undefined;
 const envAnonKey = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_SUPABASE_ANON_KEY : undefined;

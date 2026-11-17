@@ -239,8 +239,8 @@ export const InteractiveMapPage: React.FC = () => {
           </Link>
           <img
             src="/logo.png"
-            alt="Yazh Land Promoters"
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-contain ring-1 ring-amber-400/60 shadow-xs shrink-0 bg-[#05281b]"
+            alt="JV Constructions"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-contain ring-1 ring-teal-400/60 shadow-xs shrink-0 bg-white"
           />
           <div className="min-w-0">
             <h1 className="text-xs sm:text-base font-black text-slate-900 tracking-tight truncate leading-tight">
@@ -374,9 +374,9 @@ export const InteractiveMapPage: React.FC = () => {
       {/* 4. WATERMARK / BRANDING BADGE */}
       <div className={`fixed bottom-4 right-4 z-20 pointer-events-none ${selectedPlot ? 'hidden sm:block' : 'block'}`}>
         <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200/90 shadow-md flex items-center gap-2">
-          <img src="/logo.png" alt="Yazh Land Promoters" className="w-5 h-5 rounded-full object-contain ring-1 ring-amber-400/50" />
+          <img src="/logo.png" alt="JV Constructions" className="w-5 h-5 rounded-full object-contain ring-1 ring-teal-400/50 bg-white" />
           <span className="text-[10px] font-black text-slate-800 tracking-tight">
-            Yazh <span className="text-blue-700">Land Promoters</span>
+            JV <span className="text-teal-700">Constructions</span>
           </span>
         </div>
       </div>

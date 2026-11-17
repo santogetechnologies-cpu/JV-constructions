@@ -72,8 +72,8 @@ export const HomePage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-wider text-blue-800">
+              <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-wider text-teal-700">
                 Live Layout Inventory
               </span>
             </div>
@@ -86,7 +86,7 @@ export const HomePage: React.FC = () => {
           </div>
           <Link
             to="/projects"
-            className="inline-flex items-center gap-1.5 text-sm font-extrabold text-blue-700 hover:text-blue-800 transition-colors group"
+            className="inline-flex items-center gap-1.5 text-sm font-extrabold text-teal-700 hover:text-teal-800 transition-colors group"
           >
             <span>View All Projects</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
@@ -131,36 +131,36 @@ export const HomePage: React.FC = () => {
                 className="bg-white rounded-3xl border border-slate-200/90 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between group hover:-translate-y-1"
               >
                 {/* Visual Header / Blueprint Graphic Canvas */}
-                <div className="relative bg-gradient-to-br from-[#06281b] via-[#093c27] to-[#041d13] p-6 sm:p-8 text-white overflow-hidden border-b border-emerald-950">
+                <div className="relative bg-gradient-to-br from-[#07263e] via-[#0b3b64] to-[#041624] p-6 sm:p-8 text-white overflow-hidden border-b border-[#0c3757]">
                   {/* Subtle Blueprint grid pattern */}
-                  <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#6ee7b7_1px,transparent_1px)] [background-size:16px_16px]" />
+                  <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />
                   
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-3 relative z-10 mb-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-400/15 text-amber-300 border border-amber-400/30 backdrop-blur-md">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-teal-400/15 text-teal-300 border border-teal-400/30 backdrop-blur-md">
                       {getProjectApprovalType(proj).toLowerCase().includes('farm') ? (
-                        <Trees className="w-3.5 h-3.5 text-emerald-300" />
+                        <Trees className="w-3.5 h-3.5 text-teal-300" />
                       ) : (
-                        <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-teal-300" />
                       )}
                       {getProjectApprovalType(proj)}
                     </span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-emerald-100 backdrop-blur-md">
-                      <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-100 backdrop-blur-md">
+                      <MapPin className="w-3.5 h-3.5 text-teal-300" />
                       {proj.city}, {proj.state}
                     </span>
                   </div>
 
                   {/* Big Card Title */}
-                  <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-amber-200 transition-colors relative z-10 tracking-tight">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-teal-200 transition-colors relative z-10 tracking-tight">
                     {proj.name}
                   </h3>
 
                   {/* Location / Land Area details */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-emerald-100/80 mt-2 relative z-10 font-medium">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-200/80 mt-2 relative z-10 font-medium">
                     {proj.address && <span>{proj.address}</span>}
                     {proj.total_land_area && (
-                      <span className="text-amber-300 font-bold">• Extent: {proj.total_land_area}</span>
+                      <span className="text-teal-300 font-bold">• Extent: {proj.total_land_area}</span>
                     )}
                   </div>
                 </div>
@@ -184,11 +184,11 @@ export const HomePage: React.FC = () => {
                         </span>
                       </div>
 
-                      <div className="p-2 bg-emerald-50/80 rounded-xl border border-emerald-200/60">
-                        <span className="text-[11px] text-blue-800 font-extrabold uppercase tracking-wider block">
+                      <div className="p-2 bg-teal-50/80 rounded-xl border border-teal-200/60">
+                        <span className="text-[11px] text-teal-800 font-extrabold uppercase tracking-wider block">
                           Available
                         </span>
-                        <span className="text-xl sm:text-2xl font-black text-blue-800 mt-0.5 block">
+                        <span className="text-xl sm:text-2xl font-black text-teal-800 mt-0.5 block">
                           {proj.availablePlots ?? 0}
                         </span>
                       </div>

@@ -62,18 +62,18 @@ export const BookingConfirmationPage: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <img
               src="/logo.png"
-              alt="Yazh Land Promoters"
-              className="w-14 h-14 rounded-full object-contain ring-2 ring-amber-400/60 shadow-lg bg-[#05281b]"
+              alt="JV Constructions"
+              className="w-14 h-14 rounded-full object-contain ring-2 ring-teal-400/60 shadow-lg bg-white"
             />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400/15 text-amber-800 border border-amber-400/30 mb-2">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-teal-400/15 text-teal-800 border border-teal-400/30 mb-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
             <span>Enquiry Received Successfully</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 tracking-tight">
-            Yazh Land Promoters Reservation
+            JV Constructions Reservation
           </h1>
           <p className="text-xs text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
             Your booking request has been registered in our official records. Our project representative has been notified and will reach out to you shortly.

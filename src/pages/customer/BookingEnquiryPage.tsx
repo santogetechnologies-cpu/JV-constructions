@@ -145,15 +145,15 @@ export const BookingEnquiryPage: React.FC = () => {
             <div className="flex items-center gap-2.5 pb-4 mb-4 border-b border-slate-100">
               <img
                 src="/logo.png"
-                alt="Yazh Land Promoters"
-                className="w-10 h-10 rounded-full object-contain ring-1 ring-amber-400/50 bg-[#05281b]"
+                alt="JV Constructions"
+                className="w-10 h-10 rounded-full object-contain ring-1 ring-teal-400/50 bg-white"
               />
               <div>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                   Promoted By
                 </span>
                 <span className="text-xs font-black text-slate-900 block leading-tight">
-                  Yazh Land Promoters
+                  JV Constructions
                 </span>
               </div>
             </div>

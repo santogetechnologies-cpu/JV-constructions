@@ -4,7 +4,7 @@
  */
 
 const DEFAULT_WEB3FORMS_ACCESS_KEY = 'eefe88c1-b0be-4fdf-b140-a1383d289c00';
-const ADMIN_PORTAL_LEADS_URL = 'https://yazhpropertydevelopers.santoge.com/admin/leads';
+const ADMIN_PORTAL_LEADS_URL = typeof window !== 'undefined' ? `${window.location.origin}/admin/leads` : '/admin/leads';
 
 export interface LeadEmailData {
   customerName: string;
@@ -28,7 +28,7 @@ export async function sendLeadNotificationEmail(
   try {
     const formData = new FormData();
     formData.append('access_key', accessKey);
-    formData.append('from_name', 'Yazh Property Developers Portal');
+    formData.append('from_name', 'JV Constructions Portal');
 
     // Email Subject
     const sourceTag = data.source ? `[${data.source}]` : '[New Lead]';

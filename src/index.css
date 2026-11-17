@@ -4,45 +4,54 @@
 
 @layer base {
   body {
-    @apply bg-[#f7faf8] text-slate-900 font-sans antialiased;
+    @apply bg-[#f4f7fb] text-slate-900 font-sans antialiased;
   }
 }
 
-/* Glossy dark green luxury styling matching Yazh Land Promoters logo */
-.bg-glossy-green {
-  background: radial-gradient(circle at 30% 20%, #157951 0%, #0a4d33 45%, #052c1d 85%, #031b12 100%);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 8px 24px -4px rgba(5, 44, 29, 0.4);
+/* JV Constructions architectural navy & teal luxury styling */
+.bg-glossy-green,
+.bg-glossy-navy,
+.bg-jv-navy {
+  background: radial-gradient(circle at 30% 20%, #0d4677 0%, #083358 45%, #052440 85%, #031526 100%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 24px -4px rgba(3, 21, 38, 0.4);
 }
 
-.bg-glossy-green-subtle {
-  background: linear-gradient(135deg, #073523 0%, #0b4a32 50%, #052a1c 100%);
+.bg-glossy-green-subtle,
+.bg-glossy-navy-subtle,
+.bg-jv-navy-subtle {
+  background: linear-gradient(135deg, #052440 0%, #083358 50%, #0c3e69 100%);
 }
 
-.bg-glossy-green-btn {
-  background: linear-gradient(180deg, #189565 0%, #0e724a 50%, #095437 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(14, 114, 74, 0.35);
+.bg-glossy-green-btn,
+.bg-jv-btn {
+  background: linear-gradient(180deg, #16897b 0%, #0f766a 50%, #0b584f 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(15, 118, 106, 0.35);
 }
 
-.bg-glossy-green-btn:hover {
-  background: linear-gradient(180deg, #20a773 0%, #118154 50%, #0a5f3e 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 20px rgba(14, 114, 74, 0.45);
+.bg-glossy-green-btn:hover,
+.bg-jv-btn:hover {
+  background: linear-gradient(180deg, #1aa191 0%, #128275 50%, #0d6359 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 20px rgba(15, 118, 106, 0.45);
 }
 
-.text-gold-metallic {
-  background: linear-gradient(135deg, #fff2a3 0%, #f1cb5b 30%, #d4af37 60%, #a47d1a 100%);
+.text-gold-metallic,
+.text-jv-teal {
+  background: linear-gradient(135deg, #5cd7c7 0%, #2cbda9 40%, #16897b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.border-gold-glow {
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+.border-gold-glow,
+.border-teal-glow {
+  border-color: rgba(22, 137, 123, 0.45);
+  box-shadow: 0 0 16px rgba(22, 137, 123, 0.22);
 }
 
-.gold-badge {
-  background: linear-gradient(135deg, rgba(253, 224, 71, 0.15) 0%, rgba(202, 138, 4, 0.15) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  color: #b8860b;
+.gold-badge,
+.teal-badge {
+  background: linear-gradient(135deg, rgba(22, 137, 123, 0.12) 0%, rgba(15, 118, 106, 0.18) 100%);
+  border: 1px solid rgba(22, 137, 123, 0.35);
+  color: #0f766a;
 }
 
 /* Custom scrollbars */
@@ -56,11 +65,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a3cbb8;
+  background: #94a3b8;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0e724a;
+  background: #0b3b64;
 }
-
