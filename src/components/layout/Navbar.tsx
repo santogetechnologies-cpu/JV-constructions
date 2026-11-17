@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, ChevronDown, X } from 'lucide-react';
+import { Phone, ChevronDown, X, Shield } from 'lucide-react';
 import { OFFICIAL_CONTACTS } from '../../constants/contacts';
 
 export const Navbar: React.FC = () => {
@@ -45,9 +45,18 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-4">
             <Link
               to="/projects"
-              className="text-xs sm:text-sm font-black text-slate-100 hover:text-teal-300 transition-colors px-3.5 py-2 rounded-full hover:bg-white/10"
+              className="text-xs sm:text-sm font-black text-slate-100 hover:text-teal-300 transition-colors px-3 py-2 rounded-full hover:bg-white/10"
             >
               All Layouts
+            </Link>
+
+            <Link
+              to="/admin/login"
+              className="text-xs sm:text-sm font-bold text-slate-200 hover:text-teal-300 transition-colors px-2.5 py-2 rounded-full hover:bg-white/10 flex items-center gap-1.5"
+              title="Admin Portal"
+            >
+              <Shield className="w-3.5 h-3.5 text-teal-400" />
+              <span className="hidden sm:inline">Admin</span>
             </Link>
 
             {/* ADVISOR CONTACT TRIGGER WITH DROPDOWN */}

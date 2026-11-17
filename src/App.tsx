@@ -60,6 +60,7 @@ export const App: React.FC = () => {
             </Route>
 
             {/* ADMIN LOGIN */}
+            <Route path="/login" element={<Navigate to="/admin/login" replace />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
 
             {/* PROTECTED ADMIN PORTAL */}
