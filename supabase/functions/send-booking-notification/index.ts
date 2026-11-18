@@ -52,40 +52,6 @@ serve(async (req: Request) => {
 
     console.log('[send-booking-notification] Processed enquiry alert:', JSON.stringify(alertMessage));
 
-    // Send Web3Forms email notification to mail2baskar88@gmail.com
-    try {
-      const web3FormsKey = Deno.env.get('WEB3FORMS_ACCESS_KEY') || 'eefe88c1-b0be-4fdf-b140-a1383d289c00';
-      const web3Payload = {
-        access_key: web3FormsKey,
-        from_name: 'Yazh Property Developers Portal',
-        subject: `🚨 [Plot Enquiry] ${payload.customer_name} - ${payload.project_name} (Plot #${payload.plot_number})`,
-        name: payload.customer_name,
-        phone: payload.phone,
-        email: payload.email || 'mail2baskar88@gmail.com',
-        message: [
-          '🏡 NEW PLOT ENQUIRY RECEIVED',
-          `• Customer Name: ${payload.customer_name}`,
-          `• Phone: ${payload.phone}`,
-          `• Email: ${payload.email || 'N/A'}`,
-          `• City/Location: ${payload.location || 'N/A'}`,
-          `• Project: ${payload.project_name}`,
-          `• Plot Number: #${payload.plot_number}`,
-          `• Reference: ${payload.booking_reference}`,
-          `• Preferred Contact: ${payload.preferred_contact_method || 'Phone'}`,
-          `• Customer Message: ${payload.message || 'No additional notes provided.'}`,
-          '\n👉 View lead: https://yazhpropertydevelopers.santoge.com/admin/leads',
-        ].join('\n'),
-      };
-
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(web3Payload),
-      });
-    } catch (web3Err) {
-      console.warn('Web3Forms delivery failed:', web3Err);
-    }
-
     // If an external sales webhook (Slack/Discord/Zapier/CRM) is configured in Supabase secrets
     if (notificationWebhook) {
       try {

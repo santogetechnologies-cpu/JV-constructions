@@ -76,6 +76,8 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
   const eraserCanvasRef = useRef<HTMLCanvasElement>(null);
 
   // Natural blueprint dimensions
+  const initialMinX = layout.layout_bounds?.minX ?? 0;
+  const initialMinY = layout.layout_bounds?.minY ?? 0;
   const initialWidth = layout.layout_bounds?.width || 1820;
   const initialHeight = layout.layout_bounds?.height || 2576;
   const [imgDim, setImgDim] = useState({ width: initialWidth, height: initialHeight });
@@ -88,7 +90,12 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
   const [isPdfRendering, setIsPdfRendering] = useState(false);
 
   // SVG ViewBox for pan and zoom: [minX, minY, width, height]
-  const [vb, setVb] = useState<[number, number, number, number]>([0, 0, initialWidth, initialHeight]);
+  const [vb, setVb] = useState<[number, number, number, number]>([
+    initialMinX,
+    initialMinY,
+    initialWidth,
+    initialHeight,
+  ]);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef<{ clientX: number; clientY: number }>({ clientX: 0, clientY: 0 });
   const dragMovedRef = useRef(false);
@@ -219,6 +226,43 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
         const match = plots.find((p) => p.id === prev.id);
         return match || plots[0];
       });
+
+      // Auto-fit viewBox if current viewBox does not encompass all plots
+      const allCoords: [number, number][] = [];
+      plots.forEach((p) => {
+        if (p.geometry?.coordinates) allCoords.push(...p.geometry.coordinates);
+      });
+      if (allCoords.length > 0) {
+        const xs = allCoords.map((pt) => pt[0]);
+        const ys = allCoords.map((pt) => pt[1]);
+        const pMinX = Math.min(...xs);
+        const pMaxX = Math.max(...xs);
+        const pMinY = Math.min(...ys);
+        const pMaxY = Math.max(...ys);
+        const pW = pMaxX - pMinX;
+        const pH = pMaxY - pMinY;
+
+        setVb((prev) => {
+          const isOut =
+            pMinX < prev[0] ||
+            pMaxX > prev[0] + prev[2] ||
+            pMinY < prev[1] ||
+            pMaxY > prev[1] + prev[3] ||
+            (prev[0] === 0 && prev[1] === 0 && (pMinX > 30 || pMinY > 30));
+
+          if (isOut) {
+            const padX = Math.max(16, pW * 0.08);
+            const padY = Math.max(16, pH * 0.08);
+            return [
+              Number((pMinX - padX).toFixed(2)),
+              Number((pMinY - padY).toFixed(2)),
+              Number((pW + padX * 2).toFixed(2)),
+              Number((pH + padY * 2).toFixed(2)),
+            ];
+          }
+          return prev;
+        });
+      }
     }
   }, [plots]);
 

@@ -278,7 +278,7 @@ export async function submitBookingEnquiry(payload: BookingEnquiryPayload) {
 
   if (error) throw error;
 
-  // Send email alert immediately to mail2baskar88@gmail.com via Web3Forms
+  // Send email alert immediately
   if (data?.success) {
     sendLeadNotificationEmail({
       customerName: payload.customerName,
@@ -291,7 +291,7 @@ export async function submitBookingEnquiry(payload: BookingEnquiryPayload) {
       message: payload.message,
       bookingReference: data.booking_reference,
       source: 'Plot Booking Enquiry',
-    }).catch((emailErr) => console.warn('Web3Forms notification error:', emailErr));
+    }).catch((emailErr) => console.warn('Lead notification error:', emailErr));
   }
 
   // Asynchronously trigger notification edge function (fire-and-forget)

@@ -53,7 +53,7 @@ export default function ContactForm({
         console.warn('Database lead record notice:', dbErr);
       }
 
-      // 2. Dispatch automated email via Web3Forms to mail2baskar88@gmail.com
+      // 2. Dispatch automated email notification
       const emailResult = await sendLeadNotificationEmail({
         customerName: formData.name.trim(),
         phone: formData.phone.trim(),

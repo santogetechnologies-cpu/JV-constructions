@@ -252,9 +252,16 @@ export const AdminProjectLayoutPage: React.FC = () => {
 
       const newLayout = await createProjectLayout({
         project_id: project.id,
-        source_file_path: resolvedImageUrl || publicUrl || signedUrl,
-        source_file_type: 'image',
-        layout_bounds: { minX: 0, minY: 0, maxX: parsed.width, maxY: parsed.height, width: parsed.width, height: parsed.height },
+        source_file_path: resolvedImageUrl || '',
+        source_file_type: resolvedImageUrl ? 'image' : 'svg',
+        layout_bounds: {
+          minX: parsed.minX,
+          minY: parsed.minY,
+          maxX: Number((parsed.minX + parsed.width).toFixed(2)),
+          maxY: Number((parsed.minY + parsed.height).toFixed(2)),
+          width: parsed.width,
+          height: parsed.height,
+        },
       });
 
       // Automatically publish the layout so it displays on public site and editor immediately
@@ -328,9 +335,16 @@ export const AdminProjectLayoutPage: React.FC = () => {
 
         const newLayout = await createProjectLayout({
           project_id: project.id,
-          source_file_path: resolvedSourceUrl,
-          source_file_type: 'image',
-          layout_bounds: { minX: 0, minY: 0, maxX: parsed.width, maxY: parsed.height, width: parsed.width, height: parsed.height },
+          source_file_path: resolvedSourceUrl || '',
+          source_file_type: resolvedSourceUrl ? 'image' : 'svg',
+          layout_bounds: {
+            minX: parsed.minX,
+            minY: parsed.minY,
+            maxX: Number((parsed.minX + parsed.width).toFixed(2)),
+            maxY: Number((parsed.minY + parsed.height).toFixed(2)),
+            width: parsed.width,
+            height: parsed.height,
+          },
         });
         targetLayoutId = newLayout.id;
 

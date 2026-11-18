@@ -49,7 +49,7 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
 
       if (error) throw error;
 
-      // Automatically send lead email to mail2baskar88@gmail.com via Web3Forms
+      // Send lead notification
       sendLeadNotificationEmail({
         customerName: name.trim(),
         phone: phone.trim(),
@@ -57,7 +57,7 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
         projectName: projectName,
         source: 'Exclusive Offer / Callback Request',
         message: `Customer requested callback / exclusive offer enquiry for project: ${projectName}`,
-      }).catch((emailErr) => console.warn('Web3Forms notification error:', emailErr));
+      }).catch((emailErr) => console.warn('Lead notification error:', emailErr));
 
       setSubmitted(true);
       setTimeout(() => {
