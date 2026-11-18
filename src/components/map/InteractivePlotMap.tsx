@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   ZoomIn,
   ZoomOut,
@@ -13,6 +13,7 @@ import {
   pointsToSvgPolygon,
   calculatePolygonCentroid,
   getStatusColor,
+  getStatusLabel,
 } from '../../lib/utils';
 import { getStorageFileUrl } from '../../services/api';
 import { convertPdfUrlToDataUrl } from '../../lib/pdfToImage';
@@ -44,128 +45,69 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [resolvedImageUrl, setResolvedImageUrl] = useState<string>('');
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [canvasDim, setCanvasDim] = useState<{ width: number; height: number } | null>(null);
 
-  // Only attempt to load image if source_file_type is image or contains an actual image extension / base64
-  const hasValidImageSource = useMemo(() => {
-    if (!layout?.source_file_path) return false;
-    const path = layout.source_file_path.toLowerCase();
-    if (path.endsWith('.html') || path.endsWith('.htm')) return false;
-    return (
-      layout.source_file_type === 'image' ||
-      layout.source_file_type === 'pdf' ||
-      path.includes('.jpg') ||
-      path.includes('.jpeg') ||
-      path.includes('.png') ||
-      path.includes('.webp') ||
-      path.includes('.pdf') ||
-      path.startsWith('data:image/')
-    );
-  }, [layout?.source_file_path, layout?.source_file_type]);
+  // Measure natural dimensions of resolved blueprint image
+  useEffect(() => {
+    if (!resolvedImageUrl) {
+      setCanvasDim(null);
+      return;
+    }
+    const img = new Image();
+    img.src = resolvedImageUrl;
+    img.onload = () => {
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setCanvasDim({ width: img.naturalWidth, height: img.naturalHeight });
+        setImageLoaded(true);
+      }
+    };
+    img.onerror = () => {
+      setImageLoaded(true);
+    };
+  }, [resolvedImageUrl]);
 
   // Resolve storage URL for blueprint image
   useEffect(() => {
     let active = true;
     setImageLoaded(false);
-    if (hasValidImageSource && layout?.source_file_path) {
-      if (layout.source_file_path.startsWith('data:image/')) {
-        setResolvedImageUrl(layout.source_file_path);
-        return;
-      }
+    if (layout?.source_file_path) {
+      getStorageFileUrl('layout-source-files', layout.source_file_path).then(async (url) => {
+        if (!active) return;
+        const targetUrl = url || layout.source_file_path;
+        const isPdf =
+          layout.source_file_type === 'pdf' ||
+          targetUrl.toLowerCase().includes('.pdf') ||
+          targetUrl.toLowerCase().includes('application%2fpdf');
 
-      getStorageFileUrl('layout-source-files', layout.source_file_path)
-        .then(async (url) => {
-          if (!active) return;
-          const targetUrl = url || layout.source_file_path;
-          const isPdf =
-            layout.source_file_type === 'pdf' ||
-            targetUrl.toLowerCase().includes('.pdf') ||
-            targetUrl.toLowerCase().includes('application%2fpdf');
-
-          if (isPdf) {
-            try {
-              const { dataUrl } = await convertPdfUrlToDataUrl(targetUrl, 2.0);
-              if (active) setResolvedImageUrl(dataUrl);
-            } catch {
-              if (active) setResolvedImageUrl(targetUrl);
+        if (isPdf) {
+          try {
+            const { dataUrl, width, height } = await convertPdfUrlToDataUrl(targetUrl, 2.0);
+            if (active) {
+              setResolvedImageUrl(dataUrl);
+              if (width && height) setCanvasDim({ width, height });
             }
-          } else {
-            setResolvedImageUrl(targetUrl);
+          } catch {
+            if (active) setResolvedImageUrl(targetUrl);
           }
-        })
-        .catch(() => {
-          if (active) setResolvedImageUrl(layout.source_file_path);
-        });
+        } else {
+          setResolvedImageUrl(targetUrl);
+        }
+      }).catch(() => {
+        if (active) setResolvedImageUrl(layout.source_file_path);
+      });
     } else {
       setResolvedImageUrl('');
     }
-    return () => {
-      active = false;
-    };
-  }, [layout?.source_file_path, layout?.source_file_type, hasValidImageSource]);
+    return () => { active = false; };
+  }, [layout?.source_file_path, layout?.source_file_type]);
 
-  // Dynamically compute exact bounding box from layout_bounds AND actual plot coordinates
-  const bounds = useMemo(() => {
-    let minX = layout?.layout_bounds?.minX ?? 0;
-    let minY = layout?.layout_bounds?.minY ?? 0;
-    let width =
-      layout?.layout_bounds?.width ||
-      (layout?.layout_bounds
-        ? layout.layout_bounds.maxX - layout.layout_bounds.minX
-        : 0);
-    let height =
-      layout?.layout_bounds?.height ||
-      (layout?.layout_bounds
-        ? layout.layout_bounds.maxY - layout.layout_bounds.minY
-        : 0);
+  // Default layout bounds
+  const bounds = layout?.layout_bounds || {
+    minX: 0, minY: 0, maxX: 1200, maxY: 800, width: 1200, height: 800,
+  };
 
-    // Collect all valid plot polygon coordinates
-    const allCoords: [number, number][] = [];
-    plots.forEach((p) => {
-      if (p.geometry?.coordinates && p.geometry.coordinates.length >= 3) {
-        allCoords.push(...p.geometry.coordinates);
-      }
-    });
-
-    if (allCoords.length > 0) {
-      const xs = allCoords.map((pt) => pt[0]);
-      const ys = allCoords.map((pt) => pt[1]);
-      const pMinX = Math.min(...xs);
-      const pMaxX = Math.max(...xs);
-      const pMinY = Math.min(...ys);
-      const pMaxY = Math.max(...ys);
-      const pW = pMaxX - pMinX;
-      const pH = pMaxY - pMinY;
-
-      // Check if layout bounds are missing, default 0,0, or cut off any plot polygon
-      const isOutOfBounds =
-        width <= 0 ||
-        height <= 0 ||
-        pMinX < minX ||
-        pMaxX > minX + width ||
-        pMinY < minY ||
-        pMaxY > minY + height ||
-        (minX === 0 && minY === 0 && (pMinX > 30 || pMinY > 30));
-
-      if (isOutOfBounds) {
-        const padX = Math.max(16, pW * 0.08);
-        const padY = Math.max(16, pH * 0.08);
-        minX = pMinX - padX;
-        minY = pMinY - padY;
-        width = pW + padX * 2;
-        height = pH + padY * 2;
-      }
-    }
-
-    if (width <= 0) width = 1200;
-    if (height <= 0) height = 800;
-
-    return {
-      minX,
-      minY,
-      width,
-      height,
-    };
-  }, [layout?.layout_bounds, plots]);
+  const viewWidth = canvasDim?.width || bounds.width || (bounds.maxX - bounds.minX) || 1200;
+  const viewHeight = canvasDim?.height || bounds.height || (bounds.maxY - bounds.minY) || 800;
 
   // Center & Fit Layout to Container
   const fitToLayout = useCallback(() => {
@@ -173,22 +115,23 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
     const { clientWidth, clientHeight } = containerRef.current;
     if (clientWidth === 0 || clientHeight === 0) return;
 
-    const padding = 28;
-    const scaleX = (clientWidth - padding * 2) / bounds.width;
-    const scaleY = (clientHeight - padding * 2) / bounds.height;
-    const fitScale = Math.min(scaleX, scaleY, 6);
+    const padding = 20;
+    const scaleX = (clientWidth - padding * 2) / viewWidth;
+    const scaleY = (clientHeight - padding * 2) / viewHeight;
+    const fitScale = Math.min(scaleX, scaleY, 4);
 
-    const centerX =
-      (clientWidth - bounds.width * fitScale) / 2 - bounds.minX * fitScale;
-    const centerY =
-      (clientHeight - bounds.height * fitScale) / 2 - bounds.minY * fitScale;
+    const centerX = (clientWidth - viewWidth * fitScale) / 2;
+    const centerY = (clientHeight - viewHeight * fitScale) / 2;
 
     setTransform({ scale: fitScale, x: centerX, y: centerY });
-  }, [bounds]);
+  }, [viewWidth, viewHeight]);
 
   useEffect(() => {
     fitToLayout();
-  }, [fitToLayout, layout?.id, plots.length]);
+  }, [fitToLayout, layout?.id, canvasDim?.width, canvasDim?.height]);
+
+  // Selected plot highlight is handled directly in SVG rendering without zooming or shifting the map
+
 
   // Native non-passive Wheel listener (fixes Chrome passive listener errors)
   useEffect(() => {
@@ -203,7 +146,7 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
 
       const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
       setTransform((prev) => {
-        const newScale = Math.min(Math.max(prev.scale * zoomFactor, 0.05), 14);
+        const newScale = Math.min(Math.max(prev.scale * zoomFactor, 0.05), 12);
         const newX = mouseX - (mouseX - prev.x) * (newScale / prev.scale);
         const newY = mouseY - (mouseY - prev.y) * (newScale / prev.scale);
         return { scale: newScale, x: newX, y: newY };
@@ -215,32 +158,26 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
   }, []);
 
   // Handle Drag/Pan with click discrimination
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.button !== 0) return;
-      isDraggingRef.current = true;
-      dragMovedRef.current = false;
-      setDragStart({ x: e.clientX - transform.x, y: e.clientY - transform.y });
-    },
-    [transform]
-  );
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    isDraggingRef.current = true;
+    dragMovedRef.current = false;
+    setDragStart({ x: e.clientX - transform.x, y: e.clientY - transform.y });
+  }, [transform]);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isDraggingRef.current) return;
-      const dx = e.clientX - (dragStart.x + transform.x);
-      const dy = e.clientY - (dragStart.y + transform.y);
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
-        dragMovedRef.current = true;
-      }
-      setTransform((prev) => ({
-        ...prev,
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      }));
-    },
-    [dragStart, transform]
-  );
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    const dx = e.clientX - (dragStart.x + transform.x);
+    const dy = e.clientY - (dragStart.y + transform.y);
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      dragMovedRef.current = true;
+    }
+    setTransform((prev) => ({
+      ...prev,
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
+    }));
+  }, [dragStart, transform]);
 
   const handleMouseUp = useCallback(() => {
     isDraggingRef.current = false;
@@ -341,13 +278,15 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
     (p) => p.geometry?.coordinates && p.geometry.coordinates.length >= 3
   );
 
+  // Determine label scale-adaptive font size with strong readability
+  const labelSize = Math.max(9, Math.min(17, 13 / transform.scale));
+
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full bg-[#f8fafc] overflow-hidden select-none"
+      className="relative w-full h-full bg-white overflow-hidden select-none"
       style={{
-        cursor:
-          isDraggingRef.current && dragMovedRef.current ? 'grabbing' : 'grab',
+        cursor: isDraggingRef.current && dragMovedRef.current ? 'grabbing' : 'grab',
         touchAction: 'none',
       }}
       onMouseDown={handleMouseDown}
@@ -364,38 +303,28 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
           transform: `translate3d(${transform.x}px, ${transform.y}px, 0px) scale(${transform.scale})`,
         }}
       >
-        {/* Layer 1: Source Blueprint Image / Raster Background */}
-        {resolvedImageUrl && (
-          <img
-            src={resolvedImageUrl}
-            alt="Layout Plan CAD Vector"
-            className="absolute max-w-none pointer-events-none select-none transition-opacity duration-300"
-            style={{
-              top: `${bounds.minY}px`,
-              left: `${bounds.minX}px`,
-              width: `${bounds.width}px`,
-              height: `${bounds.height}px`,
-              opacity: imageLoaded ? 1 : 0.4,
-              filter: 'contrast(1.05) brightness(1.02)',
-            }}
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageLoaded(true)}
-          />
-        )}
-
-        {/* Layer 2: Vector SVG Plot Polygons & Numbers */}
+        {/* Unified SVG Canvas: Blueprint Image + Vector Plot Polygons in matching coordinate space */}
         <svg
-          viewBox={`${bounds.minX} ${bounds.minY} ${bounds.width} ${bounds.height}`}
-          width={bounds.width}
-          height={bounds.height}
-          style={{
-            position: 'absolute',
-            top: `${bounds.minY}px`,
-            left: `${bounds.minX}px`,
-            overflow: 'visible',
-          }}
-          className="pointer-events-auto"
+          viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+          width={viewWidth}
+          height={viewHeight}
+          className="absolute top-0 left-0 pointer-events-auto"
         >
+          {/* Layer 1: Blueprint CAD Image rendered inside SVG for pixel-perfect alignment */}
+          {resolvedImageUrl && (
+            <image
+              href={resolvedImageUrl}
+              width={viewWidth}
+              height={viewHeight}
+              preserveAspectRatio="xMidYMid meet"
+              opacity={imageLoaded ? 1 : 0.6}
+              style={{
+                filter: 'contrast(1.05) brightness(1.02)',
+              }}
+            />
+          )}
+
+          {/* Layer 2: Vector SVG Plot Polygons & Numbers */}
           {plotsWithGeometry.map((plot) => {
             const isSelected = selectedPlotId === plot.id;
             const isHovered = hoveredPlot?.id === plot.id;
@@ -404,15 +333,10 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
             const pointsString = pointsToSvgPolygon(plot.geometry!.coordinates);
             const statusStyle = getStatusColor(plot.status);
 
-            // Responsive badge sizing based on layout coordinates
-            const badgeW = Math.max(16, bounds.width * 0.045);
-            const badgeH = Math.max(12, bounds.height * 0.035);
-            const fontSize = Math.max(9, Math.min(22, badgeH * 0.75));
-
             return (
               <g
                 key={plot.id}
-                className="transition-opacity duration-200 cursor-pointer"
+                className="transition-opacity duration-200"
                 style={{ opacity: isFilteredOut ? 0.2 : 1 }}
                 onMouseEnter={() => setHoveredPlot(plot)}
                 onMouseLeave={() => setHoveredPlot(null)}
@@ -423,10 +347,14 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                   }
                 }}
               >
-                {/* Plot Boundary Polygon - High visibility with crisp borders */}
+                {/* Plot Boundary Polygon - Exact Nammaplot colors and thin non-scaling borders */}
                 <polygon
                   points={pointsString}
-                  fill={isSelected ? '#2563eb' : statusStyle.fill}
+                  fill={
+                    isSelected
+                      ? '#2563eb'
+                      : statusStyle.fill
+                  }
                   stroke={
                     isSelected
                       ? '#1d4ed8'
@@ -434,41 +362,37 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
                       ? '#2563eb'
                       : statusStyle.stroke
                   }
-                  strokeWidth={isSelected ? 2.5 : isHovered ? 2.0 : 1.2}
+                  strokeWidth={isSelected ? 2.5 : isHovered ? 2 : 1.2}
                   vectorEffect="non-scaling-stroke"
                   strokeLinejoin="round"
-                  className="transition-all duration-150"
-                  fillOpacity={isSelected ? 0.65 : isHovered ? 0.70 : 0.45}
+                  className="cursor-pointer transition-all duration-150"
+                  fillOpacity={
+                    isSelected
+                      ? 0.55
+                      : isHovered
+                      ? 0.70
+                      : 0.40
+                  }
                 />
 
-                {/* Plot Number Label - Clean, high-contrast dark badge */}
+                {/* Plot Number Label - Clean and crisp */}
                 {showLabels && (
-                  <g pointerEvents="none">
-                    <rect
-                      x={centroid[0] - badgeW / 2}
-                      y={centroid[1] - badgeH / 2}
-                      width={badgeW}
-                      height={badgeH}
-                      rx={Math.max(3, badgeH * 0.2)}
-                      fill={isSelected ? '#1d4ed8' : '#0f172a'}
-                      opacity={0.92}
-                    />
-                    <text
-                      x={centroid[0]}
-                      y={centroid[1]}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontSize={fontSize}
-                      fontWeight="900"
-                      fill="#ffffff"
-                      style={{
-                        userSelect: 'none',
-                        letterSpacing: '-0.02em',
-                      }}
-                    >
-                      {plot.plot_number}
-                    </text>
-                  </g>
+                  <text
+                    x={centroid[0]}
+                    y={centroid[1]}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={labelSize}
+                    fontWeight="800"
+                    fill="#1e293b"
+                    stroke="#ffffff"
+                    strokeWidth={Math.max(1.2, 2.0 / transform.scale)}
+                    strokeLinejoin="round"
+                    paintOrder="stroke fill"
+                    style={{ pointerEvents: 'none', userSelect: 'none', letterSpacing: '-0.02em' }}
+                  >
+                    {plot.plot_number}
+                  </text>
                 )}
               </g>
             );
@@ -480,74 +404,88 @@ export const InteractivePlotMap: React.FC<InteractivePlotMapProps> = ({
       <div className="absolute top-16 sm:top-20 right-2.5 sm:right-4 z-20 flex flex-col gap-1 bg-white/95 backdrop-blur-md p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-md pointer-events-auto">
         <button
           onClick={handleZoomIn}
-          className="p-2 sm:p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors"
           title="Zoom In"
+          className="p-1.5 sm:p-2 text-slate-700 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors active:scale-95"
         >
-          <ZoomIn className="w-4 h-4 sm:w-5 sm:h-5" />
+          <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
         <button
           onClick={handleZoomOut}
-          className="p-2 sm:p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors"
           title="Zoom Out"
+          className="p-1.5 sm:p-2 text-slate-700 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors active:scale-95"
         >
-          <ZoomOut className="w-4 h-4 sm:w-5 sm:h-5" />
+          <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
+        <div className="h-px bg-slate-200 my-0.5" />
         <button
           onClick={fitToLayout}
-          className="p-2 sm:p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors"
-          title="Reset View / Fit to Screen"
+          title="Fit to Layout"
+          className="p-1.5 sm:p-2 text-slate-700 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors active:scale-95"
         >
-          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+          <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
         <button
           onClick={() => setShowLabels(!showLabels)}
-          className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-colors ${
-            showLabels
-              ? 'text-teal-700 bg-teal-50'
-              : 'text-slate-400 hover:text-slate-600'
+          title={showLabels ? 'Hide Plot Labels' : 'Show Plot Labels'}
+          className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-colors active:scale-95 ${
+            showLabels ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:bg-slate-100'
           }`}
-          title={showLabels ? 'Hide Plot Numbers' : 'Show Plot Numbers'}
         >
-          {showLabels ? (
-            <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-          ) : (
-            <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
-          )}
+          {showLabels ? <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
         </button>
         <button
           onClick={toggleFullscreen}
-          className="p-2 sm:p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors hidden sm:block"
-          title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Map'}
+          title="Toggle Fullscreen"
+          className="p-1.5 sm:p-2 text-slate-700 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-colors active:scale-95 hidden sm:block"
         >
-          {isFullscreen ? (
-            <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" />
-          ) : (
-            <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
-          )}
+          {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
         </button>
       </div>
 
-      {/* PLOT STATUS LEGEND AT BOTTOM-LEFT */}
-      <div className="fixed bottom-4 sm:bottom-6 left-3 sm:left-6 z-20 pointer-events-auto">
-        <div className="bg-white/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-md flex items-center gap-3 sm:gap-4 text-xs font-bold text-slate-700">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#4efa34] border border-emerald-600/30" />
-            <span>Available</span>
+      {/* LEGEND (DESKTOP ONLY) */}
+      <div className="absolute bottom-4 left-4 z-20 hidden md:flex items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-md text-xs font-semibold text-slate-700 pointer-events-none">
+        {[
+          { label: 'Available', color: '#22c55e', border: '#15803d' },
+          { label: 'Booked', color: '#3b82f6', border: '#1d4ed8' },
+          { label: 'Registered', color: '#f43f5e', border: '#be123c' },
+          { label: 'Blocked', color: '#eab308', border: '#a16207' },
+        ].map(({ label, color, border }) => (
+          <div key={label} className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color, border: `1.5px solid ${border}` }} />
+            <span>{label}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#343efa] border border-blue-600/30" />
-            <span>Booked</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#fa348a] border border-red-600/30" />
-            <span>Registered</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f3fa34] border border-amber-600/30" />
-            <span>Blocked</span>
-          </div>
-        </div>
+        ))}
       </div>
+
+      {/* HOVER TOOLTIP (DESKTOP) */}
+      {hoveredPlot && !selectedPlotId && (
+        <div className="absolute top-20 left-4 z-30 hidden md:block bg-slate-900/90 text-white backdrop-blur-md px-3 py-2 rounded-xl text-xs shadow-xl pointer-events-none border border-slate-700">
+          <p className="font-bold text-sm">Plot {hoveredPlot.plot_number}</p>
+          <p className="text-slate-300">{hoveredPlot.area_cents} Cents ({hoveredPlot.area_sqft} sq.ft)</p>
+          <p className="text-slate-300">Facing: {hoveredPlot.facing}</p>
+          <span
+            className={`inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+              hoveredPlot.status === 'available'
+                ? 'bg-emerald-500/20 text-emerald-300'
+                : hoveredPlot.status === 'booked'
+                ? 'bg-blue-500/20 text-blue-300'
+                : hoveredPlot.status === 'blocked'
+                ? 'bg-yellow-500/20 text-yellow-300'
+                : 'bg-slate-700 text-slate-300'
+            }`}
+          >
+            {getStatusLabel(hoveredPlot.status)}
+          </span>
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {plots.length > 0 && plotsWithGeometry.length === 0 && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-slate-900/80 backdrop-blur-sm text-center pointer-events-none text-white">
+          <p className="text-sm font-bold">No Plot Boundaries Configured</p>
+          <p className="text-xs text-slate-400 mt-1">Boundaries can be configured in the admin CAD editor.</p>
+        </div>
+      )}
     </div>
   );
 };

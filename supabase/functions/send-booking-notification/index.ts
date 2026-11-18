@@ -29,8 +29,6 @@ serve(async (req: Request) => {
       );
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     const notificationWebhook = Deno.env.get('SALES_ALERT_WEBHOOK_URL');
 
     // Build notification message

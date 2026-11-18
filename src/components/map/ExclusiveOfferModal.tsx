@@ -57,7 +57,7 @@ export const ExclusiveOfferModal: React.FC<ExclusiveOfferModalProps> = ({
         projectName: projectName,
         source: 'Exclusive Offer / Callback Request',
         message: `Customer requested callback / exclusive offer enquiry for project: ${projectName}`,
-      }).catch((emailErr) => console.warn('Lead notification error:', emailErr));
+      }).catch((emailErr) => console.warn('Lead notification notice:', emailErr));
 
       setSubmitted(true);
       setTimeout(() => {
