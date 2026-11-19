@@ -7,12 +7,12 @@ export interface ContactPerson {
 
 export const OFFICIAL_CONTACTS: ContactPerson[] = [
   {
-    name: 'JV Constructions Executive',
-    phone: '+91 00000 00000',
-    phoneRaw: '+910000000000',
-    role: 'Sales & Project Enquiries',
+    name: 'Jesu Vivian',
+    phone: '+91 77081 96238',
+    phoneRaw: '+917708196238',
+    role: 'Sales & Project Advisor',
   },
 ];
 
-export const PRIMARY_CONTACT_PHONE = '+91 00000 00000';
-export const ALL_CONTACTS_DISPLAY = 'JV Constructions Executive (+91 00000 00000)';
+export const PRIMARY_CONTACT_PHONE = '+91 77081 96238';
+export const ALL_CONTACTS_DISPLAY = 'Jesu Vivian (+91 77081 96238)';

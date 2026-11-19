@@ -78,9 +78,9 @@ export const Footer: React.FC = () => {
             <div className="space-y-2.5 text-xs text-slate-300">
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">JV Constructions Executive:</span>
-                  <a href="tel:+910000000000" className="text-teal-300 hover:text-teal-200 font-mono font-bold">
-                    +91 00000 00000
+                  <span className="font-bold text-white">Jesu Vivian:</span>
+                  <a href="tel:+917708196238" className="text-teal-300 hover:text-teal-200 font-mono font-bold">
+                    +91 77081 96238
                   </a>
                 </div>
               </div>

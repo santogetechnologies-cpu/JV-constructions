@@ -30,6 +30,7 @@ serve(async (req: Request) => {
     }
 
     const notificationWebhook = Deno.env.get('SALES_ALERT_WEBHOOK_URL');
+    const web3FormsKey = Deno.env.get('WEB3FORMS_ACCESS_KEY') || '9ce768b9-e04c-4186-89d5-338e797143a9';
 
     // Build notification message
     const alertMessage = {
@@ -49,6 +50,39 @@ serve(async (req: Request) => {
     };
 
     console.log('[send-booking-notification] Processed enquiry alert:', JSON.stringify(alertMessage));
+
+    // Send Web3Forms email notification
+    try {
+      const web3Payload = {
+        access_key: web3FormsKey,
+        from_name: 'JV Constructions Portal',
+        subject: `🚨 [Plot Booking] ${payload.customer_name} - ${payload.project_name} (Plot #${payload.plot_number})`,
+        name: payload.customer_name,
+        phone: payload.phone,
+        email: payload.email || undefined,
+        message: [
+          '🏡 JV CONSTRUCTIONS - NEW PLOT ENQUIRY',
+          `• Customer Name: ${payload.customer_name}`,
+          `• Phone: ${payload.phone}`,
+          `• Email: ${payload.email || 'N/A'}`,
+          `• City/Location: ${payload.location || 'N/A'}`,
+          `• Project: ${payload.project_name}`,
+          `• Plot Number: #${payload.plot_number}`,
+          `• Reference: ${payload.booking_reference}`,
+          `• Preferred Contact: ${payload.preferred_contact_method || 'Phone'}`,
+          `• Customer Message: ${payload.message || 'No additional notes provided.'}`,
+          '\n👉 View lead in Admin Portal: /admin/leads',
+        ].join('\n'),
+      };
+
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(web3Payload),
+      });
+    } catch (web3Err) {
+      console.warn('Web3Forms delivery notice:', web3Err);
+    }
 
     // If an external sales webhook (Slack/Discord/Zapier/CRM) is configured in Supabase secrets
     if (notificationWebhook) {
