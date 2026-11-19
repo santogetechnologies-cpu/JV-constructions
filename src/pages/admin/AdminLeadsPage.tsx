@@ -15,8 +15,16 @@ import {
   Tag,
   ShieldCheck,
 } from 'lucide-react';
-import { Lead, Booking } from '../../types/database';
-import { getBookingsAdmin, deleteBooking, getLeadsAdmin, deleteLead } from '../../services/api';
+import { Lead, Booking, BookingStatus } from '../../types/database';
+import {
+  getBookingsAdmin,
+  deleteBooking,
+  getLeadsAdmin,
+  deleteLead,
+  updateBookingStatus,
+  updateLeadStatus,
+  updatePlotStatusAtomic,
+} from '../../services/api';
 
 type LeadItem =
   | {
@@ -60,6 +68,7 @@ export const AdminLeadsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [deletingItem, setDeletingItem] = useState<LeadItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const loadData = async () => {
@@ -146,6 +155,61 @@ export const AdminLeadsPage: React.FC = () => {
       setNotice({ type: 'error', text: err.message || 'Failed to delete lead' });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleStatusChange = async (item: LeadItem, newStatus: string) => {
+    if (item.status === newStatus || updatingId) return;
+    setUpdatingId(item.id);
+    const oldStatus = item.status;
+
+    // Optimistic UI update
+    setItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, status: newStatus } : i))
+    );
+
+    try {
+      if (item.kind === 'booking') {
+        const bookingStatus = newStatus as BookingStatus;
+        await updateBookingStatus(item.id, bookingStatus);
+
+        // Synchronize plot inventory status if plot_id is associated
+        const plotId = item.raw.plot_id;
+        if (plotId) {
+          if (bookingStatus === 'on_hold') {
+            await updatePlotStatusAtomic(plotId, 'on_hold', 'Hold approved by administrator');
+          } else if (bookingStatus === 'confirmed' || bookingStatus === 'sold') {
+            await updatePlotStatusAtomic(
+              plotId,
+              bookingStatus === 'sold' ? 'sold' : 'booked',
+              `Reservation confirmed (${bookingStatus})`
+            );
+          } else if (['new_enquiry', 'contacted', 'visit_scheduled', 'cancelled'].includes(bookingStatus)) {
+            if (['on_hold', 'confirmed', 'sold', 'booking_pending'].includes(oldStatus)) {
+              await updatePlotStatusAtomic(plotId, 'available', 'Plot released back to available inventory');
+            }
+          }
+        }
+      } else {
+        await updateLeadStatus(item.id, newStatus as any);
+      }
+
+      setNotice({
+        type: 'success',
+        text: `Status updated to "${newStatus.replace('_', ' ')}" for ${item.customer_name}.`,
+      });
+    } catch (err: any) {
+      console.error('Failed to update status:', err);
+      // Revert optimistic update
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, status: oldStatus } : i))
+      );
+      setNotice({
+        type: 'error',
+        text: err.message || 'Failed to update status',
+      });
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -278,8 +342,12 @@ export const AdminLeadsPage: React.FC = () => {
           <option value="visit_scheduled">Visit Scheduled</option>
           <option value="booking_pending">Booking Pending</option>
           <option value="on_hold">On Hold</option>
-          <option value="confirmed">Confirmed</option>
+          <option value="confirmed">Confirmed / Booked</option>
+          <option value="sold">Sold / Closed</option>
           <option value="cancelled">Cancelled</option>
+          <option value="qualified">Qualified</option>
+          <option value="converted">Converted</option>
+          <option value="closed">Closed</option>
         </select>
       </div>
 
@@ -366,19 +434,54 @@ export const AdminLeadsPage: React.FC = () => {
                     </td>
 
                     <td className="py-4 px-4">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize ${
-                          item.status === 'confirmed' || item.status === 'sold'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : item.status === 'on_hold'
-                            ? 'bg-indigo-100 text-indigo-800'
-                            : item.status === 'cancelled'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}
-                      >
-                        {item.status.replace('_', ' ')}
-                      </span>
+                      <div className="relative inline-flex items-center">
+                        <select
+                          value={item.status}
+                          disabled={updatingId === item.id}
+                          onChange={(e) => handleStatusChange(item, e.target.value)}
+                          className={`appearance-none cursor-pointer text-[11px] font-bold pl-2.5 pr-6 py-1 rounded-full border transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                            item.status === 'confirmed' || item.status === 'sold' || item.status === 'converted'
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                              : item.status === 'on_hold'
+                              ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                              : item.status === 'cancelled' || item.status === 'closed'
+                              ? 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100'
+                              : item.status === 'contacted' || item.status === 'qualified'
+                              ? 'bg-purple-50 text-purple-800 border-purple-300 hover:bg-purple-100'
+                              : item.status === 'visit_scheduled'
+                              ? 'bg-indigo-50 text-indigo-800 border-indigo-300 hover:bg-indigo-100'
+                              : 'bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100'
+                          } ${updatingId === item.id ? 'opacity-50 cursor-wait' : ''}`}
+                        >
+                          {item.kind === 'booking' ? (
+                            <>
+                              <option value="new_enquiry">New Enquiry</option>
+                              <option value="contacted">Contacted</option>
+                              <option value="visit_scheduled">Visit Scheduled</option>
+                              <option value="booking_pending">Booking Pending</option>
+                              <option value="on_hold">On Hold</option>
+                              <option value="confirmed">Booked (Confirmed)</option>
+                              <option value="sold">Sold (Closed)</option>
+                              <option value="cancelled">Cancelled</option>
+                            </>
+                          ) : (
+                            <>
+                              <option value="new">New Enquiry</option>
+                              <option value="contacted">Contacted</option>
+                              <option value="qualified">Qualified</option>
+                              <option value="converted">Converted / Booked</option>
+                              <option value="closed">Closed / Sold</option>
+                            </>
+                          )}
+                        </select>
+                        {updatingId === item.id ? (
+                          <div className="absolute right-2 pointer-events-none">
+                            <div className="w-2.5 h-2.5 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
+                          </div>
+                        ) : (
+                          <span className="absolute right-2 pointer-events-none text-[8px] text-slate-500">▼</span>
+                        )}
+                      </div>
                     </td>
 
                     <td className="py-4 px-4 text-slate-400 text-[11px]">

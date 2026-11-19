@@ -827,6 +827,29 @@ export async function deleteLead(leadId: string): Promise<void> {
   if (error) throw error;
 }
 
+export async function updateLeadStatus(
+  leadId: string,
+  newStatus: 'new' | 'contacted' | 'qualified' | 'converted' | 'closed',
+  notes?: string
+): Promise<Lead> {
+  const updateData: any = {
+    status: newStatus,
+    updated_at: new Date().toISOString(),
+  };
+  if (notes !== undefined) {
+    updateData.notes = notes;
+  }
+  const { data, error } = await supabase
+    .from('leads')
+    .update(updateData)
+    .eq('id', leadId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Lead;
+}
+
 export async function getLeadsAdmin(projectId?: string): Promise<Lead[]> {
   let query = supabase
     .from('leads')
