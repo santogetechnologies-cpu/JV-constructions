@@ -252,8 +252,8 @@ export const InteractiveMapPage: React.FC = () => {
                 const isFarm = approval.toLowerCase().includes('farm');
                 const label = isFarm
                   ? 'Farm Land'
-                  : approval.toLowerCase().includes('dtcp')
-                  ? `DTCP: ${dtcpRef}`
+                  : /dtcp|\blp\b/i.test(approval)
+                  ? 'Plotted Layout'
                   : approval;
                 return (
                   <span

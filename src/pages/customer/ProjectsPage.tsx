@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, ArrowRight, Layers, Building2, Tag, ShieldCheck, Map, Trees } from 'lucide-react';
-import { Project, Plot, getProjectApprovalType } from '../../types/database';
+import { Project, Plot, getPublicApprovalLabel } from '../../types/database';
 import { getPublishedProjects, getPlotsWithGeometries } from '../../services/api';
 import { formatPriceCompact } from '../../lib/utils';
 
@@ -80,10 +80,10 @@ export const ProjectsPage: React.FC = () => {
             <span>Verified Blueprint Layouts</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
-            Approved Real Estate Projects
+            Real Estate Projects
           </h1>
           <p className="text-sm sm:text-base text-slate-500 mt-2 max-w-2xl">
-            Browse verified DTCP and LP approved layouts with exact CAD boundary mapping and live plot inventory.
+            Browse layouts with exact boundary mapping and live plot inventory.
           </p>
         </div>
 
@@ -150,12 +150,12 @@ export const ProjectsPage: React.FC = () => {
                   
                   <div className="flex items-center justify-between gap-3 relative z-10 mb-4">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-white text-teal-700 border border-teal-100 shadow-sm">
-                      {getProjectApprovalType(p).toLowerCase().includes('farm') ? (
+                      {getPublicApprovalLabel(p).toLowerCase().includes('farm') ? (
                         <Trees className="w-3.5 h-3.5 text-teal-600" />
                       ) : (
                         <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
                       )}
-                      {getProjectApprovalType(p)}
+                      {getPublicApprovalLabel(p)}
                     </span>
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200">
                       <MapPin className="w-3.5 h-3.5 text-teal-600" />
@@ -180,7 +180,7 @@ export const ProjectsPage: React.FC = () => {
                   <div>
                     <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
                       {p.description ||
-                        'Verified DTCP-approved layout with verified plot boundaries, clear road networks, and ready-to-build documentation.'}
+                        'Well-planned layout with clear plot boundaries, road networks and ready-to-build documentation.'}
                     </p>
 
                     {/* STATS METRICS */}

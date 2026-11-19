@@ -79,7 +79,7 @@ export const PublicDocumentsPage: React.FC = () => {
             Official Approvals: {project.name}
           </h1>
           <p className="text-xs text-slate-500 mt-2 leading-relaxed max-w-2xl">
-            Download certified copies of government layout sanctions, DTCP orders, Local Planning authority blueprints, and official survey certificates.
+            Download certified copies of layout plans, blueprints, and official survey certificates.
           </p>
 
           <div className="mt-8 space-y-4">

@@ -11,11 +11,11 @@ export const Footer: React.FC = () => {
           <div className="md:col-span-5 space-y-5">
             <img src="/logo.png" alt="JV Constructions" className="h-16 w-auto object-contain" />
             <p className="text-sm text-slate-500 leading-relaxed max-w-sm">
-              Interactive, blueprint-backed layouts with live plot availability and effortless reservations. Verified DTCP and Local Planning approvals.
+              Interactive, blueprint-backed layouts with live plot availability and effortless reservations.
             </p>
             <div className="inline-flex items-center gap-2 text-xs text-teal-700 font-semibold bg-teal-50 px-3 py-2 rounded-full border border-teal-100">
               <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Verified DTCP &amp; LP Approved Layouts</span>
+              <span>Transparent, verified layouts</span>
             </div>
           </div>
 
@@ -29,10 +29,10 @@ export const Footer: React.FC = () => {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0b3b64] mb-4">Compliance</h4>
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0b3b64] mb-4">Why JV</h4>
             <ul className="space-y-2.5 text-sm">
-              <li>DTCP Blueprints</li>
-              <li>LP Approved</li>
+              <li>Blueprint Layouts</li>
+              <li>Live Availability</li>
               <li>Survey Boundaries</li>
             </ul>
           </div>

@@ -15,7 +15,7 @@ import {
   ExternalLink,
   Navigation,
 } from 'lucide-react';
-import { Project, Plot, ProjectDocument, getProjectApprovalType } from '../../types/database';
+import { Project, Plot, ProjectDocument, getPublicApprovalLabel } from '../../types/database';
 import { OFFICIAL_CONTACTS } from '../../constants/contacts';
 import {
   getProjectBySlug,
@@ -99,16 +99,16 @@ export const ProjectOverviewPage: React.FC = () => {
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
               <span className={`px-3 py-1 rounded-full text-xs font-black inline-flex items-center gap-1.5 border ${
-                getProjectApprovalType(project).toLowerCase().includes('farm')
+                getPublicApprovalLabel(project).toLowerCase().includes('farm')
                   ? 'bg-emerald-100/90 text-emerald-950 border-emerald-300'
                   : 'bg-amber-400/15 text-amber-900 border-amber-400/30'
               }`}>
-                {getProjectApprovalType(project).toLowerCase().includes('farm') ? (
+                {getPublicApprovalLabel(project).toLowerCase().includes('farm') ? (
                   <Trees className="w-3.5 h-3.5 text-emerald-700" />
                 ) : (
                   <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
                 )}
-                {getProjectApprovalType(project)}
+                {getPublicApprovalLabel(project)}
               </span>
               <span className="flex items-center gap-1 text-xs text-slate-500 font-medium">
                 <MapPin className="w-3.5 h-3.5 text-amber-500" />
@@ -230,7 +230,7 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-extrabold text-base text-slate-900">
-                  Approved Project Documents ({documents.length})
+                  Project Documents ({documents.length})
                 </h3>
                 <Link
                   to={`/documents/${project.slug}`}

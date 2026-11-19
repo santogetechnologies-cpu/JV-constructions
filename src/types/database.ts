@@ -75,12 +75,18 @@ export interface ProjectWithStats extends Project {
 }
 
 export function getProjectApprovalType(project?: Partial<Project> | null): string {
-  if (!project) return 'DTCP Approved';
+  if (!project) return 'Plotted Layout';
   return (
     project.booking_policy?.approval_type ||
     (project as any).approval_type ||
-    'DTCP Approved'
+    'Plotted Layout'
   );
+}
+
+/** Customer-facing label: never exposes DTCP wording. */
+export function getPublicApprovalLabel(project?: Partial<Project> | null): string {
+  const t = getProjectApprovalType(project);
+  return /dtcp|\blp\b/i.test(t) ? 'Plotted Layout' : t;
 }
 
 export function getProjectMapLink(project?: Partial<Project> | null): string {
