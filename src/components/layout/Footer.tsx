@@ -1,102 +1,63 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Mail } from 'lucide-react';
+import { ShieldCheck, Mail, Phone } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-gradient-to-b from-[#07263e] to-[#041624] text-slate-300 text-sm border-t border-[#0c3757]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand info */}
-          <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="JV Constructions"
-                className="w-12 h-12 rounded-full object-contain ring-2 ring-teal-400/70 shadow-lg bg-white"
-              />
-              <div>
-                <span className="font-black text-lg tracking-tight text-white block leading-tight">
-                  JV <span className="text-teal-400">Constructions</span>
-                </span>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-300 block">
-                  Building Trust • Shaping Futures
-                </span>
-              </div>
-            </div>
-            <p className="text-xs text-slate-300/80 leading-relaxed">
-              Interactive CAD and blueprint-backed real estate layout inventory and plot reservation platform. Verified DTCP and Local Planning authority approvals.
+    <footer className="relative bg-white border-t border-slate-200 text-slate-600 text-sm overflow-hidden">
+      <div className="absolute inset-0 bg-blueprint opacity-60 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent,black_60%)]" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+          <div className="md:col-span-5 space-y-5">
+            <img src="/logo.png" alt="JV Constructions" className="h-16 w-auto object-contain" />
+            <p className="text-sm text-slate-500 leading-relaxed max-w-sm">
+              Interactive, blueprint-backed layouts with live plot availability and effortless reservations. Verified DTCP and Local Planning approvals.
             </p>
-            <div className="flex items-center gap-2 text-xs text-teal-300 font-semibold bg-[#0c3757]/60 p-2.5 rounded-xl border border-[#11476f]">
-              <ShieldCheck className="w-4 h-4 shrink-0 text-teal-400" />
+            <div className="inline-flex items-center gap-2 text-xs text-teal-700 font-semibold bg-teal-50 px-3 py-2 rounded-full border border-teal-100">
+              <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Verified DTCP &amp; LP Approved Layouts</span>
             </div>
           </div>
 
-          {/* Quick links */}
-          <div>
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-teal-400 mb-3">
-              Explore
-            </h4>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link to="/projects" className="text-slate-300 hover:text-white transition-colors">
-                  All Approved Projects
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="text-slate-300 hover:text-white transition-colors">
-                  Live Layout Inventory
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/login" className="text-slate-300 hover:text-white transition-colors">
-                  Admin Portal
-                </Link>
-              </li>
+          <div className="md:col-span-2">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0b3b64] mb-4">Explore</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link to="/projects" className="hover:text-teal-700 transition-colors">All Projects</Link></li>
+              <li><Link to="/" className="hover:text-teal-700 transition-colors">Live Inventory</Link></li>
+              <li><Link to="/admin/login" className="hover:text-teal-700 transition-colors">Admin Portal</Link></li>
             </ul>
           </div>
 
-          {/* Standards & Transparency */}
-          <div>
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-teal-400 mb-3">
-              Compliance
-            </h4>
-            <ul className="space-y-2 text-xs text-slate-300">
-              <li>DTCP Layout Blueprints</li>
-              <li>LP Approved Subdivisions</li>
-              <li>Official Survey Boundaries</li>
-              <li>Transparent Real-time Availability</li>
+          <div className="md:col-span-2">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0b3b64] mb-4">Compliance</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li>DTCP Blueprints</li>
+              <li>LP Approved</li>
+              <li>Survey Boundaries</li>
             </ul>
           </div>
 
-          {/* Contact & Support */}
-          <div>
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-teal-400 mb-3">
-              Direct Contact & Advisors
-            </h4>
-            <div className="space-y-2.5 text-xs text-slate-300">
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">Jesu Vivian:</span>
-                  <a href="tel:+917708196238" className="text-teal-300 hover:text-teal-200 font-mono font-bold">
-                    +91 77081 96238
-                  </a>
+          <div className="md:col-span-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0b3b64] mb-4">Contact</h4>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center gap-2.5">
+                <span className="w-8 h-8 rounded-full bg-slate-100 text-[#0b3b64] flex items-center justify-center"><Phone className="w-3.5 h-3.5" /></span>
+                <div className="leading-tight">
+                  <div className="font-semibold text-slate-900">Jesu Vivian</div>
+                  <a href="tel:+917708196238" className="text-teal-700 hover:underline font-mono text-xs">+91 77081 96238</a>
                 </div>
               </div>
-              <div className="pt-2 border-t border-[#0c3757] flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-teal-400 shrink-0" />
-                <span className="truncate">contact@jvconstructions.com</span>
+              <div className="flex items-center gap-2.5">
+                <span className="w-8 h-8 rounded-full bg-slate-100 text-[#0b3b64] flex items-center justify-center"><Mail className="w-3.5 h-3.5" /></span>
+                <span className="truncate text-xs">contact@jvconstructions.com</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-[#0c3757]/80 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-6 border-t border-slate-200 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>© {new Date().getFullYear()} JV Constructions. All rights reserved.</p>
-          <p className="text-[11px] text-teal-400/80 font-medium">
-            Building Trust • Shaping Futures | Official DTCP &amp; Local Planning Sanctions.
-          </p>
+          <p>Building Trust • Shaping Futures</p>
         </div>
       </div>
     </footer>

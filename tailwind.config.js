@@ -59,16 +59,20 @@ export default {
           900: '#123f3b',
         },
         gold: {
-          50: '#fefce8',
-          100: '#fef9c3',
-          200: '#fef08a',
-          300: '#fde047',
-          400: '#facc15',
+          50: '#effbf9',
+          100: '#cbf4ee',
+          200: '#98e9de',
+          300: '#5cd7c7',
+          400: '#2cbda9',
           500: '#16897b', // Re-routed gold highlights to JV Teal
           600: '#0f766a',
           700: '#105e56',
           800: '#114b45',
           900: '#123f3b',
+        },
+        amber: {
+          50: '#f0f7ff', 100: '#e0effe', 200: '#bae0fd', 300: '#7cc5fb', 400: '#38a5f8',
+          500: '#0284c7', 600: '#0369a1', 700: '#075985', 800: '#0c4a6e', 900: '#0b3b64', 950: '#062542',
         },
         navy: {
           800: '#0c3757',
@@ -83,6 +87,10 @@ export default {
           sold: '#ef4444',      // Red
           blocked: '#f97316',   // Orange
         }
+      },
+      boxShadow: {
+        soft: '0 1px 2px rgba(11,59,100,.04), 0 8px 24px -6px rgba(11,59,100,.10)',
+        lift: '0 2px 4px rgba(11,59,100,.05), 0 20px 40px -12px rgba(11,59,100,.18)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

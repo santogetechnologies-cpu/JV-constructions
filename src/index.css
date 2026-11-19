@@ -3,72 +3,88 @@
 @tailwind utilities;
 
 @layer base {
+  html { scroll-behavior: smooth; }
   body {
-    @apply bg-[#f4f7fb] text-slate-900 font-sans antialiased;
+    @apply bg-white text-slate-900 font-sans antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
+  ::selection { background: #cbf4ee; color: #072a47; }
 }
 
-/* JV Constructions architectural navy & teal luxury styling */
+/* ---------- JV Constructions design system: white, navy #0b3b64, teal #16897b ---------- */
+
+/* Dark "hero" surfaces become clean white panels */
 .bg-glossy-green,
 .bg-glossy-navy,
 .bg-jv-navy {
-  background: radial-gradient(circle at 30% 20%, #0d4677 0%, #083358 45%, #052440 85%, #031526 100%);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 24px -4px rgba(3, 21, 38, 0.4);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(11, 59, 100, 0.04), 0 10px 30px -8px rgba(11, 59, 100, 0.14);
 }
-
 .bg-glossy-green-subtle,
 .bg-glossy-navy-subtle,
 .bg-jv-navy-subtle {
-  background: linear-gradient(135deg, #052440 0%, #083358 50%, #0c3e69 100%);
+  background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
 }
 
+/* Primary action: navy -> teal gradient */
 .bg-glossy-green-btn,
 .bg-jv-btn {
-  background: linear-gradient(180deg, #16897b 0%, #0f766a 50%, #0b584f 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(15, 118, 106, 0.35);
+  background: linear-gradient(135deg, #0b3b64 0%, #0f5a86 55%, #16897b 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 8px 20px -6px rgba(11, 59, 100, 0.45);
+  color: #fff;
 }
-
 .bg-glossy-green-btn:hover,
 .bg-jv-btn:hover {
-  background: linear-gradient(180deg, #1aa191 0%, #128275 50%, #0d6359 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 20px rgba(15, 118, 106, 0.45);
+  filter: brightness(1.08);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 12px 26px -6px rgba(11, 59, 100, 0.55);
 }
 
 .text-gold-metallic,
 .text-jv-teal {
-  background: linear-gradient(135deg, #5cd7c7 0%, #2cbda9 40%, #16897b 100%);
+  background: linear-gradient(135deg, #0b3b64 0%, #16897b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
 .border-gold-glow,
 .border-teal-glow {
-  border-color: rgba(22, 137, 123, 0.45);
-  box-shadow: 0 0 16px rgba(22, 137, 123, 0.22);
+  border-color: rgba(22, 137, 123, 0.35);
+  box-shadow: 0 0 0 4px rgba(22, 137, 123, 0.08);
 }
-
 .gold-badge,
 .teal-badge {
-  background: linear-gradient(135deg, rgba(22, 137, 123, 0.12) 0%, rgba(15, 118, 106, 0.18) 100%);
-  border: 1px solid rgba(22, 137, 123, 0.35);
+  background: #effbf9;
+  border: 1px solid #cbf4ee;
   color: #0f766a;
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Reusable aesthetic helpers */
+.bg-blueprint {
+  background-image:
+    linear-gradient(to right, rgba(11, 59, 100, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 59, 100, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
+.bg-dots {
+  background-image: radial-gradient(rgba(11, 59, 100, 0.14) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.text-brand-gradient {
+  background: linear-gradient(120deg, #0b3b64 10%, #16897b 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.animate-floaty { animation: floaty 7s ease-in-out infinite; }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.animate-rise { animation: riseIn .7s cubic-bezier(.2,.7,.2,1) both; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #0b3b64;
-}
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #0b3b64; }

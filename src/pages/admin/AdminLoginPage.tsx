@@ -34,7 +34,7 @@ export const AdminLoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-3 sm:p-4">
+    <div className="min-h-screen bg-white bg-blueprint flex flex-col justify-center items-center p-3 sm:p-4 relative overflow-hidden">
       <div className="w-full max-w-md">
         {/* LOGO */}
         <div className="text-center mb-6 sm:mb-8">
@@ -42,7 +42,7 @@ export const AdminLoginPage: React.FC = () => {
             <img
               src="/logo.png"
               alt="JV Constructions"
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain mx-auto ring-4 ring-teal-400/60 shadow-xl bg-white"
+              className="h-20 sm:h-24 w-auto object-contain mx-auto"
             />
           </div>
           <h2 className="text-lg font-black text-slate-900 tracking-tight">JV Constructions</h2>
@@ -52,7 +52,7 @@ export const AdminLoginPage: React.FC = () => {
         </div>
 
         {/* LOGIN CARD */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-5 sm:p-8">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-lift p-5 sm:p-8">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 font-medium flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />

@@ -145,32 +145,32 @@ export const ProjectsPage: React.FC = () => {
                 className="bg-white rounded-3xl border border-slate-200/90 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1"
               >
                 {/* Visual Header / Blueprint Theme */}
-                <div className="relative bg-gradient-to-br from-[#06281b] via-[#093c27] to-[#041d13] p-6 sm:p-8 text-white overflow-hidden border-b border-emerald-950">
+                <div className="relative bg-gradient-to-br from-blue-50 via-white to-teal-50 p-6 sm:p-8 text-[#0b3b64] overflow-hidden border-b border-slate-100">
                   <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#6ee7b7_1px,transparent_1px)] [background-size:16px_16px]" />
                   
                   <div className="flex items-center justify-between gap-3 relative z-10 mb-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-400/15 text-amber-300 border border-amber-400/30 backdrop-blur-md">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-white text-teal-700 border border-teal-100 shadow-sm">
                       {getProjectApprovalType(p).toLowerCase().includes('farm') ? (
-                        <Trees className="w-3.5 h-3.5 text-emerald-300" />
+                        <Trees className="w-3.5 h-3.5 text-teal-600" />
                       ) : (
-                        <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
                       )}
                       {getProjectApprovalType(p)}
                     </span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-emerald-100 backdrop-blur-md">
-                      <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200">
+                      <MapPin className="w-3.5 h-3.5 text-teal-600" />
                       {p.city}, {p.state}
                     </span>
                   </div>
 
-                  <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-amber-200 transition-colors relative z-10 tracking-tight">
+                  <h3 className="text-2xl sm:text-3xl font-black text-[#0b3b64] group-hover:text-teal-700 transition-colors relative z-10 tracking-tight">
                     {p.name}
                   </h3>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-emerald-100/80 mt-2 relative z-10 font-medium">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 mt-2 relative z-10 font-medium">
                     {p.address && <span>{p.address}</span>}
                     {p.total_land_area && (
-                      <span className="text-amber-300 font-bold">• Extent: {p.total_land_area}</span>
+                      <span className="text-teal-700 font-bold">• Extent: {p.total_land_area}</span>
                     )}
                   </div>
                 </div>
@@ -224,9 +224,9 @@ export const ProjectsPage: React.FC = () => {
                     </Link>
                     <Link
                       to={`/projects/${p.slug}/map`}
-                      className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-glossy-green-btn hover:opacity-95 text-white text-xs sm:text-sm font-black shadow-lg shadow-emerald-950/20 border border-amber-400/30 transition-all transform hover:scale-[1.02] active:scale-100 cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-full bg-glossy-green-btn hover:opacity-95 text-white text-xs sm:text-sm font-black shadow-lg shadow-emerald-950/20 border border-amber-400/30 transition-all transform hover:scale-[1.02] active:scale-100 cursor-pointer"
                     >
-                      <Map className="w-4 h-4 text-amber-200" />
+                      <Map className="w-4 h-4 text-white" />
                       <span>Open Interactive CAD Map</span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>
