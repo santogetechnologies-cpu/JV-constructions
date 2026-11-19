@@ -620,13 +620,17 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
       }
 
       for (const p of parsed.plots) {
+        const plotCents = p.areaCentsTable || 32.0;
+        const autoPrice = p.priceInr || Math.round(plotCents * 75000);
+
         const plotRecord = await createOrUpdatePlot({
           project_id: layout.project_id,
           plot_number: p.plotNumber,
-          area_cents: p.areaCentsTable || 32.0,
-          area_sqft: centsToSqft(p.areaCentsTable || 32.0),
+          description: p.title || `Plot #${p.plotNumber}`,
+          area_cents: plotCents,
+          area_sqft: centsToSqft(plotCents),
           facing: (p.facing as any) || 'East',
-          price_inr: p.priceInr || 2500000,
+          price_inr: autoPrice,
           status: p.status || 'available',
         });
         await savePlotGeometry(plotRecord.id, layout.id, p.points, 'local_cad');
@@ -1410,8 +1414,8 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
                   Import HTML Blueprint Polygons
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Upload your <code className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded font-mono font-bold">plot_viewer (1).html</code> file or paste its HTML code.
-                  All 63 plot shapes and table areas will be imported directly into this layout canvas.
+                  Upload your <code className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded font-mono font-bold">.html</code> file or paste its HTML code.
+                  All plot shapes and table areas will be imported directly into this layout canvas.
                 </p>
               </div>
               <button
@@ -1484,7 +1488,7 @@ export const PlotBoundaryEditor: React.FC<PlotBoundaryEditorProps> = ({
                 {isImportingHtml ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Importing 63 Plots...</span>
+                    <span>Importing Plots...</span>
                   </>
                 ) : (
                   <>

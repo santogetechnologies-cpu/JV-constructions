@@ -275,6 +275,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
         const plotRecord = await createOrUpdatePlot({
           project_id: project.id,
           plot_number: p.plotNumber,
+          description: p.title || `Plot #${p.plotNumber}`,
           area_cents: plotCents,
           area_sqft: centsToSqft(plotCents),
           facing: (p.facing as any) || 'East',
@@ -354,6 +355,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
         const plotRecord = await createOrUpdatePlot({
           project_id: project.id,
           plot_number: p.plotNumber,
+          description: p.title || `Plot #${p.plotNumber}`,
           area_cents: plotCents,
           area_sqft: centsToSqft(plotCents),
           facing: (p.facing as any) || 'East',
@@ -462,7 +464,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
             Layout & Plot Editor: {project.name}
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Upload clickable HTML blueprint plan. All 63 plot numbers and boundaries are pre-digitized and 100% clickable.
+            Upload clickable HTML blueprint plan. All plot numbers and boundaries are pre-digitized and 100% clickable.
           </p>
         </div>
 
@@ -493,7 +495,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
                   Upload your <code className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded font-mono font-bold">plot_viewer (1).html</code> file or paste its HTML code.
-                  All 63 plot shapes and table areas will be imported instantly into Supabase.
+                  All plot shapes and table areas will be imported instantly into Supabase.
                 </p>
               </div>
               <button
@@ -566,7 +568,7 @@ export const AdminProjectLayoutPage: React.FC = () => {
                 {isImportingHtml ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Importing 63 Plots...</span>
+                    <span>Importing Plots...</span>
                   </>
                 ) : (
                   <>

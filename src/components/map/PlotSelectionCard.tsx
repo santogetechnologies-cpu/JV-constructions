@@ -52,7 +52,7 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-black text-slate-950 tracking-tight leading-none">
-              Plot {plot.plot_number}
+              {plot.description || (plot.plot_number === 'Park' ? 'Park' : `Plot ${plot.plot_number}`)}
             </h3>
             {phaseName && (
               <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
@@ -125,7 +125,7 @@ export const PlotSelectionCard: React.FC<PlotSelectionCardProps> = ({
         <div className="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start justify-between gap-2">
           <div>
             <h3 className="text-base font-black text-slate-950 leading-tight">
-              {phaseName ? `${phaseName}: Plot no: ${plot.plot_number}` : `Plot no: ${plot.plot_number}`}
+              {plot.description || (phaseName ? `${phaseName}: Plot no: ${plot.plot_number}` : (plot.plot_number === 'Park' ? 'Park' : `Plot no: ${plot.plot_number}`))}
             </h3>
           </div>
           <button

@@ -154,36 +154,11 @@ export async function getPlotsWithGeometries(projectId: string, layoutId?: strin
   if (plotsError) throw plotsError;
   if (!plotsData || plotsData.length === 0) return [];
 
-  // Filter strictly to valid plots 1 to 63
-  const validPlotsData = plotsData.filter((p) => {
-    const n = parseInt(p.plot_number, 10);
-    return !isNaN(n) && n >= 1 && n <= 63;
-  });
-
-  // Auto-clean any extraneous plot records (> 63 or non-numeric) from the database
-  const roguePlots = plotsData.filter((p) => {
-    const n = parseInt(p.plot_number, 10);
-    return isNaN(n) || n < 1 || n > 63;
-  });
-  if (roguePlots.length > 0) {
-    const rogueIds = roguePlots.map((p) => p.id);
-    supabase
-      .from('plot_geometries')
-      .delete()
-      .in('plot_id', rogueIds)
-      .then(() => {
-        supabase
-          .from('plots')
-          .delete()
-          .in('id', rogueIds)
-          .then(() => {
-            console.log(`Auto-cleaned ${roguePlots.length} extraneous plot records (>63).`);
-          });
-      });
-  }
-
-  // Sort strictly numerically 1 to 63
-  validPlotsData.sort((a, b) => parseInt(a.plot_number, 10) - parseInt(b.plot_number, 10));
+  // Sort plots naturally (handles 1, 2, 10, 1-1, 1-2, 2-1, 2-12, Park, etc.)
+  const validPlotsData = [...plotsData];
+  validPlotsData.sort((a, b) =>
+    a.plot_number.localeCompare(b.plot_number, undefined, { numeric: true, sensitivity: 'base' })
+  );
 
   // 2. Fetch geometries
   let geomQuery = supabase
@@ -652,12 +627,9 @@ export async function updatePlotStatusAtomic(plotId: string, newStatus: PlotStat
 }
 
 export async function createOrUpdatePlot(plotData: Partial<Plot>): Promise<Plot> {
-  // Validate plot number is strictly 1 to 63
-  if (plotData.plot_number) {
-    const num = parseInt(plotData.plot_number, 10);
-    if (isNaN(num) || num < 1 || num > 63) {
-      throw new Error(`Invalid plot number "${plotData.plot_number}". Only plots 1 to 63 are supported.`);
-    }
+  // Validate plot number is non-empty
+  if (!plotData.plot_number || !plotData.plot_number.trim()) {
+    throw new Error('Plot number is required.');
   }
 
   if (plotData.id) {

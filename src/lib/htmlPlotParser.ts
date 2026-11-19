@@ -1,6 +1,7 @@
 export interface ParsedPlot {
   plotNumber: string;
   points: [number, number][];
+  title?: string;
   areaCentsTable?: number;
   facing?: string;
   priceInr?: number;
@@ -45,11 +46,12 @@ export function parsePointsString(pointsStr: string): [number, number][] {
 }
 
 /**
- * Parses an interactive plot viewer HTML file (e.g. plot_viewer (1).html) containing:
- * - <image href="..." width="W" height="H">
- * - <g class="plot" data-n="..."> <polygon points="x,y x,y..." /> ... </g>
- * - Embedded JavaScript data objects or arrays with plot details
- * - Strictly parses plots 1 to 63 only (never 64)
+ * Universally parses any interactive plot blueprint HTML file containing:
+ * - <svg viewBox="0 0 W H"> or JavaScript viewBox arrays let vb=[0, 0, W, H]
+ * - Background <image href="..." width="W" height="H">
+ * - Clickable plot shapes: <g class="plot" data-n="X"> <polygon points="..." /> </g>
+ * - Embedded plot metadata dictionaries: const D = { "1-1": { title: "Phase 1 - Plot 1", lines: [...] } }
+ * - Supports any number of plots, multi-phase naming (e.g. 1-1, 2-12, Park), and any canvas dimensions
  */
 export function parseHtmlBlueprint(htmlContent: string): ParsedHtmlBlueprint {
   const errors: string[] = [];
@@ -62,7 +64,7 @@ export function parseHtmlBlueprint(htmlContent: string): ParsedHtmlBlueprint {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
 
-    // 1. Extract Dimensions
+    // 1. Extract Dimensions from SVG or JavaScript constants
     const svgEl = doc.querySelector('svg');
     if (svgEl) {
       const vb = svgEl.getAttribute('viewBox');
@@ -75,8 +77,16 @@ export function parseHtmlBlueprint(htmlContent: string): ParsedHtmlBlueprint {
       }
     }
 
+    // Check script viewBox: let vb=[0,0,5265,3720]; or const vb=[...];
+    const jsVbMatch = htmlContent.match(/(?:let|const|var)\s+vb\s*=\s*\[\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\]/i);
+    if (jsVbMatch && parseFloat(jsVbMatch[3]) > 0 && parseFloat(jsVbMatch[4]) > 0) {
+      width = parseFloat(jsVbMatch[3]);
+      height = parseFloat(jsVbMatch[4]);
+    }
+
     // Check JS constants like: const W = 1820, H = 2576
-    const dimMatch = htmlContent.match(/const\s+W\s*=\s*(\d+)\s*,\s*H\s*=\s*(\d+)/i) ||
+    const dimMatch =
+      htmlContent.match(/const\s+W\s*=\s*(\d+)\s*,\s*H\s*=\s*(\d+)/i) ||
       htmlContent.match(/let\s+W\s*=\s*(\d+)\s*,\s*H\s*=\s*(\d+)/i) ||
       htmlContent.match(/var\s+W\s*=\s*(\d+)\s*,\s*H\s*=\s*(\d+)/i);
     if (dimMatch) {
@@ -105,173 +115,184 @@ export function parseHtmlBlueprint(htmlContent: string): ParsedHtmlBlueprint {
     }
 
     if (!imageUrl) {
-      const imgUrlMatch = htmlContent.match(/(?:const|let|var)\s+imgUrl\s*=\s*['"]([^'"]+)['"]/i) ||
-        htmlContent.match(/getPublicUrl\(['"]([^'"]+)['"]\)/i);
+      const imgUrlMatch =
+        htmlContent.match(/(?:const|let|var)\s+imgUrl\s*=\s*['"]([^'"]+)['"]/i) ||
+        htmlContent.match(/getPublicUrl\(['"]([^'"]+)['"]\)/i) ||
+        htmlContent.match(/<image[^>]+(?:href|xlink:href)=["']([^"']+)["']/i);
       if (imgUrlMatch) imageUrl = imgUrlMatch[1];
     }
 
-    // 3. Extract metadata from JS script objects (e.g. data = { "1": { table: 32, ... }, "63": { table: 28.5 } })
-    const metadataByPlotNum: Record<string, { area?: number; facing?: string; price?: number; status?: string }> = {};
-
-    // Collect all script text
-    const scriptTags = doc.querySelectorAll('script');
-    let allScriptText = htmlContent;
-    if (scriptTags.length > 0) {
-      allScriptText = Array.from(scriptTags).map((s) => s.textContent || '').join('\n') + '\n' + htmlContent;
-    }
-
-    const entryRegex = /(?:["']?(\d{1,2})["']?\s*:\s*\{([^}]+)\})/g;
-    let match: RegExpExecArray | null;
-    while ((match = entryRegex.exec(allScriptText)) !== null) {
-      const plotNo = match[1];
-      const num = parseInt(plotNo, 10);
-      // Strictly 1 to 63
-      if (isNaN(num) || num < 1 || num > 63) continue;
-      const propsStr = match[2];
-
-      const areaMatch = propsStr.match(/(?:table_area|table|area_cents|area|cents)\s*:\s*([0-9.]+)/i);
-      const facingMatch = propsStr.match(/(?:facing|direction)\s*:\s*['"]([^'"]+)['"]/i);
-      const priceMatch = propsStr.match(/(?:price|price_inr|rate)\s*:\s*([0-9.]+)/i);
-      const statusMatch = propsStr.match(/(?:status|state)\s*:\s*['"]([^'"]+)['"]/i);
-
-      metadataByPlotNum[plotNo] = {
-        area: areaMatch ? parseFloat(areaMatch[1]) : metadataByPlotNum[plotNo]?.area,
-        facing: facingMatch ? facingMatch[1] : metadataByPlotNum[plotNo]?.facing,
-        price: priceMatch ? parseFloat(priceMatch[1]) : metadataByPlotNum[plotNo]?.price,
-        status: statusMatch ? statusMatch[1] : metadataByPlotNum[plotNo]?.status,
-      };
-    }
-
-    // 4. Strategy A: Check for JS plot array: plots = [{ plot_no: 1, points: [[x,y],...], area_cents_table: 32 }, ...]
-    const scriptPlotsMatch = htmlContent.match(/(?:plots|plotData)\s*=\s*(\[\s*\{[\s\S]*?\}\s*\])/i);
-    if (scriptPlotsMatch) {
+    // 3. Extract metadata from JS dictionary D (e.g. const D = { "1-1": { title: "Phase 1 - Plot 1", lines: [...] } })
+    let dictD: Record<string, { title?: string; lines?: string[] }> = {};
+    const dMatch = htmlContent.match(/(?:const|let|var)\s+D\s*=\s*(\{[\s\S]*?\});/);
+    if (dMatch) {
       try {
-        const rawJson = scriptPlotsMatch[1];
-        const sanitizedJson = rawJson
-          .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":')
-          .replace(/'/g, '"');
-        const parsedData = JSON.parse(sanitizedJson);
-
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-          for (const item of parsedData) {
-            const plotNum = String(item.plot_no || item.plot_number || item.id || '');
-            const num = parseInt(plotNum, 10);
-            // Strictly allow only plots 1 to 63 (never 64)
-            if (isNaN(num) || num < 1 || num > 63) continue;
-
-            let pts: [number, number][] = [];
-            if (Array.isArray(item.points)) {
-              pts = item.points.map((p: any) => [Number(p[0] || p.x || 0), Number(p[1] || p.y || 0)]);
-            } else if (typeof item.points === 'string') {
-              pts = parsePointsString(item.points);
-            }
-
-            if (pts.length >= 3) {
-              const meta = metadataByPlotNum[plotNum];
-              const defaultArea = LAYOUT_63_TABLE_AREAS[plotNum] || 32.0;
-              plots.push({
-                plotNumber: plotNum,
-                points: pts,
-                areaCentsTable: meta?.area || parseFloat(item.area_cents_table || item.area_cents || item.area || String(defaultArea)) || defaultArea,
-                facing: meta?.facing || item.facing || (num % 2 === 0 ? 'East' : 'West'),
-                priceInr: meta?.price || parseFloat(item.price_inr || item.price || '2500000') || 2500000,
-                status: (item.status === 'booked' || item.status === 'on_hold' || item.status === 'sold') ? item.status : 'available',
-              });
-            }
-          }
-        }
-      } catch (scriptErr) {
-        // Fallback to DOM parsing
+        dictD = JSON.parse(dMatch[1]);
+      } catch {
+        try {
+          const sanitized = dMatch[1]
+            .replace(/(['"])?([a-zA-Z0-9_-]+)(['"])?\s*:/g, '"$2":')
+            .replace(/'/g, '"');
+          dictD = JSON.parse(sanitized);
+        } catch {}
       }
     }
 
-    // 5. Strategy B: Extract from SVG elements in the DOM
-    // Matches: <g class="plot" data-n="1"> <polygon points="..." /> </g>
+    // 4. Extract plot elements (<g class="plot" data-n="..."> <polygon points="..." /> </g>)
+    const plotElements = doc.querySelectorAll('.plot, g[data-n], [data-n], g[data-plot], [id^="plot-"], [id^="plot_"]');
+
+    for (let i = 0; i < plotElements.length; i++) {
+      const el = plotElements[i];
+
+      // Find polygon element
+      const polyEl = el.tagName.toLowerCase() === 'polygon' ? el : el.querySelector('polygon');
+      if (!polyEl) continue;
+
+      const pointsAttr = polyEl.getAttribute('points');
+      if (!pointsAttr) continue;
+
+      const pts = parsePointsString(pointsAttr);
+      if (pts.length < 3) continue;
+
+      // Determine plot identifier
+      const rawPlotId =
+        el.getAttribute('data-n') ||
+        el.getAttribute('data-plot') ||
+        polyEl.getAttribute('data-n') ||
+        polyEl.getAttribute('data-plot') ||
+        el.id?.replace(/^plot[-_]?/i, '') ||
+        polyEl.id?.replace(/^plot[-_]?/i, '') ||
+        el.querySelector('text')?.textContent?.trim() ||
+        String(i + 1);
+
+      const trimmedId = rawPlotId.trim();
+      if (!trimmedId) continue;
+
+      // Format clean plot number
+      let cleanPlotNumber = trimmedId;
+      if (/^[0-9]+-park$/i.test(trimmedId) || /^park$/i.test(trimmedId)) {
+        cleanPlotNumber = 'Park';
+      }
+
+      // Check D dictionary for title and table area
+      const dInfo = dictD[trimmedId] || dictD[cleanPlotNumber];
+      let plotTitle = dInfo?.title || `Plot #${cleanPlotNumber}`;
+      let areaCents = 32.0;
+
+      if (dInfo && Array.isArray(dInfo.lines)) {
+        for (const line of dInfo.lines) {
+          const areaMatch = line.match(/Table area:\s*([0-9.]+)\s*cents/i) || line.match(/([0-9.]+)\s*cents/i);
+          if (areaMatch) {
+            areaCents = parseFloat(areaMatch[1]);
+            break;
+          }
+        }
+      }
+
+      // If not in D, check DOM attributes
+      if (areaCents === 32.0) {
+        const areaAttr = el.getAttribute('data-area') || el.getAttribute('data-cents') || polyEl.getAttribute('data-area');
+        if (areaAttr && !isNaN(parseFloat(areaAttr))) {
+          areaCents = parseFloat(areaAttr);
+        } else if (LAYOUT_63_TABLE_AREAS[cleanPlotNumber]) {
+          areaCents = LAYOUT_63_TABLE_AREAS[cleanPlotNumber];
+        }
+      }
+
+      // Facing
+      const facingAttr = el.getAttribute('data-facing') || 'East';
+      // Price
+      const priceAttr = Math.round(areaCents * 75000);
+      // Status
+      let statusAttr: 'available' | 'booked' | 'on_hold' | 'sold' = 'available';
+      const classStr = (el.getAttribute('class') || '') + ' ' + (polyEl.getAttribute('class') || '');
+      if (classStr.includes('sold')) statusAttr = 'sold';
+      else if (classStr.includes('booked')) statusAttr = 'booked';
+      else if (classStr.includes('on_hold') || classStr.includes('warning') || classStr.includes('needs_review')) {
+        // warning/needs_review in CAD means available with review notes
+        statusAttr = 'available';
+      }
+
+      // Avoid duplicates
+      const existing = plots.find((p) => p.plotNumber === cleanPlotNumber);
+      if (!existing) {
+        plots.push({
+          plotNumber: cleanPlotNumber,
+          points: pts,
+          title: plotTitle,
+          areaCentsTable: areaCents,
+          facing: facingAttr,
+          priceInr: priceAttr,
+          status: statusAttr,
+        });
+      }
+    }
+
+    // Fallback: If querySelector did not find elements (e.g. strict XML namespace), use regex
     if (plots.length === 0) {
-      const plotElements = doc.querySelectorAll('.plot, g[data-n], [data-n], g[data-plot], [id^="plot-"], [id^="plot_"]');
+      const gRegex = /<g[^>]+class=["'][^"']*plot[^"']*["'][^>]*data-n=["']([^"']+)["'][^>]*>([\s\S]*?)<\/g>/gi;
+      let match: RegExpExecArray | null;
+      while ((match = gRegex.exec(htmlContent)) !== null) {
+        const rawDataN = match[1].trim();
+        const body = match[2];
+        const polyMatch = body.match(/<polygon[^>]+points=["']([^"']+)["']/i);
+        if (!polyMatch) continue;
 
-      for (let i = 0; i < plotElements.length; i++) {
-        const el = plotElements[i];
-
-        // Find polygon element
-        const polyEl = el.tagName.toLowerCase() === 'polygon' ? el : el.querySelector('polygon');
-        if (!polyEl) continue;
-
-        const pointsAttr = polyEl.getAttribute('points');
-        if (!pointsAttr) continue;
-
-        const pts = parsePointsString(pointsAttr);
+        const pts = parsePointsString(polyMatch[1]);
         if (pts.length < 3) continue;
 
-        // Determine plot number
-        const plotNumStr =
-          el.getAttribute('data-n') ||
-          el.getAttribute('data-plot') ||
-          polyEl.getAttribute('data-n') ||
-          polyEl.getAttribute('data-plot') ||
-          el.id?.replace(/^plot[-_]?/i, '') ||
-          polyEl.id?.replace(/^plot[-_]?/i, '') ||
-          el.querySelector('text')?.textContent?.trim() || '';
+        let cleanPlotNumber = rawDataN;
+        if (/^[0-9]+-park$/i.test(rawDataN) || /^park$/i.test(rawDataN)) {
+          cleanPlotNumber = 'Park';
+        }
 
-        const num = parseInt(plotNumStr, 10);
-        // Strictly only allow plots 1 to 63 (no 64, no non-plot shapes)
-        if (isNaN(num) || num < 1 || num > 63) continue;
-        const plotNum = String(num);
+        const dInfo = dictD[rawDataN] || dictD[cleanPlotNumber];
+        let plotTitle = dInfo?.title || `Plot #${cleanPlotNumber}`;
+        let areaCents = 32.0;
 
-        // Check if table area is provided in attributes or metadata
-        const areaAttr = el.getAttribute('data-area') || el.getAttribute('data-cents') || polyEl.getAttribute('data-area');
-        const meta = metadataByPlotNum[plotNum];
-        const defaultArea = LAYOUT_63_TABLE_AREAS[plotNum] || 32.0;
-        const parsedArea = areaAttr ? parseFloat(areaAttr) : (meta?.area || defaultArea);
+        if (dInfo && Array.isArray(dInfo.lines)) {
+          for (const line of dInfo.lines) {
+            const areaM = line.match(/Table area:\s*([0-9.]+)\s*cents/i) || line.match(/([0-9.]+)\s*cents/i);
+            if (areaM) {
+              areaCents = parseFloat(areaM[1]);
+              break;
+            }
+          }
+        } else if (LAYOUT_63_TABLE_AREAS[cleanPlotNumber]) {
+          areaCents = LAYOUT_63_TABLE_AREAS[cleanPlotNumber];
+        }
 
-        // Facing
-        const facingAttr = el.getAttribute('data-facing') || meta?.facing || (num % 2 === 0 ? 'East' : 'West');
-        // Price
-        const priceAttr = meta?.price || 2500000;
-        // Status
-        const statusAttr = (meta?.status === 'booked' || meta?.status === 'on_hold' || meta?.status === 'sold') ? (meta.status as any) : 'available';
-
-        // Avoid duplicate plot numbers from multiple matching selectors
-        const existing = plots.find((p) => p.plotNumber === plotNum);
+        const existing = plots.find((p) => p.plotNumber === cleanPlotNumber);
         if (!existing) {
           plots.push({
-            plotNumber: plotNum,
+            plotNumber: cleanPlotNumber,
             points: pts,
-            areaCentsTable: isNaN(parsedArea) ? defaultArea : parsedArea,
-            facing: facingAttr,
-            priceInr: priceAttr,
-            status: statusAttr,
+            title: plotTitle,
+            areaCentsTable: areaCents,
+            facing: 'East',
+            priceInr: Math.round(areaCents * 75000),
+            status: 'available',
           });
         }
       }
     }
 
-    // Filter to strictly plots 1 through 63
-    const finalPlots = plots
-      .filter((p) => {
-        const n = parseInt(p.plotNumber, 10);
-        return !isNaN(n) && n >= 1 && n <= 63;
-      })
-      .slice(0, 63);
-
-    if (finalPlots.length === 0) {
-      errors.push('No polygon plot elements (<g class="plot" data-n="1">) found in HTML.');
+    if (plots.length === 0) {
+      errors.push('No polygon plot elements (<g class="plot" data-n="...">) found in HTML blueprint.');
       return { success: false, width, height, plots: [], errors };
     }
 
-    // Sort plots strictly 1 to 63
-    finalPlots.sort((a, b) => {
-      const na = parseInt(a.plotNumber, 10);
-      const nb = parseInt(b.plotNumber, 10);
-      return na - nb;
-    });
+    // Natural sort: sorts 1, 2, 10, 1-1, 1-2, 2-1, 2-12, Park logically
+    plots.sort((a, b) =>
+      a.plotNumber.localeCompare(b.plotNumber, undefined, { numeric: true, sensitivity: 'base' })
+    );
 
     return {
       success: true,
       imageUrl,
       width,
       height,
-      plots: finalPlots,
+      plots,
       errors: [],
     };
   } catch (err: any) {

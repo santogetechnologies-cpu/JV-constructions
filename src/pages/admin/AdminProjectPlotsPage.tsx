@@ -128,9 +128,9 @@ export const AdminProjectPlotsPage: React.FC = () => {
     e.preventDefault();
     if (!project || !editingPlot) return;
 
-    const num = parseInt(editPlotNumber.trim(), 10);
-    if (isNaN(num) || num < 1 || num > 63) {
-      setNotice({ type: 'error', text: 'Plot number must be between 1 and 63 only.' });
+    const plotNo = editPlotNumber.trim();
+    if (!plotNo) {
+      setNotice({ type: 'error', text: 'Plot number is required.' });
       return;
     }
 
@@ -145,7 +145,7 @@ export const AdminProjectPlotsPage: React.FC = () => {
       const updated = await createOrUpdatePlot({
         id: editingPlot.id,
         project_id: project.id,
-        plot_number: String(num),
+        plot_number: plotNo,
         area_cents: cents,
         area_sqft: centsToSqft(cents),
         facing: editFacing,
@@ -207,19 +207,14 @@ export const AdminProjectPlotsPage: React.FC = () => {
   // Create new plot manually
   const handleCreatePlot = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!project || !newPlotNumber.trim()) return;
-
-    const num = parseInt(newPlotNumber.trim(), 10);
-    if (isNaN(num) || num < 1 || num > 63) {
-      setNotice({ type: 'error', text: 'Plot number must be between 1 and 63 only.' });
-      return;
-    }
+    const plotNo = newPlotNumber.trim();
+    if (!project || !plotNo) return;
 
     const cents = parseFloat(newAreaCents) || 2.5;
     try {
       const created = await createOrUpdatePlot({
         project_id: project.id,
-        plot_number: String(num),
+        plot_number: plotNo,
         area_cents: cents,
         area_sqft: centsToSqft(cents),
         facing: newFacing,
@@ -542,7 +537,7 @@ export const AdminProjectPlotsPage: React.FC = () => {
 
             <form onSubmit={handleUpdatePlot} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Plot Number * (1 - 63)</label>
+                <label className="block font-bold text-slate-700 mb-1">Plot Number *</label>
                 <input
                   type="text"
                   required
