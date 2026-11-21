@@ -493,7 +493,7 @@ export const ProjectBigCard: React.FC<ProjectBigCardProps> = ({
             <span className="text-xs font-bold text-slate-400 uppercase block mb-3">
               Management Shortcuts
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
               <Link
                 to={`/admin/projects/${project.id}/layout`}
                 onClick={onActionClick}
@@ -558,6 +558,17 @@ export const ProjectBigCard: React.FC<ProjectBigCardProps> = ({
                 <ExternalLink className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Live Site</span>
               </Link>
+
+              {onDelete && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(project)}
+                  className="p-3 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-rose-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center shadow-2xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                  <span>Delete</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { Lead, Booking, BookingStatus } from '../../types/database';
+import { CONTACT_EMAIL } from '../../constants/contacts';
 import {
   getBookingsAdmin,
   deleteBooking,
@@ -248,7 +249,7 @@ export const AdminLeadsPage: React.FC = () => {
           </div>
           <div className="text-xs">
             <span className="font-extrabold block text-emerald-950">Auto Email Alerts Active</span>
-            <span className="text-[11px] text-teal-700 font-mono">contact@jvconstructions.com</span>
+            <span className="text-[11px] text-teal-700 font-mono">{CONTACT_EMAIL}</span>
           </div>
         </div>
       </div>

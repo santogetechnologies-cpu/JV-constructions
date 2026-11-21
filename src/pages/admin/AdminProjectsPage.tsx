@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { ProjectWithStats, ProjectStatus, getProjectApprovalType } from '../../types/database';
 import { getAllProjectsWithStatsAdmin, updateProject, deleteProject } from '../../services/api';
-import { PRIMARY_CONTACT_PHONE } from '../../constants/contacts';
+import { PRIMARY_CONTACT_PHONE, CONTACT_EMAIL } from '../../constants/contacts';
 import { ProjectBigCard } from '../../components/admin/ProjectBigCard';
 import { parseMapInput, isValidCoordinate, getProjectLiveMapUrl } from '../../lib/mapUtils';
 
@@ -182,7 +182,7 @@ export const AdminProjectsPage: React.FC = () => {
     }
 
     setEditPhone(p.contact_information?.phone || PRIMARY_CONTACT_PHONE);
-    setEditEmail(p.contact_information?.email || 'contact@jvconstructions.com');
+    setEditEmail(p.contact_information?.email || CONTACT_EMAIL);
     setEditSalesOffice(p.contact_information?.sales_office || 'Kallakurichi, Tamil Nadu');
   };
 

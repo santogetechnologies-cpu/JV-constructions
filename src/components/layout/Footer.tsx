@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Mail, Phone } from 'lucide-react';
+import { OFFICIAL_CONTACTS, CONTACT_EMAIL } from '../../constants/contacts';
 
 export const Footer: React.FC = () => {
   return (
@@ -40,16 +41,18 @@ export const Footer: React.FC = () => {
           <div className="md:col-span-3">
             <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0b3b64] mb-4">Contact</h4>
             <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-2.5">
-                <span className="w-8 h-8 rounded-full bg-slate-100 text-[#0b3b64] flex items-center justify-center"><Phone className="w-3.5 h-3.5" /></span>
-                <div className="leading-tight">
-                  <div className="font-semibold text-slate-900">Jesu Vivian</div>
-                  <a href="tel:+917708196238" className="text-teal-700 hover:underline font-mono text-xs">+91 77081 96238</a>
+              {OFFICIAL_CONTACTS.map((c) => (
+                <div key={c.phoneRaw} className="flex items-center gap-2.5">
+                  <span className="w-8 h-8 rounded-full bg-slate-100 text-[#0b3b64] flex items-center justify-center"><Phone className="w-3.5 h-3.5" /></span>
+                  <div className="leading-tight">
+                    <div className="font-semibold text-slate-900">{c.name}</div>
+                    <a href={`tel:${c.phoneRaw}`} className="text-teal-700 hover:underline font-mono text-xs">{c.phone}</a>
+                  </div>
                 </div>
-              </div>
+              ))}
               <div className="flex items-center gap-2.5">
                 <span className="w-8 h-8 rounded-full bg-slate-100 text-[#0b3b64] flex items-center justify-center"><Mail className="w-3.5 h-3.5" /></span>
-                <span className="truncate text-xs">contact@jvconstructions.com</span>
+                <a href={`mailto:${CONTACT_EMAIL}`} className="truncate text-xs hover:text-teal-700">{CONTACT_EMAIL}</a>
               </div>
             </div>
           </div>
